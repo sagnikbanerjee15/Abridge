@@ -42,7 +42,7 @@ def parseCommandLineArguments():
     required_named.add_argument( "--reference", help = "Enter a single fasta file for the reference", required = True )
 
     input_group = parser.add_mutually_exclusive_group( required = True )
-    input_group.add_argument( "--inputalignedfilename", help = "Enter the name of the alignment file you wish to compress. Alignments in SAM format only is expected. Ensure that the file is sorted by coordinate. Also, files must have the header section with the reference information available. You can compress only one file at a time." )
+    input_group.add_argument( "--inputalignedfilename", help = "Enter the name of the alignment file you wish to compress. Alignments in both SAM and BAM format only is accepted. Ensure that the file is sorted by coordinate. Also, files must have the header section with the reference information available. You can compress only one file at a time." )
     input_group.add_argument( "--inputabrfilename", help = "Enter the name of the compressed alignment files you wish to merge. These files must be compressed using abridge. You can decompress only one file at a time." )
 
     compress_decompress_group = parser.add_mutually_exclusive_group( required = True )
