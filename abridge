@@ -29,7 +29,8 @@ def parseCommandLineArguments():
     parser = argparse.ArgumentParser( prog = "abridge", description = """
     Compress alignments for storage, decompress from compressed file, and generate coverages.
     The main purpose of this software is to achieve high compression and fast decompression. 
-    Hence, ABRIDGE is not optimized to retrieve data from random locations""", formatter_class = RawTextHelpFormatter )
+    Hence, ABRIDGE is not optimized to retrieve data from random locations
+    In addition to that, ABRIDGE can be used to generate coverage information also""", formatter_class = RawTextHelpFormatter )
     
     required_named = parser.add_argument_group( 'Required arguments' )
     optional_named = parser.add_argument_group( 'Optional arguments' )
@@ -74,7 +75,7 @@ def parseCommandLineArguments():
     optional_named.add_argument( "--framework", help = "Enter your choice of framework", choices = ["docker", "singularity"], default = "docker" )
     optional_named.add_argument( "--force", help = "Setting this argument will remove the output directory and start the computation from scratch", action = "store_true" )
     optional_named.add_argument( "--preserve_all_intermediate_files", help = "Set this option to preserve all the intermediate files", action = "store_true" )
-    optional_named.add_argument( "--software_directory", help = "Enter the directory with all the software. Providing this argument will ensure faster execution", default = "" )
+    optional_named.add_argument( "--software_directory", help = "Enter the directory with all the software. Providing this argument will ensure faster execution", default = None )
     
     # optional_named.add_argument( "-aq", "--save_exact_quality_scores", help = "Adjust quality scores for matched bases to achieve better encoding. For more details please check ...", action = "store_true" )
     # optional_named.add_argument( "-p", "--positions", help = "Enter the position as chromosome:start-end from which reads will be retrieved" )
