@@ -26,9 +26,11 @@ from pprint import pformat
 
 
 def parseCommandLineArguments():
-    parser = argparse.ArgumentParser( prog = "abridge", description = """Compress alignments for storage, decompress from compressed file, and generate coverages.
-                                                                        The main purpose of this software is to achieve high compression and fast decompression. 
-                                                                        Hence, ABRIDGE is not optimized to retrieve data from random locations""", formatter_class = RawTextHelpFormatter )
+    parser = argparse.ArgumentParser( prog = "abridge", description = """
+    Compress alignments for storage, decompress from compressed file, and generate coverages.
+    The main purpose of this software is to achieve high compression and fast decompression. 
+    Hence, ABRIDGE is not optimized to retrieve data from random locations""", formatter_class = RawTextHelpFormatter )
+    
     required_named = parser.add_argument_group( 'Required arguments' )
     optional_named = parser.add_argument_group( 'Optional arguments' )
 
@@ -62,7 +64,7 @@ def parseCommandLineArguments():
     optional_named.add_argument( "--quiet", help = "Prevent abridge from printing any log information. By default logging is enables", action = "store_true" )
     optional_named.add_argument( "--cpu", help = "Enter the number of CPU cores to be used. This option will be used during compression or decompression.", default = 1 )
     optional_named.add_argument( "--run_diagnostics", help = "abridge will run diagnostics on the cigar compression and decompression. It will exit on discovery of any discrepancies", action = "store_true" )
-    optional_named.add_argument( "-keep_intermediate_error_files", help = "Set this argument if you wish to preserve the intermediate error files to assess time and memory usage. Default behaviour is to delete those", action = "store_true" )
+    optional_named.add_argument( "--keep_intermediate_error_files", help = "Set this argument if you wish to preserve the intermediate error files to assess time and memory usage. Default behaviour is to delete those", action = "store_true" )
     optional_named.add_argument( "--error_directory", help = "Enter a directory where all error files will be stored. If nothing is specified then error files will be stored in the output directory" )
     optional_named.add_argument( "--framework", help = "Enter your choice of framework", choices = ["docker", "singularity"], default = "docker" )
     optional_named.add_argument( "--force", help = "Setting this argument will remove the output directory and start the computation from scratch", action = "store_true" )
@@ -1394,63 +1396,10 @@ def main():
 
 
     if options.header == True:
-        """
-        cmd=f"7za e {options.inputalignedfilename[0]} -y"
-        if options.quiet == False:
-            logging.info(f"Running command - {cmd}")
-        os.system(cmd)
-        """
         cmd = f"cat {options.inputalignedfilename[0][:-3]}|grep ^@ > {options.inputalignedfilename[0][:-3]}.headers"
         os.system( cmd )
         # print(open(f"{options.inputalignedfilename[0][:-3]}.headers","r").read())
         os.system( f"rm -f {options.inputalignedfilename[0][:-3]}.headers" )
-    """
-    if options.random == True:
-        input_filename = options.inputabrfilename
-        name_of_input_file_without_location = input_filename.split( "/" )[-1][:-8]
-        _outputfilename = options.output_directory + "/" + name_of_input_file_without_location + ".sam_concise"
-        _index_outputfilename = options.output_directory + "/" + name_of_input_file_without_location + ".sam_concise_index"
-        unmapped_outputfilename = options.output_directory + "/" + name_of_input_file_without_location + ".sam_concise_unmapped"
-        name_of_file_with_quality_scores = f"{options.output_directory}/{name_of_input_file_without_location}.sam_concise_qual"
-        compressed_abridged_filename = input_filename
-        output_sam_filename = options.output_directory + "/" + name_of_input_file_without_location + ".decompressed.sam"
-
-        cmd = f"7za e {input_filename} -y "
-        cmd += f" -o{options.output_directory}"
-        cmd += f" 1> /dev/null 2>/dev/null"
-        if options.quiet == False:
-            logging.info( f"Running command - {cmd}" )
-        os.system( cmd )
-
-        if options.inputabrfilename[-3:] == ".br":
-            cmd = f"brotli -d -k -f {_outputfilename}.br {_index_outputfilename}.br {unmapped_outputfilename}.br {name_of_file_with_quality_scores}.rle.br"
-            os.system( cmd )
-
-        cmd = f"cat {_outputfilename}|grep ^@ > {options.output_directory}/{name_of_input_file_without_location}.headers"
-        if options.quiet == False:
-            logging.info( f"Running command - {cmd}" )
-        os.system( cmd )
-        chromosome_to_length = {}
-        fhr = open( f"{options.output_directory}/{name_of_input_file_without_location}.headers", "r" )
-        for line in fhr:
-            useless, chromosome, length = line.strip().split( "\t" )
-            chromosome = chromosome.split( ":" )[-1]
-            length = length.split( ":" )[-1]
-            # print(useless,chromosome,length)
-            chromosome_to_length[chromosome] = int( length )
-        fhr.close()
-        if options.positions.count( ":" ) != 1 or options.positions.count( "-" ) != 1:
-            print( "Error in position. Please specify in chromosome:start-end format" )
-            sys.exit()
-        chromosome = options.positions.split( ":" )[0]
-        start, end = options.positions.split( ":" )[-1].split( "-" )
-        start, end = int( start ), int( end )
-        if start > chromosome_to_length[chromosome] or end > chromosome_to_length[chromosome] or start > end:
-            print( "Error in chromosome lengths" )
-            sys.exit()
-        retrieveAlignmentsRandomly( chromosome, start, end, options )
-        os.system( f"rm -rf {options.output_directory}" )
-    """
     if options.generate_overlapping_coverage == True or options.generate_non_overlapping_coverage == True:
         input_filename = options.inputabrfilename
         name_of_input_file_without_location = input_filename.split( "/" )[-1][:-8]
