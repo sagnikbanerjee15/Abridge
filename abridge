@@ -33,10 +33,12 @@ def parseCommandLineArguments():
     
     required_named = parser.add_argument_group( 'Required arguments' )
     optional_named = parser.add_argument_group( 'Optional arguments' )
-
+    
+    ################################################################################################################################################################################################################################################
     # Required arguments
+    ################################################################################################################################################################################################################################################
     required_named.add_argument( "--output_directory", help = "Enter the name of the output directory. If nothing is specified then the compressed file will be put in the same location as the input samfile", required = True )
-    required_named.add_argument( "--genome", help = "Enter a single fasta file for the reference", required = True )
+    required_named.add_argument( "--reference", help = "Enter a single fasta file for the reference", required = True )
 
     input_group = parser.add_mutually_exclusive_group( required = True )
     input_group.add_argument( "--inputalignedfilename", help = "Enter the name of the alignment file you wish to compress. Alignments in SAM format only is expected. Ensure that the file is sorted by coordinate. Also, files must have the header section with the reference information available. You can compress only one file at a time." )
@@ -48,16 +50,19 @@ def parseCommandLineArguments():
     compress_decompress_group.add_argument( "--header", help = "Print only the header of reference sequences during decompression", action = "store_true" )
     # compress_decompress_group.add_argument( "-r", "--random", help = "Retrieve alignments from random locations", action = "store_true" )
 
+    ################################################################################################################################################################################################################################################
     # Optional arguments    
-    optional_named.add_argument( "--skip_shortening_read_names", help = "Request abridge to skip the step to reduce the size of read names. This options takes a bit longer but leads to much higher compression without adding to decompression time", action = "store_true" )
-    
+    ################################################################################################################################################################################################################################################
+    # Compression
+    optional_named.add_argument( "--skip_shortening_read_names", help = "Request abridge to skip the step to reduce the size of read names. Please note that setting this option will enable faster compression but lead to a poor ratio of compression", action = "store_true" )
     optional_named.add_argument( "--ignore_alignment_scores", help = "Request abrigde to store the mapping quality scores and the alignment score (provided it is available through the AS tag)", action = "store_true" )
     optional_named.add_argument( "--ignore_all_quality_scores", help = "Ignore all quality scores", action = "store_true" )
     optional_named.add_argument( "--ignore_quality_scores_for_matched_bases", help = "Request abridge to save all quality scores", action = 'store_true' )
-    optional_named.add_argument( "--ignore_soft_clippings", help = "No soft clippings will be stored. Read will be trimmed down to only the portion which matched to nucleotides in the reference", action = "store_true" )
+    optional_named.add_argument( "--ignore_soft_clippings", help = "Ignore all soft clippings. Read will be trimmed down to only the portion which were aligned to the reference", action = "store_true" )
     optional_named.add_argument( "--ignore_mismatches", help = "All mismatches will be ignored", action = "store_true" )
     optional_named.add_argument( "--ignore_unmapped_reads", help = "Request abridge to discard all reads that are unmapped", action = "store_true" )
     
+    # Decompression
     optional_named.add_argument( "--quality", help = "Enter dummy quality scores while decompressing", default = 'I' )
     optional_named.add_argument( "--ignore_sequence", help = "No nucleotide sequence will be produced during decompression", action = "store_true" )
     
@@ -69,7 +74,6 @@ def parseCommandLineArguments():
     optional_named.add_argument( "--framework", help = "Enter your choice of framework", choices = ["docker", "singularity"], default = "docker" )
     optional_named.add_argument( "--force", help = "Setting this argument will remove the output directory and start the computation from scratch", action = "store_true" )
     optional_named.add_argument( "--preserve_all_intermediate_files", help = "Set this option to preserve all the intermediate files", action = "store_true" )
-    
     optional_named.add_argument( "--software_directory", help = "Enter the directory with all the software. Providing this argument will ensure faster execution", default = "" )
     
     # optional_named.add_argument( "-aq", "--save_exact_quality_scores", help = "Adjust quality scores for matched bases to achieve better encoding. For more details please check ...", action = "store_true" )
@@ -78,25 +82,25 @@ def parseCommandLineArguments():
     # optional_named.add_argument( "-l", "--level", help = "This can accept an integer from the set (1,2,3). If level is set to 1 then abridge will perform the fastest but low compression. abridge will use brotli to compress. Decompression will be fast. Setting level to 2 will prompt abridge to perform the medium level compression using 7z. Compression will take time but decompression will be fast. If level is set to 3 then abridge will perform the best compression using 7paq. Both compression and decompression will take average time to complete", type = int, default = 2 )
     
     # Suppressed arguments
-    parser.add_argument( "--logfilename", "-logfilename", help = argparse.SUPPRESS )  # Name of the logfile
-    parser.add_argument( "--files_for_removal", "-files_for_removal", help = argparse.SUPPRESS )  # Files will be removed later
-    parser.add_argument( "--softwares", "-softwares", help = argparse.SUPPRESS )  # Software paths
-    parser.add_argument( "--single_ended", "-single_ended", help = argparse.SUPPRESS )
-    parser.add_argument( "--reference_to_length", "-num_of_reference_sequences", help = argparse.SUPPRESS )
-    parser.add_argument( "--outputfilename", "-outputfilename", help = argparse.SUPPRESS )
-    parser.add_argument( "--compile_programs", "-compile_programs", action = "store_true", help = argparse.SUPPRESS )  # Force abridge to compile the C programs
+    parser.add_argument( "--logfilename", help = argparse.SUPPRESS )  # Name of the logfile
+    parser.add_argument( "--files_for_removal", help = argparse.SUPPRESS )  # Files will be removed later
+    parser.add_argument( "--softwares", help = argparse.SUPPRESS )  # Software paths
+    parser.add_argument( "--single_ended", help = argparse.SUPPRESS )
+    parser.add_argument( "--reference_to_length", help = argparse.SUPPRESS )
+    parser.add_argument( "--outputfilename", help = argparse.SUPPRESS )
+    parser.add_argument( "--compile_programs", action = "store_true", help = argparse.SUPPRESS )  # Force abridge to compile the C programs
 
     # Future enhancements
     compress_decompress_group.add_argument( "--generate_overlapping_coverage", help = argparse.SUPPRESS, action = "store_true" )  # Future - This option can be used in conjuction with --positions to construct coverage from a specific location # help="Enter the name of the compressed file from which you wish to generate an overlapping coverage of reads ",
     compress_decompress_group.add_argument( "--generate_non_overlapping_coverage", help = argparse.SUPPRESS, action = "store_true" )  # help="Enter the name of the compressed file from which you wish to generate a non-overlapping coverage of reads "
 
     # Options for generating coverage
-    optional_named.add_argument( "-d", "--d", help = argparse.SUPPRESS, action = "store_true" )  # help = "Report the depth at each position in each A feature. Positions reported are one based.  Each position and depth follow the complete A feature.",
-    optional_named.add_argument( "-bg", "--bg", help = argparse.SUPPRESS, action = "store_true" )
-    optional_named.add_argument( "-bga", "--bga", help = argparse.SUPPRESS, action = "store_true" )
-    optional_named.add_argument( "-split", "--split", help = argparse.SUPPRESS, action = "store_true" )  # help = "Treat \"split\" BAM or BED12 entries as distinct BED intervals.",
-    optional_named.add_argument( "-mem", "--max_memory", help = argparse.SUPPRESS, default = 10 )  # help="Enter the maximum memory allowed (in GB)"
-    optional_named.add_argument( "-t", "--produce_tags", help = argparse.SUPPRESS, nargs = "*" )  # help="Enter a comma separated list of tags that you want abridge to produce during decompression. By default abridge will generate NH, MD and XS tags."
+    optional_named.add_argument( "--d", help = argparse.SUPPRESS, action = "store_true" )  # help = "Report the depth at each position in each A feature. Positions reported are one based.  Each position and depth follow the complete A feature.",
+    optional_named.add_argument( "--bg", help = argparse.SUPPRESS, action = "store_true" )
+    optional_named.add_argument( "--bga", help = argparse.SUPPRESS, action = "store_true" )
+    optional_named.add_argument( "--split", help = argparse.SUPPRESS, action = "store_true" )  # help = "Treat \"split\" BAM or BED12 entries as distinct BED intervals.",
+    optional_named.add_argument( "--max_memory", help = argparse.SUPPRESS, default = 10 )  # help="Enter the maximum memory allowed (in GB)"
+    optional_named.add_argument( "--produce_tags", help = argparse.SUPPRESS, nargs = "*" )  # help="Enter a comma separated list of tags that you want abridge to produce during decompression. By default abridge will generate NH, MD and XS tags."
     return parser.parse_args()
         
 def configureLogger( options ):
@@ -320,10 +324,10 @@ def checkSAMAlignments( options, logging ):
     return NH_present
 
 def cleanUp( options ):
-    # Remove the genome files
-    genome_filename_without_location = options.genome.split( "/" )[-1]
-    options.genome = f"{options.output_directory}/{genome_filename_without_location}"
-    os.system( f"rm -rf {options.genome}*" )
+    # Remove the reference files
+    reference_filename_without_location = options.reference.split( "/" )[-1]
+    options.reference = f"{options.output_directory}/{reference_filename_without_location}"
+    os.system( f"rm -rf {options.reference}*" )
 
     return
     for file in options.files_for_removal:
@@ -432,7 +436,7 @@ def compressSamFile( options , list_of_softwares_with_versions, volumes_list ):
 
         cmd = f"(/usr/bin/time --verbose "
         cmd += f" compressSamFileSingleEnded "
-        cmd += f" --genome_filename {options.genome}"        
+        cmd += f" --reference_filename {options.reference}"        
         cmd += f" --name_of_file_with_quality_scores {name_of_file_with_quality_scores} "
         cmd += f" --input_sam_filename {input_filename} "
         cmd += f" --output_abridge_filename {outputfilename} "
@@ -534,7 +538,7 @@ def compressSamFile( options , list_of_softwares_with_versions, volumes_list ):
     
         cmd = f"(/usr/bin/time --verbose "
         cmd += f" compressSamFilePairedEnded "
-        cmd += f" --genome_filename {options.genome}"
+        cmd += f" --reference_filename {options.reference}"
         cmd += f" --input_sam_filename {input_filename} "
         cmd += f" --output_abridge_filename {outputfilename} "
         cmd += f" --unmapped_filename {unmapped_outputfilename} "
@@ -605,10 +609,10 @@ def compressSamFile( options , list_of_softwares_with_versions, volumes_list ):
     executeCommand(options, software, version, volumes_list,f"{options.singularity_images}/{software}:{version}", '10g' , cmd)
 
     ######################################################################################
-    # Generate SHA512 for genome file
+    # Generate SHA512 for reference file
     ######################################################################################
     reference_sha512_filename = f"{options.output_directory}/reference_sha512"
-    cmd = f"sha512sum {options.genome} > {reference_sha512_filename}.temp"
+    cmd = f"sha512sum {options.reference} > {reference_sha512_filename}.temp"
     os.system( cmd )
     open( reference_sha512_filename, "w" ).write( open( f"{reference_sha512_filename}.temp", "r" ).read().strip().split()[0] )
     os.system( f"rm {reference_sha512_filename}.temp" )
@@ -713,7 +717,7 @@ def decompressSamFile( options , list_of_softwares_with_versions, volumes_list )
     unmapped_outputfilename = f"{options.output_directory}/inputalignedfilename_unmapped"
     name_of_file_with_quality_scores = f"{options.output_directory}/inputalignedfilename_qual"
 
-    cmd = f"samtools faidx {options.genome}"
+    cmd = f"samtools faidx {options.reference}"
     
     software = "samtools"
     version = list_of_softwares_with_versions[software]
@@ -814,12 +818,12 @@ def decompressSamFile( options , list_of_softwares_with_versions, volumes_list )
         cmd += f" decompressSamFileSingleEnded "  # argv[0] - Name of the program
     else:
         cmd += f" decompressSamFilePairedEnded "  # argv[0] - Name of the program
-    cmd += f" --reference {options.genome} "  # argv[1] - genome file
+    cmd += f" --reference {options.reference} "  # argv[1] - reference file
     cmd += f" --outputfilename {output_sam_filename} "  # argv[2] - decompressed SAM filename
     cmd += f" --compressedfile {outputfilename} "  # argv[3] - Name of the  filename
     cmd += f" --mockquality {options.quality} "  # argv[4] - Quality of reads
     if options.ignore_sequence:
-        cmd += f" --ignoresequence"  # argv[5] - Whether or not to produce sequences from genome file
+        cmd += f" --ignoresequence"  # argv[5] - Whether or not to produce sequences from reference file
     cmd += f" --unmappedreadsfilename {unmapped_outputfilename}"  # argv[6] - Name of file with unmapped reads
     cmd += f" --qualityscoresfilename {name_of_file_with_quality_scores} "  # argv[7] - Name of file with quality scores
     if os.path.exists( name_of_file_dictionary ) == True:
@@ -942,8 +946,8 @@ def retrieveAlignmentsRandomly( chromosome, start, end, options ):
         os.system( cmd )
     ######################################################################################
 
-    genome_filename = options.genome
-    genome_index_filename = options.genome + ".fai"
+    reference_filename = options.reference
+    reference_index_filename = options.reference + ".fai"
 
     input_filename = options.inputabrfilename
     name_of_input_file_without_location = input_filename.split( "/" )[-1][:-8]
@@ -976,8 +980,8 @@ def retrieveAlignmentsRandomly( chromosome, start, end, options ):
     else:
         cmd = f" {randomRetrievalPairedEnded} "  # argv[0]
     cmd += f" {_index_outputfilename} "  # argv[1]
-    cmd += f" {genome_filename} "  # argv[2]
-    cmd += f" {genome_index_filename} "  # argv[3]
+    cmd += f" {reference_filename} "  # argv[2]
+    cmd += f" {reference_index_filename} "  # argv[3]
     cmd += f" {chromosome} "  # argv[4]
     cmd += f" {_outputfilename}  "  # argv[5]
     cmd += f" {start} "  # argv[6]
@@ -1235,7 +1239,7 @@ def main():
 
     remove_these_files = []
     
-    genome_fullpath, genome_onlypath, genome_onlyfilename, genome_onlybasename, genome_onlyextension = seggregateInformationFromFilename(options.genome)
+    reference_fullpath, reference_onlypath, reference_onlyfilename, reference_onlybasename, reference_onlyextension = seggregateInformationFromFilename(options.reference)
     if options.compress == True:  
         inputalignedfilename_fullpath, inputalignedfilename_onlypath, inputalignedfilename_onlyfilename, inputalignedfilename_onlybasename, inputalignedfilename_onlyextension = seggregateInformationFromFilename(options.inputalignedfilename)
     elif options.decompress == True:
@@ -1245,13 +1249,13 @@ def main():
         options.error_directory = options.output_directory
     
     if options.compress == True:
-        volumes_list = [f"{genome_onlypath}:{genome_onlypath}",
+        volumes_list = [f"{reference_onlypath}:{reference_onlypath}",
                     f"{options.output_directory}:{options.output_directory}",
                     f"{options.error_directory}:{options.error_directory}",
                     f"{inputalignedfilename_onlypath}:{inputalignedfilename_onlypath}",
                     ]
     elif options.decompress == True:
-        volumes_list = [f"{genome_onlypath}:{genome_onlypath}",
+        volumes_list = [f"{reference_onlypath}:{reference_onlypath}",
                     f"{options.output_directory}:{options.output_directory}",
                     f"{options.error_directory}:{options.error_directory}",
                     f"{inputabrfilename_onlypath}:{inputabrfilename_onlypath}",
@@ -1308,23 +1312,23 @@ def main():
     ################################################################################################################################################################################################################################################
     # Convert to single line fasta file
     ################################################################################################################################################################################################################################################
-    if os.path.exists( f"{options.output_directory}/{genome_onlyfilename}" ) == False:
-        cmd = f"perl -pe \'/^>/ ? print \"\\n\" : chomp\' {options.genome} | tail -n +2 > {options.output_directory}/{genome_onlyfilename}"
+    if os.path.exists( f"{options.output_directory}/{reference_onlyfilename}" ) == False:
+        cmd = f"perl -pe \'/^>/ ? print \"\\n\" : chomp\' {options.reference} | tail -n +2 > {options.output_directory}/{reference_onlyfilename}"
         
         #software = "abridge"
         #version = list_of_softwares_with_versions[software]
         #executeCommand(options, software, version, volumes_list, cmd)
         os.system(cmd)
-    options.genome = f"{options.output_directory}/{genome_onlyfilename}"
-    remove_these_files.append(options.genome)
-    remove_these_files.append(f"{options.genome}.fai")
+    options.reference = f"{options.output_directory}/{reference_onlyfilename}"
+    remove_these_files.append(options.reference)
+    remove_these_files.append(f"{options.reference}.fai")
     ################################################################################################################################################################################################################################################
     
     
     ################################################################################################################################################################################################################################################
-    # Generate index for genome
+    # Generate index for reference
     ################################################################################################################################################################################################################################################
-    cmd = f"samtools faidx {options.genome}"
+    cmd = f"samtools faidx {options.reference}"
 
     software = "samtools"
     version = list_of_softwares_with_versions[software]
@@ -1354,7 +1358,7 @@ def main():
             cmd += f" calmd -bAr "
             cmd += f" -@ {options.cpu} "
             cmd += f" {options.inputalignedfilename[:-4]}.temp.bam "
-            cmd += f" {options.genome} "
+            cmd += f" {options.reference} "
             cmd += f" > {options.inputalignedfilename[:-4]}.MD_added.bam"
             software = "samtools"
             version = list_of_softwares_with_versions[software]
@@ -1390,7 +1394,6 @@ def main():
         if options.quiet == False:
             logging.info( f"decompressSamFile() execution is complete" )
 
-    ###################################################################################################################  EXAMINED TILL HERE
     return
 
 
