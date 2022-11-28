@@ -106,10 +106,10 @@ void findMaximumNumberOfReadsMappedToOneNucleotide(
     int number_of_fields;
     int max_read_length;
 
-    long long int max_position, max_value;
-    long long int prev_position, prev_value;
-    long long int curr_position, curr_value;
-    long long int total_number_of_alignments;
+    unsigned long long int max_position, max_value;
+    unsigned long long int prev_position, prev_value;
+    unsigned long long int curr_position, curr_value;
+    unsigned long long int total_number_of_alignments;
 
     FILE *fhr;
     FILE *fhw;
@@ -228,15 +228,15 @@ void findMaximumNumberOfReadsMappedToOneNucleotide(
         prev_value = 1;
     }
 
-    sprintf(str, "%lld", max_value);
+    convertStringToUnsignedInteger(max_value);
     strcat(str, "\n");
     fprintf(fhw, "%s", str);
 
-    sprintf(str, "%lld", total_number_of_alignments);
+    convertStringToUnsignedInteger(total_number_of_alignments);
     strcat(str, "\n");
     fprintf(fhw_tot_alignments, "%s", str);
 
-    sprintf(str, "%lld", max_read_length);
+    convertStringToUnsignedInteger(max_read_length);
     strcat(str, "\n");
     fprintf(fhw_max_read_length, "%s", str);
 
