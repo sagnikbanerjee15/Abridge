@@ -57,14 +57,14 @@ struct arguments
     char *name_of_file_with_max_commas;
     char *name_of_file_with_quality_scores;
     char *name_of_file_with_read_names_to_short_read_names_and_NH;
-    int flag_ignore_soft_clippings;
-    int flag_ignore_mismatches;
-    int flag_ignore_all_quality_scores;
-    int flag_ignore_unmapped_sequences;
-    int run_diagnostics;
-    int flag_ignore_quality_scores_for_matched_bases;
-    int flag_ignore_alignment_scores;
-    int skip_shortening_read_names;
+    unsigned short int flag_ignore_soft_clippings;
+    unsigned short int flag_ignore_mismatches;
+    unsigned short int flag_ignore_all_quality_scores;
+    unsigned short int flag_ignore_unmapped_sequences;
+    unsigned short int run_diagnostics;
+    unsigned short int flag_ignore_quality_scores_for_matched_bases;
+    unsigned short int flag_ignore_alignment_scores;
+    unsigned short int skip_shortening_read_names;
     unsigned long long int max_input_reads_in_a_single_nucl_loc;
 };
 
@@ -115,10 +115,7 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state)
         arguments->flag_ignore_mismatches = 1;
         break;
     case 'n':
-        arguments->max_input_reads_in_a_single_nucl_loc = strtoull(
-            arg,
-            &eptr,
-            10);
+        arguments->max_input_reads_in_a_single_nucl_loc = convertStringToUnsignedInteger(arg);
         break;
     case 'o':
         arguments->output_abridge_filename = arg;
