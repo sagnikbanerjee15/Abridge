@@ -50,6 +50,7 @@ struct arguments
 {
     // char *args[0];   // No standard arguments (without flags)
     char *input_alignment_filename; // Empty string - only contains null character
+    char *input_alignment_file_format;
     char *output_abridge_filename;
     char *genome_filename;
     char *unmapped_filename;
@@ -106,6 +107,9 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state)
         break;
     case 'i':
         arguments->input_alignment_filename = arg;
+        break;
+    case 'j':
+        arguments->input_alignment_file_format = arg;
         break;
     case 'm':
         arguments->flag_ignore_mismatches = 1;
