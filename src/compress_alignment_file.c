@@ -194,14 +194,14 @@ int main()
     /********************************************************************
      * Variable declaration
      ********************************************************************/
-    char input_alignment_filename[FILENAME_LENGTH];
+    char input_alignment_filename[MAX_FILENAME_LENGTH];
     char input_alignment_file_format[TEN];
-    char output_abridgefilename[FILENAME_LENGTH];
-    char reference_filename[FILENAME_LENGTH];
-    char unmapped_filename[FILENAME_LENGTH];
-    char name_of_file_with_max_commas[FILENAME_LENGTH];
-    char name_of_file_with_quality_scores[FILENAME_LENGTH];
-    char name_of_file_with_read_names_to_short_read_names_and_NH[FILENAME_LENGTH];
+    char output_abridgefilename[MAX_FILENAME_LENGTH];
+    char reference_filename[MAX_FILENAME_LENGTH];
+    char unmapped_filename[MAX_FILENAME_LENGTH];
+    char name_of_file_with_max_commas[MAX_FILENAME_LENGTH];
+    char name_of_file_with_quality_scores[MAX_FILENAME_LENGTH];
+    char name_of_file_with_read_names_to_short_read_names_and_NH[MAX_FILENAME_LENGTH];
 
     short int flag_ignore_soft_clippings;
     short int flag_ignore_mismatches;
