@@ -48,7 +48,7 @@ struct arguments
 {
     /* Used by main to communicate with parse_opt. */
     // char *args[0];   // No standard arguments (without flags)
-    char *input_alignment_filename; // Empty string - only contains null character
+    char *input_alignment_filename;
     char *input_alignment_file_format;
     char *output_abridge_filename;
     char *reference_filename;
