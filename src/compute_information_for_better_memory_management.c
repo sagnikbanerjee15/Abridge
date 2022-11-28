@@ -5,6 +5,7 @@
 #include <ctype.h>
 #include <argp.h>
 #include "htslib/htslib/sam.h"
+#include "htslib/htslib/bam.h"
 #include "data_structure_definitions.h"
 #include "function_definitions.h"
 
