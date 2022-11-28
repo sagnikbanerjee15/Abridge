@@ -1,0 +1,2 @@
+cd /work/ABRIDGE/Abridge/src/htslib-1.16
+git pull && gcc -Ofast -g -I. -fvisibility=hidden -fpic -c  -o ../compute_information_for_better_memory_management ../compute_information_for_better_memory_management.c

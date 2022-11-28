@@ -97,6 +97,7 @@ static struct argp argp =
 
 void findMaximumNumberOfReadsMappedToOneNucleotide(
     char *input_alignment_filename,
+    char *input_alignment_file_format,
     char *filename_max_reads_to_single_nucleotide,
     char *total_number_of_alignments_filename,
     char *max_read_length_filename)
@@ -131,19 +132,24 @@ void findMaximumNumberOfReadsMappedToOneNucleotide(
     char *line = NULL; // for reading each line
     char **split_line; // List of strings to store each element of a single alignment
     char **split_tags;
-
-    // struct Sam_Alignment *curr_alignment;
     /********************************************************************/
 
     /********************************************************************
      * Variable initialization
      ********************************************************************/
-    // curr_alignment = allocateMemorySam_Alignment ();
-    fhr = fopen(input_alignment_filename, "r");
-    if (fhr == NULL)
+    if (strcmp(input_alignment_file_format, "SAM") == 0)
     {
-        printf("Error! File %s not found", input_alignment_filename);
-        exit(1);
+        fhr = fopen(input_alignment_filename, "r");
+        if (fhr == NULL)
+        {
+            printf("Error! File %s not found", input_alignment_filename);
+            exit(1);
+        }
+    }
+    else if (strcmp(input_alignment_file_format, "BAM") == 0)
+    {
+        fp_in = hts_open(input_alignment_filename, "r");
+        bamHdr = sam_hdr_read(fp_in);
     }
     fhw = fopen(filename_max_reads_to_single_nucleotide, "w");
     if (fhw == NULL)
@@ -272,6 +278,7 @@ int main(int argc, char *argv[])
      * Variable declaration
      ********************************************************************/
     char input_alignment_filename[MAX_FILENAME_LENGTH];
+    char input_alignment_file_format[TEN];
     char filename_max_reads_to_single_nucleotide[MAX_FILENAME_LENGTH];
     char total_number_of_alignments_filename[MAX_FILENAME_LENGTH];
     char max_read_length_filename[MAX_FILENAME_LENGTH];
@@ -283,6 +290,7 @@ int main(int argc, char *argv[])
      ********************************************************************/
 
     strcpy(input_alignment_filename, arguments.input_alignment_filename);
+    strcpy(input_alignment_file_format, arguments.input_alignment_file_format);
     strcpy(filename_max_reads_to_single_nucleotide, arguments.filename_max_reads_to_single_nucleotide);
     strcpy(
         total_number_of_alignments_filename,
@@ -294,6 +302,7 @@ int main(int argc, char *argv[])
     /********************************************************************/
     findMaximumNumberOfReadsMappedToOneNucleotide(
         input_alignment_filename,
+        input_alignment_file_format,
         filename_max_reads_to_single_nucleotide,
         total_number_of_alignments_filename,
         max_read_length_filename);
