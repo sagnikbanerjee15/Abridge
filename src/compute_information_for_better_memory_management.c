@@ -228,15 +228,15 @@ void findMaximumNumberOfReadsMappedToOneNucleotide(
         prev_value = 1;
     }
 
-    convertStringToUnsignedInteger(max_value);
+    convertUnsignedIntegerToString(max_value);
     strcat(str, "\n");
     fprintf(fhw, "%s", str);
 
-    convertStringToUnsignedInteger(total_number_of_alignments);
+    convertUnsignedIntegerToString(total_number_of_alignments);
     strcat(str, "\n");
     fprintf(fhw_tot_alignments, "%s", str);
 
-    convertStringToUnsignedInteger(max_read_length);
+    convertUnsignedIntegerToString(max_read_length);
     strcat(str, "\n");
     fprintf(fhw_max_read_length, "%s", str);
 
