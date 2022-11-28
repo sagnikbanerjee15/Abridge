@@ -4,8 +4,8 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <argp.h>
-#include "htslib/htslib/sam.h"
-#include "htslib/sam.c"
+#include "htslib-1.16/htslib/sam.h"
+#include "htslib-1.16/sam.c"
 #include "data_structure_definitions.h"
 #include "function_definitions.h"
 
