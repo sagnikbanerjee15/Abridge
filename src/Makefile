@@ -2,7 +2,7 @@ SRCS = $(wildcard *.c)
 
 PROGS = $(patsubst %.c,%,$(SRCS))
 
-CFLAGS = -Ofast -g -Ihtslib
+CFLAGS = -Ofast -g -Ihtslib -fvisibility=hidden -fpic -c -Wall
 
 INSTALLDIR ?= /usr/local/bin
 
