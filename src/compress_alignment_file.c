@@ -23,7 +23,8 @@ static char args_doc[] = ""; // No standard arguments
 
 static struct argp_option options[] =
     {
-        {"input_sam_filename", 'i', "SAM_FILENAME", 0, "Enter the name of the SAM file to be compressed", 0},
+        {"input_alignment_filename", 'i', "ALIGNMENT_FILENAME", 0, "Enter the name of the alignment file to be compressed", 0},
+        {"input_alignment_file_format", 'j', "ALIGNMENT_FILE_FORMAT", 0, "Enter the format of the alignment file. Must be either SAM or BAM", 0},
         {"output_abridge_filename", 'o', "TEXT_FILENAME", 0, "Enter the name of the compressed file (please note that this is not the final compressed file)", 0},
         {"genome_filename", 'g', "GENOME_FILENAME", 0, "Enter the name of the genome file in fasta format", 0},
         {"unmapped_filename", 'u', "UNMAPPED_READS_FILENAME", 0, "Enter the name of the file where the unmapped reads will be stored", 0},
