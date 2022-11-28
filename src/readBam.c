@@ -6,7 +6,7 @@
 
 int main(int argc, char *argv[])
 {
-
+    return 0;
     samFile *fp_in = hts_open(argv[1], "r"); // open bam file
     bam_hdr_t *bamHdr = sam_hdr_read(fp_in); // read header
     bam1_t *aln = bam_init1();               // initialize an alignment
@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
     int comp;
 
     printf("%s\t%d\n", chrom, locus);
-    exit(1);
+
     // header parse
     // uint32_t *tar = bamHdr->text ;
     // uint32_t *tarlen = bamHdr->target_len ;
