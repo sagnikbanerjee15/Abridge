@@ -140,8 +140,8 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state)
         // Reached the last key.
         // Check if our REQUIRED "options" have been set to non-default values
         if (strcmp(arguments->input_alignment_filename, "") == 0 ||
-            strcmp(strupr(arguments->input_alignment_file_format), "SAM") == 0 ||
-            strcmp(strupr(arguments->input_alignment_file_format), "BAM") == 0 ||
+            strcmp(strupr(arguments->input_alignment_file_format), "SAM") != 0 ||
+            strcmp(strupr(arguments->input_alignment_file_format), "BAM") != 0 ||
             strcmp(arguments->input_alignment_file_format, "") == 0 ||
             strcmp(arguments->output_abridge_filename, "") == 0 ||
             strcmp(arguments->genome_filename, "") == 0 ||
