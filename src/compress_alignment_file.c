@@ -49,7 +49,7 @@ static struct argp_option options[] =
 struct arguments
 {
     // char *args[0];   // No standard arguments (without flags)
-    char *input_sam_filename; // Empty string - only contains null character
+    char *input_alignment_filename; // Empty string - only contains null character
     char *output_abridge_filename;
     char *genome_filename;
     char *unmapped_filename;
@@ -105,7 +105,7 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state)
         arguments->genome_filename = arg;
         break;
     case 'i':
-        arguments->input_sam_filename = arg;
+        arguments->input_alignment_filename = arg;
         break;
     case 'm':
         arguments->flag_ignore_mismatches = 1;
@@ -138,7 +138,7 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state)
     case ARGP_KEY_END:
         // Reached the last key.
         // Check if our inputsamfilename and outputfilename REQUIRED "options" have been set to non-default values
-        if (strcmp(arguments->input_sam_filename, "") == 0 || strcmp(arguments->output_abridge_filename, "") == 0 || strcmp(arguments->genome_filename, "") == 0 || strcmp(arguments->unmapped_filename, "") == 0 || strcmp(arguments->name_of_file_with_max_commas, "") == 0 || strcmp(arguments->name_of_file_with_quality_scores, "") == 0 || strcmp(arguments->name_of_file_with_read_names_to_short_read_names_and_NH, "") == 0 || arguments->max_input_reads_in_a_single_nucl_loc == 0)
+        if (strcmp(arguments->input_alignment_filename, "") == 0 || strcmp(arguments->output_abridge_filename, "") == 0 || strcmp(arguments->genome_filename, "") == 0 || strcmp(arguments->unmapped_filename, "") == 0 || strcmp(arguments->name_of_file_with_max_commas, "") == 0 || strcmp(arguments->name_of_file_with_quality_scores, "") == 0 || strcmp(arguments->name_of_file_with_read_names_to_short_read_names_and_NH, "") == 0 || arguments->max_input_reads_in_a_single_nucl_loc == 0)
         {
             argp_usage(state);
         }
