@@ -7,7 +7,6 @@
 
 int main(int argc, char *argv[])
 {
-    return 0;
     samFile *fp_in = hts_open(argv[1], "r"); // open bam file
     bam_hdr_t *bamHdr = sam_hdr_read(fp_in); // read header
     bam1_t *aln = bam_init1();               // initialize an alignment
