@@ -169,13 +169,13 @@ void findMaximumNumberOfReadsMappedToOneNucleotide(
     prev_value = 0;
     max_read_length = 0;
 
-    split_line = (char **)malloc(sizeof(char *) * ROWS);
-    for (i = 0; i < ROWS; i++)
-        split_line[i] = (char *)malloc(sizeof(char) * COLS);
+    split_line = (char **)malloc(sizeof(char *) * ONE_HUNDRED);
+    for (i = 0; i < ONE_HUNDRED; i++)
+        split_line[i] = (char *)malloc(sizeof(char) * ONE_THOUSAND);
 
-    split_tags = (char **)malloc(sizeof(char *) * ROWS);
-    for (i = 0; i < ROWS; i++)
-        split_tags[i] = (char *)malloc(sizeof(char) * COLS);
+    split_tags = (char **)malloc(sizeof(char *) * ONE_HUNDRED);
+    for (i = 0; i < ONE_HUNDRED; i++)
+        split_tags[i] = (char *)malloc(sizeof(char) * ONE_THOUSAND);
     /********************************************************************/
 
     while ((line_len = getline(&line, &len, fhr)) != -1)
