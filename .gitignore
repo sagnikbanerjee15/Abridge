@@ -137,3 +137,5 @@ dmypy.json
 # VScode
 .vscode
 .vscode/*
+*.dSYM
+
