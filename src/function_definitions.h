@@ -247,4 +247,41 @@ long long int convertStringToSignedInteger(char *str)
     return strtoull(convertStringToSignedInteger_value, &convertStringToSignedInteger_eptr, 10);
 }
 
+int splitByDelimiter(char *line, char delimiter, char **new_string)
+{
+    /*********************************************************************
+     * Splits a string on a requested character and
+     * returns the number of splits
+     *********************************************************************/
+
+    /********************************************************************
+     * Variable declarations
+     ********************************************************************/
+    int i = 0, j = 0, ctr = 0;
+    /********************************************************************/
+
+    for (i = 0; line[i] != '\0'; i++)
+    {
+        // printf ("\nsplitByDelimiter i=%i" , i);
+        //  if space or NULL found, assign NULL into new_string[ctr]
+        if (line[i] == delimiter)
+        {
+            new_string[ctr][j] = '\0';
+            // printf ("\nsplitByDelimiter ctr=%i" , ctr);
+            ctr++; // for next word
+            j = 0; // for next word, init index to 0
+        }
+        else if (line[i] == '\n')
+            continue;
+        else
+        {
+            // printf ("\nsplitByDelimiter j=%i" , j);
+            new_string[ctr][j] = line[i];
+            j++;
+        }
+    }
+    new_string[ctr][j] = '\0';
+    return ctr + 1;
+}
+
 #endif /* ABRIDGE_FUNCTIONS_DEFINITIONS_H_ */
