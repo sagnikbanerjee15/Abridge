@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
     int comp;
 
     printf("%s\t%d\n", chrom, locus);
-
+    exit(1);
     // header parse
     // uint32_t *tar = bamHdr->text ;
     // uint32_t *tarlen = bamHdr->target_len ;
