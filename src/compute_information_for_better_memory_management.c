@@ -117,6 +117,11 @@ void findMaximumNumberOfReadsMappedToOneNucleotide(
     FILE *fhw_tot_alignments;
     FILE *fhw_max_read_length;
 
+    /* Variables if BAM file is provided*/
+    samFile *fp_in;            // File pointer if BAM file provided
+    bam_hdr_t *bamHdr;         // read header
+    bam1_t *aln = bam_init1(); // initialize an alignment
+
     size_t len = 0;
     ssize_t line_len;
 
