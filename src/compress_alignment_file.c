@@ -16,17 +16,16 @@ static char doc[] = "compressSamFileSingleEnded will accept an alignment file in
 static char args_doc[] = ""; // No standard arguments
                              // (i.e. arguments without "names")
 
-/*
- * Options.  Field 1 in ARGP.
- * Order of fields: {NAME, KEY, ARG, FLAGS, DOC, GROUP}.
- */
-
 static struct argp_option options[] =
     {
+        /*
+         * Options.  Field 1 in ARGP.
+         * Order of fields: {NAME, KEY, ARG, FLAGS, DOC, GROUP}.
+         */
         {"input_alignment_filename", 'i', "ALIGNMENT_FILENAME", 0, "Enter the name of the alignment file to be compressed", 0},
         {"input_alignment_file_format", 'j', "ALIGNMENT_FILE_FORMAT", 0, "Enter the format of the alignment file. Must be either SAM or BAM", 0},
         {"output_abridge_filename", 'o', "TEXT_FILENAME", 0, "Enter the name of the compressed file (please note that this is not the final compressed file)", 0},
-        {"genome_filename", 'g', "GENOME_FILENAME", 0, "Enter the name of the genome file in fasta format", 0},
+        {"reference_filename", 'g', "reference_filename", 0, "Enter the name of the genome file in fasta format", 0},
         {"unmapped_filename", 'u', "UNMAPPED_READS_FILENAME", 0, "Enter the name of the file where the unmapped reads will be stored", 0},
         {"name_of_file_with_max_commas", 'c', "MAX_COMMAS_FILENAME", 0, "Enter the name of the file that contains the value of maximum number of commas", 0},
         {"name_of_file_with_quality_scores", 'q', "QUALITY_SCORES_FILENAME", 0, "Enter the name of the file where the quality scores will be stored. This file will be compressed later", 0},
@@ -45,14 +44,14 @@ static struct argp_option options[] =
         {0, 0, 0, 0, 0, 0} // Last entry should be all zeros in all fields
 };
 
-/* Used by main to communicate with parse_opt. */
 struct arguments
 {
+    /* Used by main to communicate with parse_opt. */
     // char *args[0];   // No standard arguments (without flags)
     char *input_alignment_filename; // Empty string - only contains null character
     char *input_alignment_file_format;
     char *output_abridge_filename;
-    char *genome_filename;
+    char *reference_filename;
     char *unmapped_filename;
     char *name_of_file_with_max_commas;
     char *name_of_file_with_quality_scores;
@@ -68,14 +67,13 @@ struct arguments
     unsigned long long int max_input_reads_in_a_single_nucl_loc;
 };
 
-/*
- * Parser. Field 2 in ARGP.
- * Order of parameters: KEY, ARG, STATE.
- * Parse a single option.
- */
-
 static error_t parse_opt(int key, char *arg, struct argp_state *state)
 {
+    /*
+     * Parser. Field 2 in ARGP.
+     * Order of parameters: KEY, ARG, STATE.
+     * Parse a single option.
+     */
     /* Get the input argument from argp_parse, which we
      know is a pointer to our arguments structure. */
     struct arguments *arguments = state->input;
@@ -103,7 +101,7 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state)
         arguments->skip_shortening_read_names = 1;
         break;
     case 'g':
-        arguments->genome_filename = arg;
+        arguments->reference_filename = arg;
         break;
     case 'i':
         arguments->input_alignment_filename = arg;
@@ -144,7 +142,7 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state)
             strcmp(strupr(arguments->input_alignment_file_format), "BAM") != 0 ||
             strcmp(arguments->input_alignment_file_format, "") == 0 ||
             strcmp(arguments->output_abridge_filename, "") == 0 ||
-            strcmp(arguments->genome_filename, "") == 0 ||
+            strcmp(arguments->reference_filename, "") == 0 ||
             strcmp(arguments->unmapped_filename, "") == 0 ||
             strcmp(arguments->name_of_file_with_max_commas, "") == 0 ||
             strcmp(arguments->name_of_file_with_quality_scores, "") == 0 ||
@@ -167,5 +165,82 @@ static struct argp argp =
 
 int main()
 {
+    /********************************************************************
+     * Named CLI
+     ********************************************************************/
+    struct arguments arguments;
+
+    // Parse our arguments; every option seen by parse_opt will be reflected in arguments.
+    // Default values.
+    arguments.input_alignment_filename = ""; // Empty string - only contains null character
+    arguments.input_alignment_file_format = "";
+    arguments.output_abridge_filename = "";
+    arguments.reference_filename = "";
+    arguments.unmapped_filename = "";
+    arguments.name_of_file_with_max_commas = "";
+    arguments.name_of_file_with_quality_scores = "";
+    arguments.name_of_file_with_read_names_to_short_read_names_and_NH = "";
+    arguments.flag_ignore_soft_clippings = 0;
+    arguments.flag_ignore_mismatches = 0;
+    arguments.flag_ignore_all_quality_scores = 0;
+    arguments.flag_ignore_unmapped_sequences = 0;
+    arguments.flag_ignore_quality_scores_for_matched_bases = 0;
+    arguments.flag_ignore_alignment_scores = 0;
+    arguments.run_diagnostics = 0;
+    arguments.max_input_reads_in_a_single_nucl_loc = 0;
+    arguments.skip_shortening_read_names = 0;
+
+    argp_parse(&argp, argc, argv, 0, 0, &arguments);
+    /********************************************************************
+     * Variable declaration
+     ********************************************************************/
+    char input_alignment_filename[FILENAME_LENGTH];
+    char input_alignment_file_format[TEN];
+    char output_abridgefilename[FILENAME_LENGTH];
+    char reference_filename[FILENAME_LENGTH];
+    char unmapped_filename[FILENAME_LENGTH];
+    char name_of_file_with_max_commas[FILENAME_LENGTH];
+    char name_of_file_with_quality_scores[FILENAME_LENGTH];
+    char name_of_file_with_read_names_to_short_read_names_and_NH[FILENAME_LENGTH];
+
+    short int flag_ignore_soft_clippings;
+    short int flag_ignore_mismatches;
+    short int flag_ignore_all_quality_scores;
+    short int flag_ignore_unmapped_sequences;
+    short int run_diagnostics;
+    short int flag_ignore_quality_scores_for_matched_bases;
+    short int flag_ignore_alignment_scores;
+    short int skip_shortening_read_names;
+
+    unsigned long long int max_input_reads_in_a_single_nucl_loc;
+    /********************************************************************/
+
+    /********************************************************************
+     * Variable initialization
+     ********************************************************************/
+    strcpy(reference_filename, arguments.reference_filename);
+    strcpy(input_alignment_filename, arguments.input_alignment_filename);
+    strcpy(output_abridgefilename, arguments.output_abridge_filename);
+    strcpy(unmapped_filename, arguments.unmapped_filename);
+    strcpy(
+        name_of_file_with_max_commas,
+        arguments.name_of_file_with_max_commas);
+    strcpy(
+        name_of_file_with_quality_scores,
+        arguments.name_of_file_with_quality_scores);
+    strcpy(
+        name_of_file_with_read_names_to_short_read_names_and_NH,
+        arguments.name_of_file_with_read_names_to_short_read_names_and_NH);
+
+    flag_ignore_alignment_scores = arguments.flag_ignore_alignment_scores; // Ignore the column 5 of SAM alignment file which is often set to 255 and also the AS tag if one is provided
+    flag_ignore_soft_clippings = arguments.flag_ignore_soft_clippings;
+    flag_ignore_mismatches = arguments.flag_ignore_mismatches;
+    flag_ignore_all_quality_scores = arguments.flag_ignore_all_quality_scores;
+    flag_ignore_unmapped_sequences = arguments.flag_ignore_unmapped_sequences;
+    flag_ignore_quality_scores_for_matched_bases = arguments.flag_ignore_quality_scores_for_matched_bases;
+    run_diagnostics = arguments.run_diagnostics;
+    max_input_reads_in_a_single_nucl_loc = arguments.max_input_reads_in_a_single_nucl_loc;
+    skip_shortening_read_names = arguments.skip_shortening_read_names;
+    /********************************************************************/
     return 0;
 }
