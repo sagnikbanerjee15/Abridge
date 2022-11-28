@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include "htslib-1.16/htslib/sam.h"
+#include "htslib-1.16/sam.c"
 
 int main(int argc, char *argv[])
 {
