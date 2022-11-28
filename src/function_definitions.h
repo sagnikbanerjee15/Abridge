@@ -207,4 +207,44 @@ void readCompleteReference(
     fclose(fhr);
 }
 
+char *convertSignedIntegerToString(long long int)
+{
+    /*************************************************************************************************************************
+     * Converts signed integer to string
+     **************************************************************************************************************************/
+    char str[256];
+    sprintf(str, "%lld", x);
+}
+
+char *convertUnsignedIntegerToString(unsigned long long int)
+{
+    /*************************************************************************************************************************
+     * Converts unsigned integers to string
+    (*************************************************************************************************************************/
+    char str[256];
+    sprintf(str, "%llu", x);
+}
+
+unsigned long long int convertStringToUnsignedInteger(char *str)
+{
+    /*************************************************************************************************************************
+     * Converts string to unsigned integer
+     **************************************************************************************************************************/
+    char convertStringToUnsignedInteger_value[10];
+    char *convertStringToUnsignedInteger_eptr;
+
+    return strtoull(convertStringToUnsignedInteger_value, &convertStringToUnsignedInteger_eptr, 10);
+}
+
+long long int convertStringToSignedInteger(char *str)
+{
+    /*************************************************************************************************************************
+     * Converts string to signed integer
+     **************************************************************************************************************************/
+    char convertStringToSignedInteger_value[10];
+    char *convertStringToSignedInteger_eptr;
+
+    return strtoull(convertStringToSignedInteger_value, &convertStringToSignedInteger_eptr, 10);
+}
+
 #endif /* ABRIDGE_FUNCTIONS_DEFINITIONS_H_ */
