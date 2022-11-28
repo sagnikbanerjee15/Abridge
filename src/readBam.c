@@ -4,7 +4,7 @@
 //#include "htslib-1.16/htslib/sam.h"
 //#include "htslib-1.16/sam.c"
 #include <htslib/sam.h>
-#include <htslib/sam.c>
+#include <sam.c>
 
 int main(int argc, char *argv[])
 {
