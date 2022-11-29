@@ -28,6 +28,7 @@ int main(int argc, char *argv[])
     {
         if (number_of_record_to_read--)
             break;
+        printf("\nProcessing %d", number_of_record_to_read);
         int32_t pos = aln->core.pos + 1;                // left most position of alignment in zero based coordianate (+1)
         char *chr = bamHdr->target_name[aln->core.tid]; // contig name (chromosome)
         uint32_t len = aln->core.l_qseq;                // length of the read.
