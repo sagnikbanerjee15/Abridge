@@ -38,11 +38,11 @@ int main(int argc, char *argv[])
         uint32_t q2 = aln->core.qual;  // mapping quality
 
         char *qseq = (char *)malloc(len);
-        /*
+
         for (int i = 0; i < len; i++)
         {
             qseq[i] = seq_nt16_str[bam_seqi(q, i)]; // gets nucleotide id and converts them into IUPAC id.
-        }*/
+        }
 
         // printf("%s\t%d\t%d\t%s\t%s\t%d\n",chr,pos,len,qseq,q,q2);
     }
