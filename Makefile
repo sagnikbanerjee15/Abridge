@@ -2,9 +2,9 @@ SRCS := $(wildcard src/*.c)
 
 PROGS = $(patsubst %.c,%,$(SRCS))
 
-CFLAGS = -Ofast -g -I$(PWD)/submodules/htslib -fvisibility=hidden -fpic -c -Wall
+CFLAGS = -Ofast -g -Isubmodules/htslib -fvisibility=hidden -fpic -c -Wall
 
-LDFLAGS = -L$(PWD)/submodules/htslib -Wl,-rpath=$(PWD)/submodules/htslib -lhts
+LDFLAGS = -Lsubmodules/htslib -Wl,-rpath=$(PWD)/submodules/htslib -lhts
 
 INSTALLDIR ?= bin
 
