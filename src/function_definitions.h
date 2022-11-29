@@ -207,7 +207,7 @@ void readCompleteReference(
     fclose(fhr);
 }
 
-char *convertSignedIntegerToString(long long int x)
+inline char *convertSignedIntegerToString(long long int x)
 {
     /*************************************************************************************************************************
      * Converts signed integer to string
@@ -216,7 +216,7 @@ char *convertSignedIntegerToString(long long int x)
     sprintf(str, "%lld", x);
 }
 
-char *convertUnsignedIntegerToString(unsigned long long int x)
+inline char *convertUnsignedIntegerToString(unsigned long long int x)
 {
     /*************************************************************************************************************************
      * Converts unsigned integers to string
@@ -225,7 +225,7 @@ char *convertUnsignedIntegerToString(unsigned long long int x)
     sprintf(str, "%llu", x);
 }
 
-unsigned long long int convertStringToUnsignedInteger(char *str)
+inline unsigned long long int convertStringToUnsignedInteger(char *str)
 {
     /*************************************************************************************************************************
      * Converts string to unsigned integer
@@ -236,7 +236,7 @@ unsigned long long int convertStringToUnsignedInteger(char *str)
     return strtoull(convertStringToUnsignedInteger_value, &convertStringToUnsignedInteger_eptr, 10);
 }
 
-long long int convertStringToSignedInteger(char *str)
+inline long long int convertStringToSignedInteger(char *str)
 {
     /*************************************************************************************************************************
      * Converts string to signed integer
