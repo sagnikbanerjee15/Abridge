@@ -41,7 +41,7 @@ int main(int argc, char *argv[])
         {
             qseq[i] = seq_nt16_str[bam_seqi(q, i)]; // gets nucleotide id and converts them into IUPAC id.
         }
-        printf("\nSequence %s length of sequence %lu", qseq, strlen(qseq));
+        printf("\nSequence %s length of sequence %lu %s", qseq, strlen(qseq), q);
         // printf("%s\t%d\t%d\t%s\t%s\t%d\n",chr,pos,len,qseq,q,q2);
     }
 
