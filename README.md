@@ -21,8 +21,10 @@ Download `abridge` directly from GitHub using `git clone`. Please note that this
 
 
 ```bash
-git clone https://github.com/sagnikbanerjee15/Abridge.git
+git clone --recurse-submodules https://github.com/sagnikbanerjee15/Abridge.git
 cd Abridge
+make htslib
+make install
 echo "export PATH=\$PATH:$(pwd)" >> ~/.bashrc
 source ~/.bashrc
 ```
