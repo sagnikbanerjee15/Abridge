@@ -1,8 +1,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-//#include "htslib-1.16/htslib/sam.h"
-//#include "htslib-1.16/sam.c"
 #include <htslib/sam.h>
 
 int main(int argc, char *argv[])
@@ -43,7 +41,7 @@ int main(int argc, char *argv[])
         {
             qseq[i] = seq_nt16_str[bam_seqi(q, i)]; // gets nucleotide id and converts them into IUPAC id.
         }
-        printf("\nSequence %s", qseq);
+        printf("\nSequence %s length of sequence %d", qseq, strlen(qseq));
         // printf("%s\t%d\t%d\t%s\t%s\t%d\n",chr,pos,len,qseq,q,q2);
     }
 
