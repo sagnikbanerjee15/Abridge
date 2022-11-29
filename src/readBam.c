@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include "htslib/sam.h"
+#include <htslib/sam.h>
 
 int main(int argc, char *argv[])
 {
