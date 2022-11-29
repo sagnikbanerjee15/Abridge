@@ -11,7 +11,7 @@ int main(int argc, char *argv[])
 
     char *chrom = argv[2];
     int locus = atoi(argv[3]);
-    int comp;
+    int comp, i;
     int number_of_record_to_read = 10;
 
     printf("%s\t%d\n", chrom, locus);
@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
 
         char *qseq = (char *)malloc(len);
 
-        for (int i = 0; i < len; i++)
+        for (i = 0; i < len; i++)
         {
             qseq[i] = seq_nt16_str[bam_seqi(q, i)]; // gets nucleotide id and converts them into IUPAC id.
         }
