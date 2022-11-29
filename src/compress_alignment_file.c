@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <argp.h>
+#include <sys/types.h>
 #include "data_structure_definitions.h"
 #include "function_definitions.h"
 
