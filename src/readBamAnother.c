@@ -2,7 +2,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <bam.h>
+#include <htslib/bam.h>
+#include <htslib/sam.h>
 #define WHERE fprintf(stderr, "%d\n", __LINE__)
 int main(int argc, char **argv)
 {
