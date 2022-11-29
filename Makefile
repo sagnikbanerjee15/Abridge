@@ -1,8 +1,8 @@
-SRCS := $(filter-out src/readBamAnother.c, $(wildcard src/*.c))
+SRCS := $(wildcard src/*.c)
 
 PROGS = $(patsubst %.c,%,$(SRCS))
 
-CFLAGS = -std=c99 -Ofast -g -Isubmodules/htslib -fvisibility=hidden -fpic -c -Wall
+CFLAGS = -Ofast -g -Isubmodules/htslib -fvisibility=hidden -fpic -c -Wall
 
 LDFLAGS = -Lsubmodules/htslib -Wl,-rpath=$(PWD)/submodules/htslib -lhts
 
