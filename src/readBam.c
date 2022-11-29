@@ -26,7 +26,8 @@ int main(int argc, char *argv[])
 
     while (sam_read1(fp_in, bamHdr, aln) > 0)
     {
-        if (number_of_record_to_read--)
+        number_of_record_to_read--;
+        if (number_of_record_to_read == 0)
             break;
         printf("\nProcessing %d", number_of_record_to_read);
         int32_t pos = aln->core.pos + 1;                // left most position of alignment in zero based coordianate (+1)
