@@ -25,7 +25,7 @@ git clone --recurse-submodules https://github.com/sagnikbanerjee15/Abridge.git
 cd Abridge
 make htslib
 make install
-echo "export PATH=\$PATH:$(pwd)" >> ~/.bashrc
+echo "export PATH=\$PATH:$(pwd)/bin" >> ~/.bashrc
 source ~/.bashrc
 ```
 
