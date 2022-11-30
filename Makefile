@@ -2,9 +2,7 @@ SRCS := $(wildcard src/*.c)
 
 PROGS = $(patsubst %.c,%,$(SRCS))
 
-CFLAGS = -Ofast -g -Isubmodules/htslib -fvisibility=hidden -fpic -c -Wall
-
-LDFLAGS = -Lsubmodules/htslib -Wl,-rpath=$(PWD)/submodules/htslib
+CFLAGS = -Ofast -g -fvisibility=hidden -fpic -c -Wall
 
 LDLIBS = -lhts
 
@@ -20,7 +18,7 @@ install: $(PROGS)
 	cp -p $(PROGS) $(INSTALLDIR)
 
 htslib:
-	cd submodules/htslib && autoreconf -i && ./configure && make
+	cd submodules/htslib && autoreconf -i && ./configure && make && make install
 
 clean: 
 	rm -f $(PROGS) *.o
