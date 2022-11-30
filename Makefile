@@ -4,7 +4,9 @@ PROGS = $(patsubst %.c,%,$(SRCS))
 
 CFLAGS = -Ofast -g -Isubmodules/htslib -fvisibility=hidden -fpic -c -Wall
 
-LDFLAGS = -Lsubmodules/htslib -Wl,-rpath=$(PWD)/submodules/htslib -lhts
+LDFLAGS = -Lsubmodules/htslib -Wl,-rpath=$(PWD)/submodules/htslib
+
+LDLIBS = -lhts
 
 INSTALLDIR ?= bin
 
@@ -18,7 +20,7 @@ install: $(PROGS)
 	cp -p $(PROGS) $(INSTALLDIR)
 
 htslib:
-	cd submodules/htslib && autoreconf -i && ./configure && make && make install
+	cd submodules/htslib && autoreconf -i && ./configure && make
 
 clean: 
 	rm -f $(PROGS) *.o
