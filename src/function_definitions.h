@@ -105,8 +105,6 @@ struct Sam_Alignment* allocateMemorySam_Alignment ()
 	s->MD = ( char* ) malloc (sizeof(char) * ( MAX_SEQ_LEN * 2 ));
 	strcpy(s->MD , "-1");
 	return s;
-
-	return s;
 }
 
 /*************************************************************************************************************************
