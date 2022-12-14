@@ -95,8 +95,6 @@ struct Sam_Alignment* allocateMemorySam_Alignment ()
 	s->soft_clips_removed_seq[0] = '\0';
 	s->soft_clips_removed_qual = ( char* ) malloc (sizeof(char) * MAX_SEQ_LEN);
 	s->soft_clips_removed_qual[0] = '\0';
-	s->selected_qual = ( char* ) malloc (sizeof(char) * MAX_SEQ_LEN);
-	s->selected_qual[0] = '\0';
 
 	s->NH = ( char* ) malloc (sizeof(char) * 10);
 	strcpy(s->NH , "-1");
