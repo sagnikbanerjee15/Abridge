@@ -251,7 +251,10 @@ inline long long int convertStringToSignedInteger (char *str)
 			10);
 }
 
-int splitByDelimiter (char *line, char delimiter, char **new_string)
+unsigned short int splitByDelimiter (
+		char *line,
+		char delimiter,
+		char **new_string)
 {
 	/*********************************************************************
 	 * Splits a string on a requested character and
@@ -261,7 +264,8 @@ int splitByDelimiter (char *line, char delimiter, char **new_string)
 	/********************************************************************
 	 * Variable declarations
 	 ********************************************************************/
-	int i = 0, j = 0, ctr = 0;
+	int i = 0, j = 0;
+	unsigned short ctr = 0;
 	/********************************************************************/
 
 	for ( i = 0 ; line[i] != '\0' ; i++ )
