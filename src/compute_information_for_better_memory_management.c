@@ -171,13 +171,16 @@ void findMaximumNumberOfReadsMappedToOneNucleotide (
 	current_reference_name[0] = '\0';
 	previous_reference_name = ( char* ) malloc (sizeof(char) * ONE_HUNDRED);
 	previous_reference_name[0] = '\0';
+
+	total_number_of_alignments = 0;
 	/********************************************************************/
 
 	if ( strcmp (input_alignment_file_format , "SAM") == 0 )
+	{
 		while ( ( line_len = getline ( &line , &len , fhr) ) != -1 )
 			if ( line[0] != '@' ) break;
+	}
 
-	total_number_of_alignments = 0;
 	do
 	{
 		total_number_of_alignments += 1;

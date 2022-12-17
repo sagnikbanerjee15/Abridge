@@ -486,7 +486,6 @@ void readSingleAlignmentFromFile (
 		struct Sam_Alignment *s,
 		char *ended,
 		char *alignment_format,
-		unsigned short int fill_specific_fields,
 		unsigned short int AS_tag_presence,
 		char **split_line,
 		char **split_tags)
