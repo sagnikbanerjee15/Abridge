@@ -433,6 +433,8 @@ void populateSamAlignmentInstance (
 				&total_number_of_cigar_items ,
 				cigar_items_instance);
 
+		left_soft_clip_point = 0;
+		right_soft_clip_point = 0;
 		if ( cigar_items_instance[0].def == 'S' )
 		{
 			left_soft_clip_point = cigar_items_instance[0].len;
