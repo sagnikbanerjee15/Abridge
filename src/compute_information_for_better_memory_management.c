@@ -188,11 +188,6 @@ void findMaximumNumberOfReadsMappedToOneNucleotide (
 	do
 	{
 		total_number_of_alignments += 1;
-		if ( total_number_of_alignments % 100000 == 0 )
-			printf ("\nTotal number of alignments: %u input_alignment_file_format: %s strcmp value: %d" ,
-					total_number_of_alignments ,
-					input_alignment_file_format ,
-					strcmp (input_alignment_file_format , "SAM"));
 
 		if ( strcmp (input_alignment_file_format , "BAM") == 0 )
 		{
@@ -206,9 +201,6 @@ void findMaximumNumberOfReadsMappedToOneNucleotide (
 			current_read_length = strlen (split_line[9]);
 			strcpy(current_reference_name , split_line[2]);
 			current_reference_position = convertStringToUnsignedInteger (split_line[3]);
-			printf ("\n%s %u" ,
-					split_line[3] ,
-					convertStringToUnsignedInteger (split_line[3]));
 		}
 		if ( current_reference_position == 0 ) break; //Unaligned read
 
