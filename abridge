@@ -342,10 +342,7 @@ def runCommand( eachpinput ):
 def constructFileNames( input_filename, options ):
     name_of_input_file_without_location = input_filename.split( "/" )[-1][:-4]
 
-    name_of_max_input_reads_file = f"{options.output_directory}/inputalignedfilename_max_input_reads"
-    name_of_file_with_max_commas = f"{options.output_directory}/inputalignedfilename_max_commas"
-    name_of_file_max_read_length = f"{options.output_directory}/inputalignedfilename_max_read_size"
-    name_of_total_number_of_alignments_file = f"{options.output_directory}/inputalignedfilename_total_number_of_alignments"
+    summary_information_outputfilename = f"{options.output_directory}/inputalignedfilename_summary_information"
     frequency_of_flags_filename = f"{options.output_directory}/inputalignedfilename_frequency_of_flags"
 
     outputfilename = f"{options.output_directory}/inputalignedfilename_compressed"
@@ -356,7 +353,6 @@ def constructFileNames( input_filename, options ):
     name_of_file_dictionary = f"{options.output_directory}/inputalignedfilename_dictionary"
     fclqc_output_filename = f"{options.output_directory}/inputalignedfilename_qual_compressed_fclqc"
 
-    error_file_max_input_reads = f"{name_of_max_input_reads_file}.error"
     error_file_compress_ = f"{outputfilename}.error"
     error_file_prep_abridge_index = f"{index_outputfilename}.error"
     error_file_qual_rle = f"{name_of_file_with_quality_scores_rle}.error"
@@ -371,13 +367,13 @@ def constructFileNames( input_filename, options ):
     error_file_zpaq_decompression = f"{options.error_directory}/zpaq_decompression.error"
     error_file_brotli_decompression = f"{options.error_directory}/brotli_decompression.error"
 
-    delete_these_files = [name_of_max_input_reads_file, name_of_file_with_max_commas, name_of_file_max_read_length, name_of_total_number_of_alignments_file, frequency_of_flags_filename]
+    delete_these_files = [summary_information_outputfilename]
     other_files = [outputfilename, index_outputfilename, unmapped_outputfilename, name_of_file_with_quality_scores, name_of_file_with_quality_scores_rle, name_of_file_dictionary, fclqc_output_filename]
     error_files = [error_file_max_input_reads, error_file_compress_, error_file_qual_rle, error_file_prep_abridge_index, error_file_7z_compression, error_file_zpaq_compression, error_file_brotli_compression, error_file_7z_decompression, error_file_zpaq_decompression, error_file_brotli_decompression, error_fclqc]
     # compressed_files = [compressed_abridged_filename_br,compressed_abridged_filename_zpaq]
     return  delete_these_files, other_files, error_files
 
-def compressSamFile( options , list_of_softwares_with_versions, volumes_list ):
+def compressSamFile( options , tags_presence, list_of_softwares_with_versions, volumes_list ):
     """
     """
     pool = multiprocessing.Pool( processes = int( options.cpu ) )
@@ -385,7 +381,7 @@ def compressSamFile( options , list_of_softwares_with_versions, volumes_list ):
     input_filename = options.inputalignedfilename
     name_of_input_file_without_location = input_filename.split( "/" )[-1]
     delete_these_files, other_files, error_files = constructFileNames( input_filename, options )
-    name_of_max_input_reads_file, name_of_file_with_max_commas, name_of_file_max_read_length, name_of_total_number_of_alignments_file, frequency_of_flags_filename = delete_these_files
+    summary_information_outputfilename = delete_these_files
     outputfilename, index_outputfilename, unmapped_outputfilename, name_of_file_with_quality_scores, name_of_file_with_quality_scores_rle, name_of_file_dictionary, fclqc_output_filename = other_files
     error_file_max_input_reads, error_file_compress_, error_file_qual_rle, error_file_prep_abridge_index, error_file_7z_compression, error_file_zpaq_compression, error_file_brotli_compression, error_file_7z_decompression, error_file_zpaq_decompression, error_file_brotli_decompression, error_fclqc = error_files
     # compressed_abridged_filename_7z, compressed_abridged_filename_br,compressed_abridged_filename_zpaq = compressed_files
@@ -404,11 +400,11 @@ def compressSamFile( options , list_of_softwares_with_versions, volumes_list ):
             logging.info( f"Starting compression for {input_filename}" )
 
         cmd = f"(/usr/bin/time --verbose "
-        cmd += f" maxReadsMappedToSingleNucleotide  "
+        cmd += f" compute_information_for_better_memory_management  "
         cmd += f" --input_sam_filename {input_filename} "
-        cmd += f" --output_filename {name_of_max_input_reads_file}"
-        cmd += f" --name_of_total_number_of_alignments_filename  {name_of_total_number_of_alignments_file} "
-        cmd += f" --name_of_file_max_read_length {name_of_file_max_read_length}"
+        cmd += f" --summary_information_outputfilename {summary_information_outputfilename}"
+        cmd += f" --ended {'SE' if options.single_ended == True else 'PE'}"
+        cmd += f" --AS_tag_presence  {tags_presence['AS']} "
         cmd += f")"
         cmd += f"1> /dev/null "
         if options.keep_intermediate_error_files == True:
@@ -1094,11 +1090,13 @@ def returnTagList(options, samfilename, tagfilename, list_of_softwares_with_vers
     fhr.close()
     
     
-    tag_presence = {"NH":0, "MD":0}
+    tag_presence = {"NH":0, "MD":0, "AS": 0}
     if "NH:i:" in line:
         tag_presence["NH"] = 1
     if "MD:Z:" in line:
         tag_presence["MD"] = 1
+    if "AS:i" in line:
+        tag_presence["AS"] = 1
         
     return tag_presence
 
@@ -1386,7 +1384,7 @@ def main():
         if options.quiet == False:
             logging.info( f"findEndedness() execution is complete" )
         
-        compressSamFile( options, list_of_softwares_with_versions, volumes_list )
+        compressSamFile( options, tag_present, list_of_softwares_with_versions, volumes_list )
         if options.quiet == False:
             logging.info( f"compressSamFile() execution is complete" )
 

@@ -288,4 +288,218 @@ int splitByDelimiter (char *line, char delimiter, char **new_string)
 	return ctr + 1;
 }
 
+int isSequenceSoftClipped (char *cigar)
+{
+	int i;
+	for ( i = 0 ; cigar[i] != '\0' ; i++ )
+		if ( cigar[i] == 'S' ) return 1;
+	return 0;
+}
+
+void splitCigar (char *cigar, // The original CIGAR string
+		int *num_of_types, //Sets the number of different items in the CIGAR string
+		struct Cigar_Items *cigar_items_instance)
+{
+	/********************************************************************
+	 * Variable declarations
+	 ********************************************************************/
+
+	int i, j = 0;
+	int current_length = 0;
+	/********************************************************************/
+
+	for ( i = 0 ; cigar[i] != '\0' ; i++ )
+	{
+		if ( isdigit (cigar[i]) != 0 ) //cigar[i] is a digit
+		{
+			current_length = current_length * 10 + cigar[i] - 48;
+		}
+		else //cigar[i] is a character
+		{
+			cigar_items_instance[j].def = cigar[i];
+			cigar_items_instance[j].len = current_length;
+			current_length = 0;
+			j += 1;
+		}
+	}
+	*num_of_types = j;
+}
+
+void populateSamAlignmentInstance (
+		struct Sam_Alignment *dest,
+		char **src,
+		char **split_tags,
+		int number_of_fields,
+		unsigned short int fill_specific_fields,
+		unsigned short int AS_tag_presence)
+{
+	/*************************************************************************************************************************
+	 * Processed the line read from the SAM alignment file and prepares the Sam_Alignment instance
+	 * Skips unimportant fields if requested
+	 *************************************************************************************************************************/
+
+	/********************************************************************
+	 * Variable declarations
+	 ********************************************************************/
+	char *temp;
+	int i;
+
+	struct Cigar_Items cigar_items_instance[MAX_SEQ_LEN];
+	unsigned short int total_number_of_cigar_items;
+	unsigned short int left_soft_clip_point;
+	unsigned short int right_soft_clip_point;
+	/********************************************************************/
+
+	strcpy(dest->read_name , src[0]);
+	dest->samflag = convertStringToUnsignedInteger (src[1]);
+	strcpy(dest->reference_name , src[2]);
+	dest->start_position = convertStringToUnsignedInteger (src[3]);
+	strcpy(dest->mapping_quality_score , src[4]);
+	strcpy(dest->cigar , src[5]);
+	strcpy(dest->reference_name_next_mate , src[6]);
+	dest->start_position_next = convertStringToUnsignedInteger (src[7]);
+	strcpy(dest->template_length , src[8]);
+	strcpy(dest->sequence , src[9]);
+	strcpy(dest->quality_scores , src[10]);
+	for ( i = 0 ; dest->quality_scores[i] != '\0' ; i++ )
+		dest->quality_scores[i] += QUAL_SCORE_ADJUSTMENT;
+
+	for ( i = 11 ; i < number_of_fields ; i++ )
+	{
+		//printf("%s\n",src[i]);
+		//fflush ( stdout );
+		splitByDelimiter (src[i] , ':' , split_tags);
+		//sam_tag_index = locateSamTags(split_tags[0]);
+		//dest->tags[i - 11].name = sam_tags[sam_tag_index];
+		if ( i == number_of_fields - 1 )
+			split_tags[2][strlen (split_tags[2])] = '\0';
+
+		if ( strcmp (split_tags[0] , "NH") == 0 )
+			strcpy(dest->NH , split_tags[2]);
+		else if ( strcmp (split_tags[0] , "MD") == 0 )
+			strcpy(dest->MD , split_tags[2]);
+		else if ( strcmp (split_tags[0] , "AS") == 0 )
+		{
+			strcpy(dest->AS , split_tags[2]);
+		}
+
+		//printf("\n Tags %s Parts of the tag %s %s %s ", src[i], split_tags[0], split_tags[1], split_tags[2]);
+	}
+
+	dest->read_seq_len = strlen (dest->seq);
+
+	/*
+	 * Process soft clipped fields
+	 */
+	if ( isSequenceSoftClipped (dest->cigar) == 0 ) // Process everything when there are no soft clips
+	{
+		strcpy(dest->left_soft_clipped_sequence , "");
+		strcpy(dest->right_soft_clipped_sequence , "");
+		strcpy(dest->left_soft_clipped_qual , "");
+		strcpy(dest->right_soft_clipped_qual , "");
+		dest->left_soft_clipped_sequence_length = 0;
+		dest->right_soft_clipped_sequence_length = 0;
+		strcpy(dest->soft_clips_removed_seq , dest->sequence);
+		strcpy(dest->soft_clips_removed_qual , dest->quality_scores);
+		dest->soft_clips_removed_seq_len = 0;
+	}
+	else
+	{
+		splitCigar (dest->cigar ,
+				&total_number_of_cigar_items ,
+				cigar_items_instance);
+
+		if ( dest->cigar_items[0].def == 'S' )
+		{
+			left_soft_clip_point = dest->cigar_items[0].len;
+			extractSubString (dest->seq ,
+					dest->soft_clippings.left ,
+					0 ,
+					left_soft_clip_point - 1);
+			extractSubString (dest->qual ,
+					dest->soft_clippings.left_qual ,
+					0 ,
+					left_soft_clip_point - 1);
+			dest->soft_clips_removed_seq_len = dest->read_seq_len - dest->cigar_items[0].len;
+			for ( i = 0 ; i <= left_soft_clip_point - 1 ; i++ )
+				dest->soft_clippings.left[i] =
+						( dest->soft_clippings.left[i] >= 65 && dest->soft_clippings.left[i] <= 90 ) ? dest->soft_clippings.left[i] + 32 : dest->soft_clippings.left[i];
+		}
+		if ( dest->cigar_items[dest->number_of_cigar_items - 1].def == 'S' )
+		{
+			right_soft_clip_point = dest->cigar_items[dest->number_of_cigar_items - 1].len;
+			extractSubString (dest->seq ,
+					dest->soft_clippings.right ,
+					dest->read_seq_len - right_soft_clip_point ,
+					dest->read_seq_len - 1);
+			extractSubString (dest->qual ,
+					dest->soft_clippings.right_qual ,
+					dest->read_seq_len - right_soft_clip_point ,
+					dest->read_seq_len - 1);
+			dest->soft_clips_removed_seq_len = dest->read_seq_len - dest->cigar_items[dest->number_of_cigar_items - 1].len;
+			for ( i = 0 ; i <= right_soft_clip_point ; i++ )
+				dest->soft_clippings.right[i] =
+						( dest->soft_clippings.right[i] >= 65 && dest->soft_clippings.right[i] <= 90 ) ? dest->soft_clippings.right[i] + 32 : dest->soft_clippings.right[i];
+		}
+
+		/*
+		 * Remove the soft-clips and construct new sequence
+		 */
+
+		int j = 0;
+		for ( i = left_soft_clip_point ;
+				i < dest->read_seq_len - right_soft_clip_point ; i++ )
+		{
+			dest->soft_clips_removed_seq[j] = dest->seq[i];
+			dest->soft_clips_removed_qual[j] = dest->qual[i];
+			j++;
+		}
+		dest->soft_clips_removed_seq[j] = '\0';
+		dest->soft_clips_removed_qual[j] = '\0';
+
+	}
+
+}
+
+void readSingleAlignmentFromFile (
+		FILE *fhr,
+		struct Sam_Alignment *s,
+		char *ended,
+		char *alignment_format,
+		unsigned short int fill_specific_fields,
+		unsigned short int AS_tag_presence,
+		char **split_line,
+		char **split_tags)
+{
+	/*************************************************************************************************************************
+	 * Reads in each alignment and stores the values in them Sam_Alignment object
+	 * Decided which fields to retain based on whether the alignment was SE or PE
+	 *
+	 * If fill_specific_fields == 0 then all information will be copied into the DS
+	 * else == 1 then only the portion required for determining max memory will be filled in
+	 **************************************************************************************************************************/
+
+	size_t len = 0;
+	ssize_t line_len;
+
+	char *line = NULL; // for reading each line
+	unsigned short int number_of_fields;
+
+	if ( strcmp (alignment_format , "SAM") == 0 )
+	{
+
+		number_of_fields = splitByDelimiter (line , '\t' , split_line);
+		populateSamAlignmentInstance (s ,
+				split_line ,
+				split_tags ,
+				number_of_fields ,
+				fill_specific_fields ,
+				AS_tag_presence);
+	}
+	else if ( strcmp (alignment_format , "BAM") == 0 )
+	{
+
+	}
+}
+
 #endif /* ABRIDGE_FUNCTIONS_DEFINITIONS_H_ */

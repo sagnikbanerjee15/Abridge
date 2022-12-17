@@ -30,6 +30,8 @@
 #define MAX_FILES_FOR_MERGING 1000
 #define MAX_READ_ID_LENGTH 1000
 #define QUAL_SCORE_ADJUSTMENT 100
+#define FILL_ENTIRE_SAM_ALIGNEMENT_DS 0
+#define SAM_ALIGNEMENT_DS_FILL_MEM_MGMT 1
 
 /*************************************************************************************************************************
  * Define characters for mismatch and deletion
@@ -67,7 +69,7 @@ struct Cigar_Items
 	 * Data structure definition to outline how CIGAR items are loaded and stored
 	 *************************************************************************************************************************/
 	char def;
-	int len;
+	unsigned short int len;
 };
 
 struct Soft_Clippings
@@ -97,13 +99,13 @@ struct Sam_Alignment
 	 * Mandatory fields
 	 */
 	char *read_name;                       // Name of the read
-	char *samflag; // Flag produced by aligner. For more details see https://www.samformat.info/sam-format-flag
+	unsigned short int samflag; // Flag produced by aligner. For more details see https://www.samformat.info/sam-format-flag
 	char *reference_name;                  // Chromosome name
 	unsigned long long int start_position; // starting position of the read
 	char *mapping_quality_score; // mapping score - not very important but might be of use to some downstream software - Keeping this as a string since there is no need to perform mathematical calculations
 	char *cigar;                        // the most important bit of information
 	char *reference_name_next_mate; // Reference name where the mate/next read is mapped
-	char *start_position_next;             // Position of the mate/next read
+	unsigned long long int start_position_next; // Position of the mate/next read
 	char *template_length;                 // Observed template length
 	char *sequence;                        // The nucleotide read sequence
 	char *quality_scores;                  // The read quality scores
@@ -136,7 +138,7 @@ struct Sam_Alignment
 	unsigned short int right_soft_clipped_sequence_length; // Store the length of the right clipped sequence
 	char *soft_clips_removed_seq; // Nucleotides from the portion of the sequence not soft clipped
 	char *soft_clips_removed_qual; // Quality scores from the portion of the sequence not soft clipped
-	int soft_clips_removed_seq_len; // Length of the sequence without any soft clips
+	unsigned short int soft_clips_removed_seq_len; // Length of the sequence without any soft clips
 };
 
 struct Paired_Ended_Dictionary_Items
