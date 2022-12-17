@@ -96,7 +96,7 @@ void findMaximumNumberOfReadsMappedToOneNucleotide (
 		char *ended,
 		char *input_alignment_file_format,
 		char *summary_information_outputfilename,
-		AS_tag_presence)
+		unsigned short int AS_tag_presence)
 {
 	/********************************************************************
 	 * Variable declaration
