@@ -407,7 +407,7 @@ void populateSamAlignmentInstance (
 		//printf("\n Tags %s Parts of the tag %s %s %s ", src[i], split_tags[0], split_tags[1], split_tags[2]);
 	}
 
-	dest->read_sequence_len = strlen (dest->seq);
+	dest->read_sequence_len = strlen (dest->sequence);
 
 	/*
 	 * Process soft clipped fields
@@ -444,7 +444,7 @@ void populateSamAlignmentInstance (
 			dest->left_soft_clipped_sequence_length = dest->read_sequence_len - cigar_items_instance[0].len;
 
 		}
-		if ( cigar_items_instance[dest->number_of_cigar_items - 1].def == 'S' )
+		if ( cigar_items_instance[total_number_of_cigar_items - 1].def == 'S' )
 		{
 			right_soft_clip_point = cigar_items_instance[total_number_of_cigar_items - 1].len;
 			extractSubString (dest->sequence ,
