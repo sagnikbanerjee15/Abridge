@@ -325,6 +325,27 @@ void splitCigar (char *cigar, // The original CIGAR string
 	*num_of_types = j;
 }
 
+void extractSubString (char *str, char *substr, int start_index, int end_index)
+{
+	/********************************************************************
+	 * Variable declarations
+	 ********************************************************************/
+	int length = strlen (str);
+	int i;
+	int j = 0;
+
+	/********************************************************************/
+
+	if ( length < ( end_index - start_index + 1 ) )
+	{
+		return;
+	}
+	for ( i = start_index ; i <= end_index ; i++ )
+		substr[j++ ] = str[i];
+	substr[j] = '\0';
+
+}
+
 void populateSamAlignmentInstance (
 		struct Sam_Alignment *dest,
 		char **src,
