@@ -284,6 +284,9 @@ int main (int argc, char *argv[])
 	// Default values.
 	arguments.input_alignment_filename = "";// Empty string - only contains null character
 	arguments.summary_information_outputfilename = "";
+	arguments.input_alignment_file_format = "";
+	arguments.AS_tag_presence = 0;
+	arguments.ended = "";
 
 	argp_parse ( &argp , argc , argv , 0 , 0 , &arguments);
 	/********************************************************************
