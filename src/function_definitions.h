@@ -225,7 +225,7 @@ inline char* convertUnsignedIntegerToString (unsigned long long int x)
 	return str;
 }
 
-unsigned long long int convertStringToUnsignedInteger (char *str)
+inline unsigned long long int convertStringToUnsignedInteger (char *str)
 {
 	/*************************************************************************************************************************
 	 * Converts string to unsigned integer
@@ -233,6 +233,7 @@ unsigned long long int convertStringToUnsignedInteger (char *str)
 	char convertStringToUnsignedInteger_value[100];
 	char *convertStringToUnsignedInteger_eptr;
 
+	convertStringToUnsignedInteger_value[0] = '\0';
 	return strtoull (convertStringToUnsignedInteger_value ,
 			&convertStringToUnsignedInteger_eptr ,
 			10);
@@ -246,6 +247,7 @@ inline long long int convertStringToSignedInteger (char *str)
 	char convertStringToSignedInteger_value[100];
 	char *convertStringToSignedInteger_eptr;
 
+	convertStringToSignedInteger_value[0] = '\0';
 	return strtoll (convertStringToSignedInteger_value ,
 			&convertStringToSignedInteger_eptr ,
 			10);
