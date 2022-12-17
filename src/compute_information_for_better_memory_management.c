@@ -72,13 +72,13 @@ static error_t parse_opt (int key, char *arg, struct argp_state *state)
 		case ARGP_KEY_END:
 			// Reached the last key.
 			// Check if our inputsamfilename and outputfilename REQUIRED "options" have been set to non-default values
-			if ( strcmp (arguments->input_alignment_filename , "") == 0 || strcmp (strupr (arguments->input_alignment_file_format) ,
-					"SAM") != 0 || strcmp (strupr (arguments->input_alignment_file_format) ,
-					"BAM") != 0 || strcmp (arguments->summary_information_outputfilename ,
-					"") == 0 || strcmp (arguments->ended , "") == 0 )
-			{
-				argp_usage (state);
-			}
+			/*if ( strcmp (arguments->input_alignment_filename , "") == 0 || strcmp (strupr (arguments->input_alignment_file_format) ,
+			 "SAM") != 0 || strcmp (strupr (arguments->input_alignment_file_format) ,
+			 "BAM") != 0 || strcmp (arguments->summary_information_outputfilename ,
+			 "") == 0 || strcmp (arguments->ended , "") == 0 )
+			 {
+			 argp_usage (state);
+			 }*/
 			break;
 
 		default:
