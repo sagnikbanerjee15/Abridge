@@ -225,7 +225,7 @@ inline char* convertUnsignedIntegerToString (unsigned long long int x)
 	return str;
 }
 
-inline unsigned long long int convertStringToUnsignedInteger (char *str)
+unsigned long long int convertStringToUnsignedInteger (char *str)
 {
 	/*************************************************************************************************************************
 	 * Converts string to unsigned integer
