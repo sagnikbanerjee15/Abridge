@@ -180,7 +180,7 @@ void findMaximumNumberOfReadsMappedToOneNucleotide (
 		while ( ( line_len = getline ( &line , &len , fhr) ) != -1 )
 			if ( line[0] != '@' ) break;
 	}
-	if ( strcmp (ended , "BAM") == 0 )
+	if ( strcmp (input_alignment_file_format , "BAM") == 0 )
 	{
 		sam_read1 (fp_in , bamHdr , aln);
 	}
@@ -193,13 +193,13 @@ void findMaximumNumberOfReadsMappedToOneNucleotide (
 					total_number_of_alignments ,
 					ended);
 
-		if ( strcmp (ended , "BAM") == 0 )
+		if ( strcmp (input_alignment_file_format , "BAM") == 0 )
 		{
 			current_reference_name = bamHdr->target_name[aln->core.tid];
 			current_read_length = aln->core.l_qseq;
 			current_reference_position = aln->core.pos + 1;
 		}
-		else if ( strcmp (ended , "SAM") == 0 )
+		else if ( strcmp (input_alignment_file_format , "SAM") == 0 )
 		{
 			splitByDelimiter (line , '\t' , split_line);
 			current_read_length = strlen (split_line[9]);
@@ -239,13 +239,13 @@ void findMaximumNumberOfReadsMappedToOneNucleotide (
 			}
 		}
 
-		if ( strcmp (ended , "SAM") == 0 )
+		if ( strcmp (input_alignment_file_format , "SAM") == 0 )
 		{
 			line_len = getline ( &line , &len , fhr);
 			printf ("\nLine length %d" , line_len);
 		}
 
-		if ( strcmp (ended , "BAM") == 0 )
+		if ( strcmp (input_alignment_file_format , "BAM") == 0 )
 			line_len = sam_read1 (fp_in , bamHdr , aln);
 
 		if ( line_len <= 0 ) break;
