@@ -230,7 +230,7 @@ inline unsigned long long int convertStringToUnsignedInteger (char *str)
 	/*************************************************************************************************************************
 	 * Converts string to unsigned integer
 	 **************************************************************************************************************************/
-	char convertStringToUnsignedInteger_value[10];
+	char convertStringToUnsignedInteger_value[100];
 	char *convertStringToUnsignedInteger_eptr;
 
 	return strtoull (convertStringToUnsignedInteger_value ,
@@ -243,7 +243,7 @@ inline long long int convertStringToSignedInteger (char *str)
 	/*************************************************************************************************************************
 	 * Converts string to signed integer
 	 **************************************************************************************************************************/
-	char convertStringToSignedInteger_value[10];
+	char convertStringToSignedInteger_value[100];
 	char *convertStringToSignedInteger_eptr;
 
 	return strtoll (convertStringToSignedInteger_value ,

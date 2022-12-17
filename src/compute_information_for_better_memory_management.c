@@ -210,6 +210,7 @@ void findMaximumNumberOfReadsMappedToOneNucleotide (
 					split_line[3] ,
 					convertStringToUnsignedInteger (split_line[3]));
 		}
+		if ( current_reference_position == 0 ) break; //Unaligned read
 
 		if ( max_read_length < current_read_length )
 			max_read_length = current_read_length;
