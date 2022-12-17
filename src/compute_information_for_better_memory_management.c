@@ -243,7 +243,7 @@ void findMaximumNumberOfReadsMappedToOneNucleotide (
 		if ( strcmp (input_alignment_file_format , "SAM") == 0 )
 		{
 			line_len = getline ( &line , &len , fhr);
-			printf ("\nLine length %d" , line_len);
+			//printf ("\nLine length %d" , line_len);
 		}
 
 		if ( strcmp (input_alignment_file_format , "BAM") == 0 )
