@@ -433,11 +433,11 @@ void populateSamAlignmentInstance (
 		if ( cigar_items_instance[0].def == 'S' )
 		{
 			left_soft_clip_point = cigar_items_instance[0].len;
-			extractSubString (dest->seq ,
+			extractSubString (dest->sequence ,
 					dest->left_soft_clipped_sequence ,
 					0 ,
 					left_soft_clip_point - 1);
-			extractSubString (dest->qual ,
+			extractSubString (dest->quality_scores ,
 					dest->left_soft_clipped_qual ,
 					0 ,
 					left_soft_clip_point - 1);
@@ -446,16 +446,16 @@ void populateSamAlignmentInstance (
 		}
 		if ( cigar_items_instance[dest->number_of_cigar_items - 1].def == 'S' )
 		{
-			right_soft_clip_point = cigar_items_instance[dest->number_of_cigar_items - 1].len;
-			extractSubString (dest->seq ,
+			right_soft_clip_point = cigar_items_instance[total_number_of_cigar_items - 1].len;
+			extractSubString (dest->sequence ,
 					dest->right_soft_clipped_sequence ,
 					dest->read_sequence_len - right_soft_clip_point ,
 					dest->read_sequence_len - 1);
-			extractSubString (dest->qual ,
+			extractSubString (dest->quality_scores ,
 					dest->right_soft_clipped_qual ,
 					dest->read_sequence_len - right_soft_clip_point ,
 					dest->read_sequence_len - 1);
-			dest->right_soft_clipped_sequence_length = dest->read_sequence_len - cigar_items_instance[dest->number_of_cigar_items - 1].len;
+			dest->right_soft_clipped_sequence_length = dest->read_sequence_len - cigar_items_instance[total_number_of_cigar_items - 1].len;
 		}
 
 		/*
