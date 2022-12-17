@@ -230,13 +230,11 @@ inline unsigned long long int convertStringToUnsignedInteger (char *str)
 	/*************************************************************************************************************************
 	 * Converts string to unsigned integer
 	 **************************************************************************************************************************/
-	char convertStringToUnsignedInteger_value[100] = "\0";
+	//char convertStringToUnsignedInteger_value[100] = "\0";
 	char *convertStringToUnsignedInteger_eptr;
 
-	convertStringToUnsignedInteger_value[0] = '\0';
-	return strtoull (convertStringToUnsignedInteger_value ,
-			&convertStringToUnsignedInteger_eptr ,
-			10);
+	//convertStringToUnsignedInteger_value[0] = '\0';
+	return strtoull (str , &convertStringToUnsignedInteger_eptr , 10);
 }
 
 inline long long int convertStringToSignedInteger (char *str)
@@ -244,13 +242,11 @@ inline long long int convertStringToSignedInteger (char *str)
 	/*************************************************************************************************************************
 	 * Converts string to signed integer
 	 **************************************************************************************************************************/
-	char convertStringToSignedInteger_value[100] = "\0";
+	//char convertStringToSignedInteger_value[100] = "\0";
 	char *convertStringToSignedInteger_eptr;
 
-	convertStringToSignedInteger_value[0] = '\0';
-	return strtoll (convertStringToSignedInteger_value ,
-			&convertStringToSignedInteger_eptr ,
-			10);
+	//convertStringToSignedInteger_value[0] = '\0';
+	return strtoll (str , &convertStringToSignedInteger_eptr , 10);
 }
 
 unsigned short int splitByDelimiter (
