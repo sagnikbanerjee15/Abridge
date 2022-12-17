@@ -84,8 +84,8 @@ struct Soft_Clippings
 	char *right_qual;              // Quality scores soft clipped from the right
 	unsigned int left_soft_clipped_sequence_length; // Store the length of the left clipped sequence
 	unsigned int right_soft_clipped_sequence_length; // Store the length of the right clipped sequence
-	char *soft_clips_removed_seq; // Nucleotides from the portion of the sequence not soft clipped
-	char *soft_clips_removed_qual; // Quality scores from the portion of the sequence not soft clipped
+	char *soft_clips_removed_sequence; // Nucleotides from the portion of the sequence not soft clipped
+	char *soft_clips_removed_quality_scores; // Quality scores from the portion of the sequence not soft clipped
 	int soft_clips_removed_seq_len; // Length of the sequence without any soft clips
 };
 
@@ -120,7 +120,7 @@ struct Sam_Alignment
 	/*
 	 * Other fields created by abridge
 	 */
-	unsigned short int read_seq_len; // basically strlen(seq). Field is kept to prevent extra calls to strlen
+	unsigned short int read_sequence_len; // basically strlen(seq). Field is kept to prevent extra calls to strlen
 	//struct Soft_Clippings soft_clippings; // Stores the left and the right soft clippings
 	//struct Cigar_Items *cigar_items;
 	//int number_of_cigar_items;
@@ -136,8 +136,8 @@ struct Sam_Alignment
 	char *right_soft_clipped_qual; // Quality scores soft clipped from the right
 	unsigned short int left_soft_clipped_sequence_length; // Store the length of the left clipped sequence
 	unsigned short int right_soft_clipped_sequence_length; // Store the length of the right clipped sequence
-	char *soft_clips_removed_seq; // Nucleotides from the portion of the sequence not soft clipped
-	char *soft_clips_removed_qual; // Quality scores from the portion of the sequence not soft clipped
+	char *soft_clips_removed_sequence; // Nucleotides from the portion of the sequence not soft clipped
+	char *soft_clips_removed_quality_scores; // Quality scores from the portion of the sequence not soft clipped
 	unsigned short int soft_clips_removed_seq_len; // Length of the sequence without any soft clips
 };
 

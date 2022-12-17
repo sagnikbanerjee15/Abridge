@@ -66,7 +66,7 @@ struct Sam_Alignment* allocateMemorySam_Alignment ()
 	s->mapping_quality_score = ( char* ) malloc (sizeof(char) * TEN);
 	s->cigar = ( char* ) malloc (sizeof(char) * MAX_SEQ_LEN);
 	s->reference_name_next_mate = ( char* ) malloc (sizeof(char) * MAX_SEQ_LEN);
-	s->start_position_next = ( char* ) malloc (sizeof(char) * MAX_SEQ_LEN);
+	s->start_position_next = 0;
 	s->template_length = ( char* ) malloc (sizeof(char) * MAX_SEQ_LEN);
 	s->sequence = ( char* ) malloc (sizeof(char) * MAX_SEQ_LEN);
 	s->quality_scores = ( char* ) malloc (sizeof(char) * MAX_SEQ_LEN);
@@ -91,10 +91,10 @@ struct Sam_Alignment* allocateMemorySam_Alignment ()
 	//s->splices = ( char** ) malloc (sizeof(char*) * 100);
 	//for ( i = 0 ; i < 100 ; i++ )
 	//	s->splices[i] = ( char* ) malloc (sizeof(char) * 50);
-	s->soft_clips_removed_seq = ( char* ) malloc (sizeof(char) * MAX_SEQ_LEN);
-	s->soft_clips_removed_seq[0] = '\0';
-	s->soft_clips_removed_qual = ( char* ) malloc (sizeof(char) * MAX_SEQ_LEN);
-	s->soft_clips_removed_qual[0] = '\0';
+	s->soft_clips_removed_sequence = ( char* ) malloc (sizeof(char) * MAX_SEQ_LEN);
+	s->soft_clips_removed_sequence[0] = '\0';
+	s->soft_clips_removed_quality_scores = ( char* ) malloc (sizeof(char) * MAX_SEQ_LEN);
+	s->soft_clips_removed_quality_scores[0] = '\0';
 
 	s->NH = ( char* ) malloc (sizeof(char) * 10);
 	strcpy(s->NH , "-1");
@@ -359,7 +359,7 @@ void populateSamAlignmentInstance (
 	strcpy(dest->reference_name_next_mate , src[6]);
 	dest->start_position_next = convertStringToUnsignedInteger (src[7]);
 	strcpy(dest->template_length , src[8]);
-	strcpy(dest->sequence , src[9]);
+	strcpy(dest->sequence , strupr (src[9]));
 	strcpy(dest->quality_scores , src[10]);
 	for ( i = 0 ; dest->quality_scores[i] != '\0' ; i++ )
 		dest->quality_scores[i] += QUAL_SCORE_ADJUSTMENT;
@@ -386,7 +386,7 @@ void populateSamAlignmentInstance (
 		//printf("\n Tags %s Parts of the tag %s %s %s ", src[i], split_tags[0], split_tags[1], split_tags[2]);
 	}
 
-	dest->read_seq_len = strlen (dest->seq);
+	dest->read_sequence_len = strlen (dest->seq);
 
 	/*
 	 * Process soft clipped fields
@@ -399,8 +399,8 @@ void populateSamAlignmentInstance (
 		strcpy(dest->right_soft_clipped_qual , "");
 		dest->left_soft_clipped_sequence_length = 0;
 		dest->right_soft_clipped_sequence_length = 0;
-		strcpy(dest->soft_clips_removed_seq , dest->sequence);
-		strcpy(dest->soft_clips_removed_qual , dest->quality_scores);
+		strcpy(dest->soft_clips_removed_sequence , dest->sequence);
+		strcpy(dest->soft_clips_removed_quality_scores , dest->quality_scores);
 		dest->soft_clips_removed_seq_len = 0;
 	}
 	else
@@ -409,37 +409,32 @@ void populateSamAlignmentInstance (
 				&total_number_of_cigar_items ,
 				cigar_items_instance);
 
-		if ( dest->cigar_items[0].def == 'S' )
+		if ( cigar_items_instance[0].def == 'S' )
 		{
-			left_soft_clip_point = dest->cigar_items[0].len;
+			left_soft_clip_point = cigar_items_instance[0].len;
 			extractSubString (dest->seq ,
-					dest->soft_clippings.left ,
+					dest->left_soft_clipped_sequence ,
 					0 ,
 					left_soft_clip_point - 1);
 			extractSubString (dest->qual ,
-					dest->soft_clippings.left_qual ,
+					dest->left_soft_clipped_qual ,
 					0 ,
 					left_soft_clip_point - 1);
-			dest->soft_clips_removed_seq_len = dest->read_seq_len - dest->cigar_items[0].len;
-			for ( i = 0 ; i <= left_soft_clip_point - 1 ; i++ )
-				dest->soft_clippings.left[i] =
-						( dest->soft_clippings.left[i] >= 65 && dest->soft_clippings.left[i] <= 90 ) ? dest->soft_clippings.left[i] + 32 : dest->soft_clippings.left[i];
+			dest->left_soft_clipped_sequence_length = dest->read_sequence_len - cigar_items_instance[0].len;
+
 		}
-		if ( dest->cigar_items[dest->number_of_cigar_items - 1].def == 'S' )
+		if ( cigar_items_instance[dest->number_of_cigar_items - 1].def == 'S' )
 		{
-			right_soft_clip_point = dest->cigar_items[dest->number_of_cigar_items - 1].len;
+			right_soft_clip_point = cigar_items_instance[dest->number_of_cigar_items - 1].len;
 			extractSubString (dest->seq ,
-					dest->soft_clippings.right ,
-					dest->read_seq_len - right_soft_clip_point ,
-					dest->read_seq_len - 1);
+					dest->right_soft_clipped_sequence ,
+					dest->read_sequence_len - right_soft_clip_point ,
+					dest->read_sequence_len - 1);
 			extractSubString (dest->qual ,
-					dest->soft_clippings.right_qual ,
-					dest->read_seq_len - right_soft_clip_point ,
-					dest->read_seq_len - 1);
-			dest->soft_clips_removed_seq_len = dest->read_seq_len - dest->cigar_items[dest->number_of_cigar_items - 1].len;
-			for ( i = 0 ; i <= right_soft_clip_point ; i++ )
-				dest->soft_clippings.right[i] =
-						( dest->soft_clippings.right[i] >= 65 && dest->soft_clippings.right[i] <= 90 ) ? dest->soft_clippings.right[i] + 32 : dest->soft_clippings.right[i];
+					dest->right_soft_clipped_qual ,
+					dest->read_sequence_len - right_soft_clip_point ,
+					dest->read_sequence_len - 1);
+			dest->right_soft_clipped_sequence_length = dest->read_sequence_len - cigar_items_instance[dest->number_of_cigar_items - 1].len;
 		}
 
 		/*
@@ -448,14 +443,14 @@ void populateSamAlignmentInstance (
 
 		int j = 0;
 		for ( i = left_soft_clip_point ;
-				i < dest->read_seq_len - right_soft_clip_point ; i++ )
+				i < dest->read_sequence_len - right_soft_clip_point ; i++ )
 		{
-			dest->soft_clips_removed_seq[j] = dest->seq[i];
-			dest->soft_clips_removed_qual[j] = dest->qual[i];
+			dest->soft_clips_removed_sequence[j] = dest->sequence[i];
+			dest->soft_clips_removed_quality_scores[j] = dest->quality_scores[i];
 			j++;
 		}
-		dest->soft_clips_removed_seq[j] = '\0';
-		dest->soft_clips_removed_qual[j] = '\0';
+		dest->soft_clips_removed_sequence[j] = '\0';
+		dest->soft_clips_removed_quality_scores[j] = '\0';
 
 	}
 
