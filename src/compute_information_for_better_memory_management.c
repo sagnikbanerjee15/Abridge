@@ -96,7 +96,6 @@ void findMaximumNumberOfReadsMappedToOneNucleotide (
 		char *ended,
 		char *input_alignment_file_format,
 		char *summary_information_outputfilename,
-		unsigned short int fill_all_fields,
 		unsigned short int AS_tag_presence)
 {
 	/********************************************************************
@@ -213,6 +212,7 @@ void findMaximumNumberOfReadsMappedToOneNucleotide (
 		}
 
 	} while ( ( line_len = getline ( &line , &len , fhr) ) != -1 );
+
 	if ( prev_value > max_value )
 	{
 		max_value = prev_value;

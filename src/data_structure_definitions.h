@@ -86,7 +86,7 @@ struct Soft_Clippings
 	unsigned int right_soft_clipped_sequence_length; // Store the length of the right clipped sequence
 	char *soft_clips_removed_sequence; // Nucleotides from the portion of the sequence not soft clipped
 	char *soft_clips_removed_quality_scores; // Quality scores from the portion of the sequence not soft clipped
-	int soft_clips_removed_seq_len; // Length of the sequence without any soft clips
+	int soft_clips_removed_sequence_len; // Length of the sequence without any soft clips
 };
 
 struct Sam_Alignment
@@ -138,7 +138,7 @@ struct Sam_Alignment
 	unsigned short int right_soft_clipped_sequence_length; // Store the length of the right clipped sequence
 	char *soft_clips_removed_sequence; // Nucleotides from the portion of the sequence not soft clipped
 	char *soft_clips_removed_quality_scores; // Quality scores from the portion of the sequence not soft clipped
-	unsigned short int soft_clips_removed_seq_len; // Length of the sequence without any soft clips
+	unsigned short int soft_clips_removed_sequence_len; // Length of the sequence without any soft clips
 };
 
 struct Paired_Ended_Dictionary_Items

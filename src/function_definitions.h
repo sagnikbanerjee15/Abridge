@@ -351,7 +351,6 @@ void populateSamAlignmentInstance (
 		char **src,
 		char **split_tags,
 		int number_of_fields,
-		unsigned short int fill_specific_fields,
 		unsigned short int AS_tag_presence)
 {
 	/*************************************************************************************************************************
@@ -422,7 +421,7 @@ void populateSamAlignmentInstance (
 		dest->right_soft_clipped_sequence_length = 0;
 		strcpy(dest->soft_clips_removed_sequence , dest->sequence);
 		strcpy(dest->soft_clips_removed_quality_scores , dest->quality_scores);
-		dest->soft_clips_removed_seq_len = 0;
+		dest->soft_clips_removed_sequence_len = 0;
 	}
 	else
 	{
@@ -472,9 +471,8 @@ void populateSamAlignmentInstance (
 		}
 		dest->soft_clips_removed_sequence[j] = '\0';
 		dest->soft_clips_removed_quality_scores[j] = '\0';
-
+		dest->soft_clips_removed_sequence_len = strlen (dest->soft_clips_removed_sequence);
 	}
-
 }
 
 void readSingleAlignmentFromFile (
@@ -490,9 +488,6 @@ void readSingleAlignmentFromFile (
 	/*************************************************************************************************************************
 	 * Reads in each alignment and stores the values in them Sam_Alignment object
 	 * Decided which fields to retain based on whether the alignment was SE or PE
-	 *
-	 * If fill_specific_fields == 0 then all information will be copied into the DS
-	 * else == 1 then only the portion required for determining max memory will be filled in
 	 **************************************************************************************************************************/
 
 	size_t len = 0;
@@ -509,7 +504,6 @@ void readSingleAlignmentFromFile (
 				split_line ,
 				split_tags ,
 				number_of_fields ,
-				fill_specific_fields ,
 				AS_tag_presence);
 	}
 	else if ( strcmp (alignment_format , "BAM") == 0 )
