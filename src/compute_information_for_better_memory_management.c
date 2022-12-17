@@ -188,6 +188,9 @@ void findMaximumNumberOfReadsMappedToOneNucleotide (
 	do
 	{
 		total_number_of_alignments += 1;
+		if ( total_number_of_alignments % 100000 == 0 )
+			printf ("\nTotal number of alignments %d" ,
+					total_number_of_alignments);
 
 		if ( strcmp (input_alignment_file_format , "BAM") == 0 )
 		{
@@ -247,6 +250,8 @@ void findMaximumNumberOfReadsMappedToOneNucleotide (
 
 		if ( line_len <= 0 ) break;
 	} while ( 1 );
+	printf ("\nWill start writing to file now");
+	fflush (stdout);
 
 	if ( number_of_reads_mapped_to_the_current_reference_nucleotide > maximum_number_of_reads_mapped_to_a_single_reference_nucleotide )
 		maximum_number_of_reads_mapped_to_a_single_reference_nucleotide = number_of_reads_mapped_to_the_current_reference_nucleotide;
