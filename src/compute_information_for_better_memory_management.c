@@ -244,7 +244,7 @@ void findMaximumNumberOfReadsMappedToOneNucleotide (
 		if ( strcmp (ended , "BAM") == 0 )
 			line_len = sam_read1 (fp_in , bamHdr , aln);
 
-		if ( line_len == -1 ) break;
+		if ( line_len <= 0 ) break;
 	} while ( 1 );
 
 	if ( number_of_reads_mapped_to_the_current_reference_nucleotide > maximum_number_of_reads_mapped_to_a_single_reference_nucleotide )
