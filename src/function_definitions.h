@@ -481,7 +481,7 @@ void populateSamAlignmentInstance (
 	}
 }
 
-void readSingleAlignmentFromFile (
+unsigned short int readSingleAlignmentFromSAMAlignmentFile (
 		FILE *fhr,
 		struct Sam_Alignment *s,
 		char *ended,
@@ -503,7 +503,8 @@ void readSingleAlignmentFromFile (
 
 	if ( strcmp (alignment_format , "SAM") == 0 )
 	{
-
+		line_len = getline ( &line , &len , fhr);
+		if ( line_len == -1 ) return -1;
 		number_of_fields = splitByDelimiter (line , '\t' , split_line);
 		populateSamAlignmentInstance (s ,
 				split_line ,
@@ -515,6 +516,7 @@ void readSingleAlignmentFromFile (
 	{
 
 	}
+	return 0;
 }
 
 #endif /* ABRIDGE_FUNCTIONS_DEFINITIONS_H_ */

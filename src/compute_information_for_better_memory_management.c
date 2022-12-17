@@ -103,7 +103,7 @@ void findMaximumNumberOfReadsMappedToOneNucleotide (
 	 ********************************************************************/
 	int i;
 	unsigned short int number_of_fields;
-	unsigned short int max_read_length;
+	unsigned short int max_read_length, current_read_length;
 	unsigned long long int total_number_of_alignments;
 	unsigned long long int current_reference_position,
 			previous_reference_position;
@@ -180,15 +180,32 @@ void findMaximumNumberOfReadsMappedToOneNucleotide (
 		while ( ( line_len = getline ( &line , &len , fhr) ) != -1 )
 			if ( line[0] != '@' ) break;
 	}
+	if ( strcmp (ended , "BAM") == 0 )
+	{
+		sam_read1 (fp_in , bamHdr , aln);
+	}
 
 	do
 	{
 		total_number_of_alignments += 1;
-		number_of_fields = splitByDelimiter (line , '\t' , split_line);
-		if ( max_read_length < strlen (split_line[9]) )
-			max_read_length = strlen (split_line[9]);
 
-		strcpy(current_reference_name , split_line[2]);
+		if ( strcmp (ended , "BAM") == 0 )
+		{
+			current_reference_name = bamHdr->target_name[aln->core.tid];
+			current_read_length = aln->core.l_qseq;
+			current_reference_position = aln->core.pos + 1;
+		}
+		else if ( strcmp (ended , "SAM") == 0 )
+		{
+			splitByDelimiter (line , '\t' , split_line);
+			current_read_length = strlen (split_line[9]);
+			strcpy(current_reference_name , split_line[2]);
+			current_reference_position = convertStringToUnsignedInteger (split_line[3]);
+		}
+
+		if ( max_read_length < current_read_length )
+			max_read_length = current_read_length;
+
 		if ( strlen (previous_reference_name) == 0 )
 		{
 			strcpy(previous_reference_name , current_reference_name);
@@ -197,7 +214,7 @@ void findMaximumNumberOfReadsMappedToOneNucleotide (
 		{
 			previous_reference_position = -1;
 		}
-		current_reference_position = convertStringToUnsignedInteger (split_line[3]);
+
 		if ( current_reference_position == 0 ) continue;
 		if ( maximum_number_of_reads_mapped_to_a_single_reference_nucleotide == 0 )
 		{
@@ -218,7 +235,14 @@ void findMaximumNumberOfReadsMappedToOneNucleotide (
 			}
 		}
 
-	} while ( ( line_len = getline ( &line , &len , fhr) ) != -1 );
+		if ( strcmp (ended , "SAM") == 0 )
+			line_len = getline ( &line , &len , fhr);
+
+		if ( strcmp (ended , "BAM") == 0 )
+			line_len = sam_read1 (fp_in , bamHdr , aln);
+
+		if ( line_len == -1 ) break;
+	} while ( 1 );
 
 	if ( number_of_reads_mapped_to_the_current_reference_nucleotide > maximum_number_of_reads_mapped_to_a_single_reference_nucleotide )
 		maximum_number_of_reads_mapped_to_a_single_reference_nucleotide = number_of_reads_mapped_to_the_current_reference_nucleotide;
@@ -241,6 +265,12 @@ void findMaximumNumberOfReadsMappedToOneNucleotide (
 
 	fclose (fhw);
 	fclose (fhr);
+
+	if ( strcmp (ended , "BAM") == 0 )
+	{
+		bam_destroy1 (aln);
+		sam_close(fp_in);
+	}
 }
 
 int main (int argc, char *argv[])
@@ -252,7 +282,7 @@ int main (int argc, char *argv[])
 
 	// Parse our arguments; every option seen by parse_opt will be reflected in arguments.
 	// Default values.
-	arguments.input_alignment_filename = ""; // Empty string - only contains null character
+	arguments.input_alignment_filename = "";// Empty string - only contains null character
 	arguments.summary_information_outputfilename = "";
 
 	argp_parse ( &argp , argc , argv , 0 , 0 , &arguments);
