@@ -189,9 +189,9 @@ void findMaximumNumberOfReadsMappedToOneNucleotide (
 	{
 		total_number_of_alignments += 1;
 		if ( total_number_of_alignments % 10000 == 0 )
-			printf ("\nTotal number of alignments: %u ended: %s" ,
+			printf ("\nTotal number of alignments: %u input_alignment_file_format: %s" ,
 					total_number_of_alignments ,
-					ended);
+					input_alignment_file_format);
 
 		if ( strcmp (input_alignment_file_format , "BAM") == 0 )
 		{
