@@ -246,7 +246,7 @@ inline long long int convertStringToSignedInteger (char *str)
 	char convertStringToSignedInteger_value[10];
 	char *convertStringToSignedInteger_eptr;
 
-	return strtoull (convertStringToSignedInteger_value ,
+	return strtoll (convertStringToSignedInteger_value ,
 			&convertStringToSignedInteger_eptr ,
 			10);
 }

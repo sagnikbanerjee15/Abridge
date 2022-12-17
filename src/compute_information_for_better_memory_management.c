@@ -206,6 +206,9 @@ void findMaximumNumberOfReadsMappedToOneNucleotide (
 			current_read_length = strlen (split_line[9]);
 			strcpy(current_reference_name , split_line[2]);
 			current_reference_position = convertStringToUnsignedInteger (split_line[3]);
+			printf ("\n%s %u" ,
+					split_line[3] ,
+					convertStringToUnsignedInteger (split_line[3]));
 		}
 
 		if ( max_read_length < current_read_length )
