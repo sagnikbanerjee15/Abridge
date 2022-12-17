@@ -297,7 +297,7 @@ int isSequenceSoftClipped (char *cigar)
 }
 
 void splitCigar (char *cigar, // The original CIGAR string
-		int *num_of_types, //Sets the number of different items in the CIGAR string
+		unsigned short int *num_of_types, //Sets the number of different items in the CIGAR string
 		struct Cigar_Items *cigar_items_instance)
 {
 	/********************************************************************

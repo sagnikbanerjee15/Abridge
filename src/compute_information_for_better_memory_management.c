@@ -101,8 +101,7 @@ void findMaximumNumberOfReadsMappedToOneNucleotide (
 	/********************************************************************
 	 * Variable declaration
 	 ********************************************************************/
-	int i, j, k;
-	int number_of_fields;
+	int i;
 
 	unsigned short int max_read_length;
 	unsigned long long int total_number_of_alignments;
@@ -114,8 +113,6 @@ void findMaximumNumberOfReadsMappedToOneNucleotide (
 
 	FILE *fhr;
 	FILE *fhw;
-	FILE *fhw_tot_alignments;
-	FILE *fhw_max_read_length;
 
 	/* Variables if BAM file is provided*/
 	samFile *fp_in;            // File pointer if BAM file provided
