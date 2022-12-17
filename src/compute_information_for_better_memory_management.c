@@ -280,6 +280,5 @@ int main (int argc, char *argv[])
 			ended ,
 			input_alignment_file_format ,
 			summary_information_outputfilename ,
-			SAM_ALIGNEMENT_DS_FILL_MEM_MGMT ,
 			AS_tag_presence);
 }
