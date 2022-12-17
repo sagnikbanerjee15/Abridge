@@ -103,12 +103,14 @@ void findMaximumNumberOfReadsMappedToOneNucleotide (
 	 ********************************************************************/
 	int i, j, k;
 	int number_of_fields;
-	int max_read_length;
 
-	unsigned long long int max_position, max_value;
-	unsigned long long int prev_position, prev_value;
-	unsigned long long int curr_position, curr_value;
+	unsigned short int max_read_length;
 	unsigned long long int total_number_of_alignments;
+	unsigned long long int current_reference_position,
+			previous_reference_position;
+	unsigned long long int
+			maximum_number_of_reads_mapped_to_a_single_reference_nucleotide,
+			number_of_reads_mapped_to_the_current_reference_nucleotide;
 
 	FILE *fhr;
 	FILE *fhw;
@@ -128,6 +130,7 @@ void findMaximumNumberOfReadsMappedToOneNucleotide (
 	char *line = NULL; // for reading each line
 	char **split_line; // List of strings to store each element of a single alignment
 	char **split_tags;
+	char *current_reference_name, *previous_reference_name;
 	/********************************************************************/
 
 	/********************************************************************
@@ -155,25 +158,27 @@ void findMaximumNumberOfReadsMappedToOneNucleotide (
 		exit (1);
 	}
 
-	max_position = 0;
-	max_value = 0;
-	curr_position = 0;
-	curr_value = 0;
-	prev_position = 0;
-	prev_value = 0;
 	max_read_length = 0;
+	maximum_number_of_reads_mapped_to_a_single_reference_nucleotide = 0;
+	number_of_reads_mapped_to_the_current_reference_nucleotide = 0;
 
 	split_line = ( char** ) malloc (sizeof(char*) * ONE_HUNDRED);
 	for ( i = 0 ; i < ONE_HUNDRED ; i++ )
-		split_line[i] = ( char* ) malloc (sizeof(char) * ONE_THOUSAND);
+		split_line[i] = ( char* ) malloc (sizeof(char) * MAX_SEQ_LEN);
 
 	split_tags = ( char** ) malloc (sizeof(char*) * ONE_HUNDRED);
 	for ( i = 0 ; i < ONE_HUNDRED ; i++ )
-		split_tags[i] = ( char* ) malloc (sizeof(char) * ONE_THOUSAND);
+		split_tags[i] = ( char* ) malloc (sizeof(char) * TEN);
+
+	current_reference_name = ( char* ) malloc (sizeof(char) * ONE_HUNDRED);
+	current_reference_name[0] = '\0';
+	previous_reference_name = ( char* ) malloc (sizeof(char) * ONE_HUNDRED);
+	previous_reference_name[0] = '\0';
 	/********************************************************************/
 
-	while ( ( line_len = getline ( &line , &len , fhr) ) != -1 )
-		if ( line[0] != '@' ) break;
+	if ( strcmp (input_alignment_file_format , "SAM") == 0 )
+		while ( ( line_len = getline ( &line , &len , fhr) ) != -1 )
+			if ( line[0] != '@' ) break;
 
 	total_number_of_alignments = 0;
 	do
@@ -182,60 +187,59 @@ void findMaximumNumberOfReadsMappedToOneNucleotide (
 		number_of_fields = splitByDelimiter (line , '\t' , split_line);
 		if ( max_read_length < strlen (split_line[9]) )
 			max_read_length = strlen (split_line[9]);
-		// populateSamAlignmentInstance ( curr_alignment , split_line , number_of_fields , split_tags );
 
-		curr_position = strtol (split_line[3] , &temp , 10);
-		if ( curr_position == 0 ) continue;
-		if ( max_position == 0 )
+		strcpy(current_reference_name , split_line[2]);
+		if ( strlen (previous_reference_name) == 0 )
 		{
-			max_position = curr_position;
-			prev_position = curr_position;
-
-			max_value = 1;
-			curr_value = 1;
-			prev_value = 1;
+			strcpy(previous_reference_name , current_reference_name);
+		}
+		else if ( strcmp (current_reference_name , previous_reference_name) != 0 ) // Different reference sequence encountered
+		{
+			previous_reference_position = -1;
+		}
+		current_reference_position = convertStringToUnsignedInteger (split_line[3]);
+		if ( current_reference_position == 0 ) continue;
+		if ( maximum_number_of_reads_mapped_to_a_single_reference_nucleotide == 0 )
+		{
+			previous_reference_position = current_reference_position;
+			maximum_number_of_reads_mapped_to_a_single_reference_nucleotide = 1;
+			number_of_reads_mapped_to_the_current_reference_nucleotide = 1;
 		}
 		else
 		{
-			if ( prev_position == curr_position )
-				prev_value += 1;
+			if ( previous_reference_position == current_reference_position )
+				number_of_reads_mapped_to_the_current_reference_nucleotide += 1;
 			else
 			{
-				if ( prev_value > max_value )
-				{
-					max_value = prev_value;
-					max_position = prev_position;
-				}
-				prev_position = curr_position;
-				prev_value = 1;
+				if ( number_of_reads_mapped_to_the_current_reference_nucleotide > maximum_number_of_reads_mapped_to_a_single_reference_nucleotide )
+					maximum_number_of_reads_mapped_to_a_single_reference_nucleotide = number_of_reads_mapped_to_the_current_reference_nucleotide;
+				previous_reference_position = current_reference_position;
+				number_of_reads_mapped_to_the_current_reference_nucleotide = 0;
 			}
 		}
 
 	} while ( ( line_len = getline ( &line , &len , fhr) ) != -1 );
 
-	if ( prev_value > max_value )
-	{
-		max_value = prev_value;
-		max_position = prev_position;
-		prev_position = curr_position;
-		prev_value = 1;
-	}
+	if ( number_of_reads_mapped_to_the_current_reference_nucleotide > maximum_number_of_reads_mapped_to_a_single_reference_nucleotide )
+		maximum_number_of_reads_mapped_to_a_single_reference_nucleotide = number_of_reads_mapped_to_the_current_reference_nucleotide;
 
-	convertUnsignedIntegerToString (max_value);
+	strcat(str ,
+			"maximum_number_of_reads_mapped_to_a_single_reference_nucleotide: ");
+	strcat(str ,
+			convertUnsignedIntegerToString (maximum_number_of_reads_mapped_to_a_single_reference_nucleotide));
 	strcat(str , "\n");
+
+	strcat(str , "total_number_of_alignments: ");
+	strcat(str , convertUnsignedIntegerToString (total_number_of_alignments));
+	strcat(str , "\n");
+
+	strcat(str , "max_read_length:");
+	strcat(str , convertUnsignedIntegerToString (max_read_length));
+	strcat(str , "\n");
+
 	fprintf (fhw , "%s" , str);
 
-	convertUnsignedIntegerToString (total_number_of_alignments);
-	strcat(str , "\n");
-	fprintf (fhw_tot_alignments , "%s" , str);
-
-	convertUnsignedIntegerToString (max_read_length);
-	strcat(str , "\n");
-	fprintf (fhw_max_read_length , "%s" , str);
-
 	fclose (fhw);
-	fclose (fhw_tot_alignments);
-	fclose (fhw_max_read_length);
 	fclose (fhr);
 }
 
