@@ -253,6 +253,7 @@ void findSummaryInformation (
 			printf ("\nLine length %d total_number_of_alignments %d" ,
 					line_len ,
 					total_number_of_alignments);
+			fflush (stdout);
 		}
 
 		if ( line_len <= 0 ) break;
