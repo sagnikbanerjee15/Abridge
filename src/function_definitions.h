@@ -347,11 +347,8 @@ void extractSubString (char *str, char *substr, int start_index, int end_index)
 
 }
 
-void populateSamAlignmentInstance (
+void processSoftClips (
 		struct Sam_Alignment *dest,
-		char **src,
-		char **split_on_colon,
-		int number_of_fields,
 		unsigned short int AS_tag_presence,
 		unsigned short int flag_ignore_alignment_scores,
 		unsigned short int flag_ignore_soft_clippings,
@@ -360,64 +357,16 @@ void populateSamAlignmentInstance (
 		unsigned short int flag_ignore_unmapped_sequences,
 		unsigned short int flag_ignore_quality_scores_for_matched_bases)
 {
-	/*************************************************************************************************************************
-	 * Processed the line read from the SAM alignment file and prepares the Sam_Alignment instance
-	 * Skips unimportant fields if requested
-	 *************************************************************************************************************************/
-
-	/********************************************************************
-	 * Variable declarations
-	 ********************************************************************/
-	char *temp;
-	int i;
 
 	struct Cigar_Items cigar_items_instance[MAX_SEQ_LEN];
 	unsigned short int total_number_of_cigar_items;
 	unsigned short int left_soft_clip_point;
 	unsigned short int right_soft_clip_point;
-	/********************************************************************/
 
-	strcpy(dest->read_name , src[0]);
-	dest->samflag = convertStringToUnsignedInteger (src[1]);
-	strcpy(dest->reference_name , src[2]);
-	dest->start_position = convertStringToUnsignedInteger (src[3]);
-	strcpy(dest->mapping_quality_score , src[4]);
-	strcpy(dest->cigar , src[5]);
-	strcpy(dest->reference_name_next_mate , src[6]);
-	dest->start_position_next = convertStringToUnsignedInteger (src[7]);
-	strcpy(dest->template_length , src[8]);
-	strcpy(dest->sequence , strupr (src[9]));
-	strcpy(dest->quality_scores , src[10]);
-	for ( i = 0 ; dest->quality_scores[i] != '\0' ; i++ )
-		dest->quality_scores[i] += QUAL_SCORE_ADJUSTMENT;
-
-	for ( i = 11 ; i < number_of_fields ; i++ )
-	{
-		//printf("%s\n",src[i]);
-		//fflush ( stdout );
-		splitByDelimiter (src[i] , ':' , split_on_colon);
-		//sam_tag_index = locateSamTags(split_on_colon[0]);
-		//dest->tags[i - 11].name = sam_tags[sam_tag_index];
-		if ( i == number_of_fields - 1 )
-			split_on_colon[2][strlen (split_on_colon[2])] = '\0';
-
-		if ( strcmp (split_on_colon[0] , "NH") == 0 )
-			strcpy(dest->NH , split_on_colon[2]);
-		else if ( strcmp (split_on_colon[0] , "MD") == 0 )
-			strcpy(dest->MD , split_on_colon[2]);
-		else if ( strcmp (split_on_colon[0] , "AS") == 0 )
-		{
-			strcpy(dest->AS , split_on_colon[2]);
-		}
-
-		//printf("\n Tags %s Parts of the tag %s %s %s ", src[i], split_on_colon[0], split_on_colon[1], split_on_colon[2]);
-	}
-
-	dest->read_sequence_len = strlen (dest->sequence);
-
-	/*
-	 * Process soft clipped fields
-	 */
+	unsigned int i;
+	/*************************************************************************************************************************
+	 * Processes the Sam_Alignemnt data structure and constructs the soft clips
+	 *************************************************************************************************************************/
 	if ( isSequenceSoftClipped (dest->cigar) == 0 || flag_ignore_soft_clippings == 0 ) // Process everything when there are no soft clips
 	{
 		strcpy(dest->left_soft_clipped_sequence , "");
@@ -483,10 +432,124 @@ void populateSamAlignmentInstance (
 		dest->soft_clips_removed_quality_scores[j] = '\0';
 		dest->soft_clips_removed_sequence_len = strlen (dest->soft_clips_removed_sequence);
 	}
+}
+
+void populateSamAlignmentInstance (
+		struct Sam_Alignment *dest,
+		char **src,
+		char **split_on_colon,
+		int number_of_fields,
+		unsigned short int AS_tag_presence,
+		unsigned short int flag_ignore_alignment_scores,
+		unsigned short int flag_ignore_soft_clippings,
+		unsigned short int flag_ignore_mismatches,
+		unsigned short int flag_ignore_all_quality_scores,
+		unsigned short int flag_ignore_unmapped_sequences,
+		unsigned short int flag_ignore_quality_scores_for_matched_bases)
+{
+	/*************************************************************************************************************************
+	 * Processed the line read from the SAM alignment file and prepares the Sam_Alignment instance
+	 * Skips unimportant fields if requested
+	 *************************************************************************************************************************/
+
+	/********************************************************************
+	 * Variable declarations
+	 ********************************************************************/
+	char *temp;
+	int i;
+
+	/********************************************************************/
+
+	strcpy(dest->read_name , src[0]);
+	dest->samflag = convertStringToUnsignedInteger (src[1]);
+	strcpy(dest->reference_name , src[2]);
+	dest->start_position = convertStringToUnsignedInteger (src[3]);
+	strcpy(dest->mapping_quality_score , src[4]);
+	strcpy(dest->cigar , src[5]);
+	strcpy(dest->reference_name_next_mate , src[6]);
+	dest->start_position_next = convertStringToUnsignedInteger (src[7]);
+	strcpy(dest->template_length , src[8]);
+	strcpy(dest->sequence , strupr (src[9]));
+	strcpy(dest->quality_scores , src[10]);
+	for ( i = 0 ; dest->quality_scores[i] != '\0' ; i++ )
+		dest->quality_scores[i] += QUAL_SCORE_ADJUSTMENT;
+
+	for ( i = 11 ; i < number_of_fields ; i++ )
+	{
+		//printf("%s\n",src[i]);
+		//fflush ( stdout );
+		splitByDelimiter (src[i] , ':' , split_on_colon);
+		//sam_tag_index = locateSamTags(split_on_colon[0]);
+		//dest->tags[i - 11].name = sam_tags[sam_tag_index];
+		if ( i == number_of_fields - 1 )
+			split_on_colon[2][strlen (split_on_colon[2])] = '\0';
+
+		if ( strcmp (split_on_colon[0] , "NH") == 0 )
+			strcpy(dest->NH , split_on_colon[2]);
+		else if ( strcmp (split_on_colon[0] , "MD") == 0 )
+			strcpy(dest->MD , split_on_colon[2]);
+		else if ( strcmp (split_on_colon[0] , "AS") == 0 )
+		{
+			strcpy(dest->AS , split_on_colon[2]);
+		}
+
+		//printf("\n Tags %s Parts of the tag %s %s %s ", src[i], split_on_colon[0], split_on_colon[1], split_on_colon[2]);
+	}
+
+	dest->read_sequence_len = strlen (dest->sequence);
+
+	/*
+	 * Process soft clipped fields
+	 */
+	processSoftClips (dest ,
+			AS_tag_presence ,
+			flag_ignore_alignment_scores ,
+			flag_ignore_soft_clippings ,
+			flag_ignore_mismatches ,
+			flag_ignore_all_quality_scores ,
+			flag_ignore_unmapped_sequences ,
+			flag_ignore_quality_scores_for_matched_bases);
 
 }
 
-unsigned short int readSingleAlignmentFromSAMAlignmentFile (
+void populateBamAlignmentInstance (struct Sam_Alignment *dest, // Final Sam alignment DS
+		samFile *fp_in, // File pointer if BAM file provided
+		bam_hdr_t *bamHdr,         // read header
+		bam1_t *aln,
+		char **split_on_colon,
+		int number_of_fields,
+		unsigned short int AS_tag_presence,
+		unsigned short int flag_ignore_alignment_scores,
+		unsigned short int flag_ignore_soft_clippings,
+		unsigned short int flag_ignore_mismatches,
+		unsigned short int flag_ignore_all_quality_scores,
+		unsigned short int flag_ignore_unmapped_sequences,
+		unsigned short int flag_ignore_quality_scores_for_matched_bases)
+{
+	strcpy(dest->read_name , bam_get_qname (aln));
+	dest->samflag = aln->core.flag;
+	strcpy(dest->reference_name , bamHdr->target_name[aln->core.tid]); // contig name (chromosome)
+	dest->start_position = aln->core.pos + 1; // left most position of alignment in zero based coordianate (+1)
+	dest->mapping_quality_score = aln->core.qual;
+
+	uint32_t len = aln->core.l_qseq;                // length of the read.
+
+	uint8_t *q = bam_get_seq (aln); // quality string
+
+	char *qseq = ( char* ) malloc (len);
+
+	for ( i = 0 ; i < len ; i++ )
+	{
+		qseq[i] = seq_nt16_str[bam_seqi (q , i)]; // gets nucleotide id and converts them into IUPAC id.
+	}
+	qseq[i] = '\0';
+}
+
+unsigned short int readSingleAlignmentFromAlignmentFile (
+		char *line,
+		samFile *fp_in,           // File pointer if BAM file provided
+		bam_hdr_t *bamHdr,         // read header
+		bam1_t *aln,
 		FILE *fhr,
 		struct Sam_Alignment *sam_alignment_instance,
 		char *ended,
@@ -509,13 +572,12 @@ unsigned short int readSingleAlignmentFromSAMAlignmentFile (
 	size_t len = 0;
 	ssize_t line_len;
 
-	char *line = NULL; // for reading each line
 	unsigned short int number_of_fields;
 
 	if ( strcmp (alignment_format , "SAM") == 0 )
 	{
-		line_len = getline ( &line , &len , fhr);
-		if ( line_len == -1 ) return -1;
+		//line_len = getline ( &line , &len , fhr);
+		//if ( line_len == -1 ) return -1;
 		number_of_fields = splitByDelimiter (line , '\t' , split_on_tab);
 		populateSamAlignmentInstance (sam_alignment_instance ,
 				split_on_tab ,
@@ -531,7 +593,18 @@ unsigned short int readSingleAlignmentFromSAMAlignmentFile (
 	}
 	else if ( strcmp (alignment_format , "BAM") == 0 )
 	{
-
+		populateBamAlignmentInstance (sam_alignment_instance , fp_in ,// File pointer if BAM file provided
+				bamHdr ,		// read header
+				aln ,
+				split_on_colon ,
+				number_of_fields ,
+				AS_tag_presence ,
+				flag_ignore_alignment_scores ,
+				flag_ignore_soft_clippings ,
+				flag_ignore_mismatches ,
+				flag_ignore_all_quality_scores ,
+				flag_ignore_unmapped_sequences ,
+				flag_ignore_quality_scores_for_matched_bases);
 	}
 	return 0;
 }
