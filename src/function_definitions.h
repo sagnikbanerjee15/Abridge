@@ -352,7 +352,13 @@ void populateSamAlignmentInstance (
 		char **src,
 		char **split_on_colon,
 		int number_of_fields,
-		unsigned short int AS_tag_presence)
+		unsigned short int AS_tag_presence,
+		unsigned short int flag_ignore_alignment_scores,
+		unsigned short int flag_ignore_soft_clippings,
+		unsigned short int flag_ignore_mismatches,
+		unsigned short int flag_ignore_all_quality_scores,
+		unsigned short int flag_ignore_unmapped_sequences,
+		unsigned short int flag_ignore_quality_scores_for_matched_bases)
 {
 	/*************************************************************************************************************************
 	 * Processed the line read from the SAM alignment file and prepares the Sam_Alignment instance
@@ -480,10 +486,16 @@ void populateSamAlignmentInstance (
 
 unsigned short int readSingleAlignmentFromSAMAlignmentFile (
 		FILE *fhr,
-		struct Sam_Alignment *s,
+		struct Sam_Alignment *sam_alignment_instance,
 		char *ended,
 		char *alignment_format,
 		unsigned short int AS_tag_presence,
+		unsigned short int flag_ignore_alignment_scores,
+		unsigned short int flag_ignore_soft_clippings,
+		unsigned short int flag_ignore_mismatches,
+		unsigned short int flag_ignore_all_quality_scores,
+		unsigned short int flag_ignore_unmapped_sequences,
+		unsigned short int flag_ignore_quality_scores_for_matched_bases,
 		char **split_on_tab,
 		char **split_on_colon)
 {
@@ -503,11 +515,17 @@ unsigned short int readSingleAlignmentFromSAMAlignmentFile (
 		line_len = getline ( &line , &len , fhr);
 		if ( line_len == -1 ) return -1;
 		number_of_fields = splitByDelimiter (line , '\t' , split_on_tab);
-		populateSamAlignmentInstance (s ,
+		populateSamAlignmentInstance (sam_alignment_instance ,
 				split_on_tab ,
 				split_on_colon ,
 				number_of_fields ,
-				AS_tag_presence);
+				AS_tag_presence ,
+				flag_ignore_alignment_scores ,
+				flag_ignore_soft_clippings ,
+				flag_ignore_mismatches ,
+				flag_ignore_all_quality_scores ,
+				flag_ignore_unmapped_sequences ,
+				flag_ignore_quality_scores_for_matched_bases);
 	}
 	else if ( strcmp (alignment_format , "BAM") == 0 )
 	{
