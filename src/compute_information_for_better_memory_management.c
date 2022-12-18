@@ -293,9 +293,10 @@ void findSummaryInformation (
 	strcat(str , temp_str_integer_to_string_conversion);
 	strcat(str , "\n");
 
-	//printf ("\nLength of line to be written to file %s" , strlen (str));
-	fprintf (fhw , "%s" , str);
 	return;
+	printf ("\nLength of line to be written to file %s" , strlen (str));
+	fprintf (fhw , "%s" , str);
+
 	fclose (fhw);
 	fclose (fhr);
 
