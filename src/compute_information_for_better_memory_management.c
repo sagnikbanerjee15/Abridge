@@ -299,9 +299,10 @@ void findSummaryInformation (
 			str);
 	fprintf (fhw , "%s" , str);
 
-	fclose (fhw);
 	fclose (fhr);
 	return;
+	fclose (fhw);
+
 	if ( strcmp (ended , "BAM") == 0 )
 	{
 		bam_destroy1 (aln);
