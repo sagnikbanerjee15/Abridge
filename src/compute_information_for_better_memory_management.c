@@ -298,7 +298,7 @@ void findSummaryInformation (
 			strlen (str) ,
 			str);
 	fprintf (fhw , "%s" , str);
-
+	return;
 	fclose (fhr);
 	return;
 	fclose (fhw);
