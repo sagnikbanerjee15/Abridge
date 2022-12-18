@@ -197,6 +197,11 @@ void findSummaryInformation (
 		if ( strcmp (input_alignment_file_format , "BAM") == 0 )
 		{
 			current_reference_position = aln->core.pos + 1;
+			if ( current_reference_position == 0 )
+			{
+				printf ("\n Breaking unaligned read encountered");
+				break; //Unaligned read}
+			}
 			if ( current_reference_position == 0 ) break; //Unaligned read
 			current_reference_name = bamHdr->target_name[aln->core.tid];
 			current_read_length = aln->core.l_qseq;
