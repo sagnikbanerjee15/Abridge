@@ -403,8 +403,6 @@ def compressSamFile( options , tags_presence, list_of_softwares_with_versions, v
         cmd += f" compute_information_for_better_memory_management  "
         cmd += f" --input_sam_filename {input_filename} "
         cmd += f" --summary_information_outputfilename {summary_information_outputfilename}"
-        cmd += f" --ended {'SE' if options.single_ended == True else 'PE'}"
-        cmd += f" --AS_tag_presence  {tags_presence['AS']} "
         cmd += f")"
         cmd += f"1> /dev/null "
         if options.keep_intermediate_error_files == True:
@@ -418,7 +416,6 @@ def compressSamFile( options , tags_presence, list_of_softwares_with_versions, v
         version = list_of_softwares_with_versions[software]
         executeCommand(options, software, version, volumes_list,f"{options.singularity_images}/{software}:{version}", '10g' , cmd)
         
-
         ######################################################################################
         #  Execute the compress SAM file command for single ended reads
         ######################################################################################

@@ -24,8 +24,6 @@ static struct argp_option options[] =
 { "input_alignment_filename" , 'i' , "SAM_FILENAME" , 0 , "Enter the name of the SAM file to be compressed" , 0 } ,
 { "input_alignment_file_format" , 'j' , "ended" , 0 , "Enter the format of the alignment file. Must be either SAM or BAM" , 0 } ,
 { "summary_information_outputfilename" , 'o' , "TEXT_FILENAME" , 0 , "Enter the name of the output file that will contain (1) the value of maximum number of reads mapped to a single nucleotide (2) Total number of alignments (3) Maximum read length" , 0 } ,
-{ "ended" , 'e' , "FILE_FORMAT" , 0 , "Enter whether the sample is single ended or paired ended" , 0 } ,
-{ "AS_tag_presence" , 's' , "AS_TAG_PRESENSE" , 0 , "Enter 0 or 1 depending on whether the AS tag is present or not" , 0 } ,
 { 0 , 0 , 0 , 0 , 0 , 0 } // Last entry should be all zeros in all fields
 };
 
@@ -62,12 +60,6 @@ static error_t parse_opt (int key, char *arg, struct argp_state *state)
 			break;
 		case 'o':
 			arguments->summary_information_outputfilename = arg;
-			break;
-		case 'e':
-			arguments->ended = arg;
-			break;
-		case 's':
-			arguments->AS_tag_presence = convertStringToUnsignedInteger (arg);
 			break;
 		case ARGP_KEY_END:
 			// Reached the last key.
@@ -340,13 +332,9 @@ int main (int argc, char *argv[])
 			strupr (arguments.input_alignment_file_format));
 	strcpy(summary_information_outputfilename ,
 			arguments.summary_information_outputfilename);
-	strcpy(ended , arguments.ended);
-	AS_tag_presence = arguments.AS_tag_presence;
 
 	/********************************************************************/
 	findSummaryInformation (input_alignment_filename ,
-			ended ,
 			input_alignment_file_format ,
-			summary_information_outputfilename ,
-			AS_tag_presence);
+			summary_information_outputfilename);
 }
