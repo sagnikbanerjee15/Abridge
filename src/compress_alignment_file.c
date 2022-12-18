@@ -304,22 +304,15 @@ void compressAlignmentFile (
 
 	already_processed = ( short* ) malloc (sizeof(short) * max_input_reads_in_a_single_nucl_loc);
 	max_input_reads_in_a_single_nucl_loc += 5;
-	compressed_ds_pool = ( struct Compressed_DS** ) malloc (sizeof(struct Compressed_DS*) * max_input_reads_in_a_single_nucl_loc);
-	for ( i = 0 ; i < max_input_reads_in_a_single_nucl_loc ; i++ )
-		compressed_ds_pool[i] = allocateMemoryCompressed_DS (max_input_reads_in_a_single_nucl_loc);
-
-	compressed_ds_pool_rearranged = ( struct Compressed_DS** ) malloc (sizeof(struct Compressed_DS*) * max_input_reads_in_a_single_nucl_loc);
-	for ( i = 0 ; i < max_input_reads_in_a_single_nucl_loc ; i++ )
-		compressed_ds_pool_rearranged[i] = allocateMemoryCompressed_DS (max_input_reads_in_a_single_nucl_loc);
 
 	line_to_be_written_to_file = ( char* ) malloc (sizeof(char) * MAX_LINE_TO_BE_WRITTEN_TO_FILE);
 	qual_for_writeToFile = ( char* ) malloc (sizeof(char) * MAX_SEQ_LEN);
 
-	reference_id_quick_read = ( char* ) malloc (sizeof(char) * 1000);
-	samflag_quick_read = ( char* ) malloc (sizeof(char) * 1000);
-	prev_reference_name = ( char* ) malloc (sizeof(char) * 1000);
+	reference_id_quick_read = ( char* ) malloc (sizeof(char) * ONE_THOUSAND);
+	samflag_quick_read = ( char* ) malloc (sizeof(char) * ONE_THOUSAND);
+	prev_reference_name = ( char* ) malloc (sizeof(char) * ONE_THOUSAND);
 	prev_reference_name[0] = '\0';
-	curr_reference_name = ( char* ) malloc (sizeof(char) * 1000);
+	curr_reference_name = ( char* ) malloc (sizeof(char) * ONE_THOUSAND);
 	curr_reference_name[0] = '\0';
 
 	current_alignment = allocateMemorySam_Alignment (max_read_length);
