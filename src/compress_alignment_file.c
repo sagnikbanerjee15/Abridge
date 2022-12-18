@@ -332,36 +332,38 @@ void compressAlignmentFile (
 	/*
 	 * Write the first line in output file
 	 */
-	temp[0] = '\0';
-	strcat(temp , "flag_ignore_mismatches:");
-	sprintf(str , "%lld" , flag_ignore_mismatches);
-	strcat(temp , str);
-	strcat(temp , "\t");
-	strcat(temp , "flag_ignore_soft_clippings:");
-	sprintf(str , "%lld" , flag_ignore_soft_clippings);
-	strcat(temp , str);
-	strcat(temp , "\t");
-	strcat(temp , "flag_ignore_unmapped_sequences:");
-	sprintf(str , "%lld" , flag_ignore_unmapped_sequences);
-	strcat(temp , str);
-	strcat(temp , "\t");
+	line_to_be_written_to_file[0] = '\0';
+	strcat(line_to_be_written_to_file);
+	convertUnsignedIntegerToString (str , flag_ignore_mismatches);
+	strcat(line_to_be_written_to_file , str);
+	strcat(line_to_be_written_to_file , "\t");
+	strcat(line_to_be_written_to_file , "flag_ignore_soft_clippings:");
+	convertUnsignedIntegerToString (str , flag_ignore_soft_clippings);
+	strcat(line_to_be_written_to_file , str);
+	strcat(line_to_be_written_to_file , "\t");
+	strcat(line_to_be_written_to_file , "flag_ignore_unmapped_sequences:");
+	convertUnsignedIntegerToString (str , flag_ignore_unmapped_sequences);
+	strcat(line_to_be_written_to_file , str);
+	strcat(line_to_be_written_to_file , "\t");
 	strcat(temp , "flag_ignore_all_quality_scores:");
-	sprintf(str , "%lld" , flag_ignore_all_quality_scores);
-	strcat(temp , str);
-	strcat(temp , "\t");
-	strcat(temp , "flag_ignore_quality_scores_for_matched_bases:");
-	sprintf(str , "%lld" , flag_ignore_quality_scores_for_matched_bases);
-	strcat(temp , str);
-	strcat(temp , "\t");
-	strcat(temp , "flag_ignore_alignment_scores:");
-	sprintf(str , "%lld" , flag_ignore_alignment_scores);
-	strcat(temp , str);
-	strcat(temp , "\t");
-	strcat(temp , "flag_skip_shortening_read_names:");
-	sprintf(str , "%lld" , skip_shortening_read_names);
-	strcat(temp , str);
-	strcat(temp , "\n");
-	fprintf (fhw_compressed , "%s" , temp);
+	convertUnsignedIntegerToString (str , flag_ignore_all_quality_scores);
+	strcat(line_to_be_written_to_file , str);
+	strcat(line_to_be_written_to_file , "\t");
+	strcat(line_to_be_written_to_file ,
+			"flag_ignore_quality_scores_for_matched_bases:");
+	convertUnsignedIntegerToString (str ,
+			flag_ignore_quality_scores_for_matched_bases);
+	strcat(line_to_be_written_to_file , str);
+	strcat(line_to_be_written_to_file , "\t");
+	strcat(line_to_be_written_to_file , "flag_ignore_alignment_scores:");
+	convertUnsignedIntegerToString (str , flag_ignore_alignment_scores);
+	strcat(line_to_be_written_to_file , str);
+	strcat(line_to_be_written_to_file , "\t");
+	strcat(line_to_be_written_to_file , "flag_skip_shortening_read_names:");
+	convertUnsignedIntegerToString (str , skip_shortening_read_names);
+	strcat(line_to_be_written_to_file , str);
+	strcat(line_to_be_written_to_file , "\n");
+	fprintf (fhw_compressed , "%s" , line_to_be_written_to_file);
 }
 
 int main (int argc, char *argv[])
