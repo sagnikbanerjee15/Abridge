@@ -32,6 +32,7 @@
 #define QUAL_SCORE_ADJUSTMENT 100
 #define FILL_ENTIRE_SAM_ALIGNEMENT_DS 0
 #define SAM_ALIGNEMENT_DS_FILL_MEM_MGMT 1
+#define MAX_LINE_TO_BE_WRITTEN_TO_FILE 1000000
 
 /*************************************************************************************************************************
  * Define characters for mismatch and deletion

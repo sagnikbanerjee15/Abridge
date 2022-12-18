@@ -203,8 +203,8 @@ void compressAlignmentFile (
 
 	char **qual_scores;
 	char **read_names;
-	char **split_line; // List of strings to store each element of a single alignment
-	char **split_tags; // List of strings to store tag information
+	char **split_on_tabs; // List of strings to store each element of a single alignment
+	char **split_on_colon; // List of strings to store tag information
 	char **split_reference_info;
 	char *temp; //Useless
 	char *line = NULL; // for reading each line
@@ -263,10 +263,10 @@ void compressAlignmentFile (
 	/****************************************************************************************************************************************
 	 * Variable initialization
 	 ****************************************************************************************************************************************/
-	fhr = fopen (input_samfilename , "r");
+	fhr = fopen (input_alignment_filename , "r");
 	if ( fhr == NULL )
 	{
-		printf ("Error! File %s not found" , input_samfilename);
+		printf ("Error! File %s not found" , input_alignment_filename);
 		exit (1);
 	}
 	fhw_pass1 = fopen (output_abridgefilename , "w");
@@ -297,13 +297,13 @@ void compressAlignmentFile (
 		exit (1);
 	}
 
-	split_line = ( char** ) malloc (sizeof(char*) * ROWS);
-	for ( i = 0 ; i < ROWS ; i++ )
-		split_line[i] = ( char* ) malloc (sizeof(char) * COLS);
+	split_on_tabs = ( char** ) malloc (sizeof(char*) * ONE_HUNDRED);
+	for ( i = 0 ; i < ONE_HUNDRED ; i++ )
+		split_on_tabs[i] = ( char* ) malloc (sizeof(char) * ( max_read_length + TEN ));
 
-	split_tags = ( char** ) malloc (sizeof(char*) * ROWS);
-	for ( i = 0 ; i < ROWS ; i++ )
-		split_tags[i] = ( char* ) malloc (sizeof(char) * COLS);
+	split_on_colon = ( char** ) malloc (sizeof(char*) * TEN);
+	for ( i = 0 ; i < TEN ; i++ )
+		split_on_colon[i] = ( char* ) malloc (sizeof(char) * ONE_HUNDRED);
 
 	split_reference_info = ( char** ) malloc (sizeof(char*) * ROWS);
 	for ( i = 0 ; i < ROWS ; i++ )
@@ -319,18 +319,8 @@ void compressAlignmentFile (
 	for ( i = 0 ; i < max_input_reads_in_a_single_nucl_loc ; i++ )
 		compressed_ds_pool_rearranged[i] = allocateMemoryCompressed_DS (max_input_reads_in_a_single_nucl_loc);
 
-	write_to_file_col1 = ( char* ) malloc (sizeof(char) * MAX_LINE_TO_BE_WRITTEN_TO_FILE);
-	write_to_file_col2 = ( char* ) malloc (sizeof(char) * MAX_LINE_TO_BE_WRITTEN_TO_FILE);
-	write_to_file_col3 = ( char* ) malloc (sizeof(char) * MAX_LINE_TO_BE_WRITTEN_TO_FILE);
 	line_to_be_written_to_file = ( char* ) malloc (sizeof(char) * MAX_LINE_TO_BE_WRITTEN_TO_FILE);
-	list_of_read_names = ( char* ) malloc (sizeof(char) * MAX_LINE_TO_BE_WRITTEN_TO_FILE);
-	list_of_qual_scores = ( char* ) malloc (sizeof(char) * MAX_LINE_TO_BE_WRITTEN_TO_FILE);
 	qual_for_writeToFile = ( char* ) malloc (sizeof(char) * MAX_SEQ_LEN);
-	encoded_string = ( char* ) malloc (sizeof(char) * MAX_LINE_TO_BE_WRITTEN_TO_FILE);
-
-	write_to_file_col1[0] = '\0';
-	write_to_file_col2[0] = '\0';
-	write_to_file_col3[0] = '\0';
 
 	reference_id_quick_read = ( char* ) malloc (sizeof(char) * 1000);
 	samflag_quick_read = ( char* ) malloc (sizeof(char) * 1000);
