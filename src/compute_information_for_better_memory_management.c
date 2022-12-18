@@ -250,7 +250,9 @@ void findSummaryInformation (
 		if ( strcmp (input_alignment_file_format , "BAM") == 0 )
 		{
 			line_len = sam_read1 (fp_in , bamHdr , aln);
-			printf ("\nLine length %d" , line_len);
+			printf ("\nLine length %d total_number_of_alignments %d" ,
+					line_len ,
+					total_number_of_alignments);
 		}
 
 		if ( line_len <= 0 ) break;
