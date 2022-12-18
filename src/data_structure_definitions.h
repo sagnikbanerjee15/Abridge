@@ -129,7 +129,7 @@ struct Sam_Alignment
 	char *cigar_extended; // Required for generating iCIGAR
 	char *md_extended;    // Required for generating iCIGAR
 	char *icigar; // Stores the integrated representation comprising of all relevant information about the alignment - the iCIGAR
-	char qual_for_mismatches_and_indels; // Stores the quality scores of only those bases that were mismatches or indels
+	char *qual_for_mismatches_and_indels; // Stores the quality scores of only those bases that were mismatches or indels
 	//char **splices;
 
 	char *left_soft_clipped_sequence; // Nucleotide sequence soft clipped from the left
