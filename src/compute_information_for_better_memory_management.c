@@ -304,6 +304,7 @@ void findSummaryInformation (
 	{
 		printf ("\nInside here");
 		bam_destroy1 (aln);
+		return;
 		sam_close(fp_in);
 	}
 	else fclose (fhr);
