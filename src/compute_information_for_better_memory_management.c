@@ -190,8 +190,9 @@ void findSummaryInformation (
 	{
 		total_number_of_alignments += 1;
 		//if ( total_number_of_alignments == 100 ) break;
-		//if ( total_number_of_alignments % 100000 == 0 )
-		printf ("\nTotal number of alignments %d" , total_number_of_alignments);
+		if ( total_number_of_alignments % 100000 == 0 )
+			printf ("\nTotal number of alignments %d" ,
+					total_number_of_alignments);
 
 		if ( strcmp (input_alignment_file_format , "BAM") == 0 )
 		{
@@ -206,15 +207,15 @@ void findSummaryInformation (
 		}
 		else if ( strcmp (input_alignment_file_format , "SAM") == 0 )
 		{
+			splitByDelimiter (line , '\t' , split_line);
+			current_read_length = strlen (split_line[9]);
+			strcpy(current_reference_name , split_line[2]);
 			current_reference_position = convertStringToUnsignedInteger (split_line[3]);
 			if ( current_reference_position == 0 )
 			{
 				printf ("\nBreaking unaligned read encountered");
 				break; //Unaligned read}
 			}
-			splitByDelimiter (line , '\t' , split_line);
-			current_read_length = strlen (split_line[9]);
-			strcpy(current_reference_name , split_line[2]);
 		}
 
 		if ( max_read_length < current_read_length )
