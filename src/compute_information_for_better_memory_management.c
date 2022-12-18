@@ -293,12 +293,13 @@ void findSummaryInformation (
 	strcat(str , temp_str_integer_to_string_conversion);
 	strcat(str , "\n");
 	strcat(str , "\0");
-
+	return;
 	printf ("\nLength of line to be written to file %d\nLine: %s" ,
 			strlen (str) ,
 			str);
 	fprintf (fhw , "%s" , str);
 
+	return;
 	fclose (fhw);
 	fclose (fhr);
 
