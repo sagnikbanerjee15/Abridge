@@ -121,8 +121,8 @@ void findSummaryInformation (
 	size_t len = 0;
 	ssize_t line_len;
 
-	char *str;
-	char *temp_str_integer_to_string_conversion;
+	char str[ONE_THOUSAND];
+	char temp_str_integer_to_string_conversion[ONE_HUNDRED];
 	char *temp;        // Useless
 	char *line = NULL; // for reading each line
 	char **split_line; // List of strings to store each element of a single alignment
@@ -171,8 +171,6 @@ void findSummaryInformation (
 	current_reference_name[0] = '\0';
 	previous_reference_name = ( char* ) malloc (sizeof(char) * ONE_HUNDRED);
 	previous_reference_name[0] = '\0';
-	str = ( char* ) malloc (sizeof(char) * ONE_THOUSAND);
-	temp_str_integer_to_string_conversion = ( char* ) malloc (sizeof(char) * TEN);
 
 	total_number_of_alignments = 0;
 	str[0] = '\0';
@@ -191,7 +189,7 @@ void findSummaryInformation (
 	do
 	{
 		total_number_of_alignments += 1;
-		if ( total_number_of_alignments == 100 ) break;
+		//if ( total_number_of_alignments == 100 ) break;
 		if ( total_number_of_alignments % 100000 == 0 )
 			printf ("\nTotal number of alignments %d" ,
 					total_number_of_alignments);
