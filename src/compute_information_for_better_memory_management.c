@@ -102,7 +102,6 @@ void findSummaryInformation (
 	 * Variable declaration
 	 ********************************************************************/
 	int i;
-	unsigned short int number_of_fields;
 	unsigned short int max_read_length, current_read_length;
 	unsigned long long int total_number_of_alignments;
 	unsigned long long int current_reference_position,

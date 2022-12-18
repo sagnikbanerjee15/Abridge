@@ -203,7 +203,7 @@ void readCompleteReference (
 	fclose (fhr);
 }
 
-inline char* convertSignedIntegerToString (long long int x)
+char* convertSignedIntegerToString (long long int x)
 {
 	/*************************************************************************************************************************
 	 * Converts signed integer to string
@@ -214,7 +214,7 @@ inline char* convertSignedIntegerToString (long long int x)
 	return str;
 }
 
-inline char* convertUnsignedIntegerToString (unsigned long long int x)
+char* convertUnsignedIntegerToString (unsigned long long int x)
 {
 	/*************************************************************************************************************************
 	 * Converts unsigned integers to string
