@@ -91,7 +91,7 @@ static error_t parse_opt (int key, char *arg, struct argp_state *state)
 static struct argp argp =
 { options , parse_opt , args_doc , doc , 0 , 0 , 0 };
 
-void findMaximumNumberOfReadsMappedToOneNucleotide (
+void findSummaryInformation (
 		char *input_alignment_filename,
 		char *ended,
 		char *input_alignment_file_format,
@@ -324,7 +324,7 @@ int main (int argc, char *argv[])
 	AS_tag_presence = arguments.AS_tag_presence;
 
 	/********************************************************************/
-	findMaximumNumberOfReadsMappedToOneNucleotide (input_alignment_filename ,
+	findSummaryInformation (input_alignment_filename ,
 			ended ,
 			input_alignment_file_format ,
 			summary_information_outputfilename ,
