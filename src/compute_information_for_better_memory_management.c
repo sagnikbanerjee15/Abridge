@@ -204,7 +204,11 @@ void findSummaryInformation (
 		else if ( strcmp (input_alignment_file_format , "SAM") == 0 )
 		{
 			current_reference_position = convertStringToUnsignedInteger (split_line[3]);
-			if ( current_reference_position == 0 ) break; //Unaligned read
+			if ( current_reference_position == 0 )
+			{
+				printf ("\n Breaking unaligned read encountered");
+				break; //Unaligned read}
+			}
 			splitByDelimiter (line , '\t' , split_line);
 			current_read_length = strlen (split_line[9]);
 			strcpy(current_reference_name , split_line[2]);
