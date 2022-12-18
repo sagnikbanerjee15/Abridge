@@ -190,16 +190,15 @@ void findSummaryInformation (
 	{
 		total_number_of_alignments += 1;
 		//if ( total_number_of_alignments == 100 ) break;
-		if ( total_number_of_alignments % 100000 == 0 )
-			printf ("\nTotal number of alignments %d" ,
-					total_number_of_alignments);
+		//if ( total_number_of_alignments % 100000 == 0 )
+		printf ("\nTotal number of alignments %d" , total_number_of_alignments);
 
 		if ( strcmp (input_alignment_file_format , "BAM") == 0 )
 		{
 			current_reference_position = aln->core.pos + 1;
 			if ( current_reference_position == 0 )
 			{
-				printf ("\n Breaking unaligned read encountered");
+				printf ("\nBreaking unaligned read encountered");
 				break; //Unaligned read}
 			}
 			current_reference_name = bamHdr->target_name[aln->core.tid];
@@ -210,7 +209,7 @@ void findSummaryInformation (
 			current_reference_position = convertStringToUnsignedInteger (split_line[3]);
 			if ( current_reference_position == 0 )
 			{
-				printf ("\n Breaking unaligned read encountered");
+				printf ("\nBreaking unaligned read encountered");
 				break; //Unaligned read}
 			}
 			splitByDelimiter (line , '\t' , split_line);
