@@ -205,7 +205,6 @@ void compressAlignmentFile (
 	char **read_names;
 	char **split_on_tabs; // List of strings to store each element of a single alignment
 	char **split_on_colon; // List of strings to store tag information
-	char **split_reference_info;
 	char *temp; //Useless
 	char *line = NULL; // for reading each line
 	char *line_name_of_file_with_read_names_to_short_read_names_and_NH = NULL;
@@ -304,10 +303,6 @@ void compressAlignmentFile (
 	split_on_colon = ( char** ) malloc (sizeof(char*) * TEN);
 	for ( i = 0 ; i < TEN ; i++ )
 		split_on_colon[i] = ( char* ) malloc (sizeof(char) * ONE_HUNDRED);
-
-	split_reference_info = ( char** ) malloc (sizeof(char*) * ROWS);
-	for ( i = 0 ; i < ROWS ; i++ )
-		split_reference_info[i] = ( char* ) malloc (sizeof(char) * COLS);
 
 	already_processed = ( short* ) malloc (sizeof(short) * max_input_reads_in_a_single_nucl_loc);
 	max_input_reads_in_a_single_nucl_loc += 5;
