@@ -122,6 +122,7 @@ void findSummaryInformation (
 	ssize_t line_len;
 
 	char *str;
+	char *temp_str_integer_to_string_conversion;
 	char *temp;        // Useless
 	char *line = NULL; // for reading each line
 	char **split_line; // List of strings to store each element of a single alignment
@@ -170,7 +171,8 @@ void findSummaryInformation (
 	current_reference_name[0] = '\0';
 	previous_reference_name = ( char* ) malloc (sizeof(char) * ONE_HUNDRED);
 	previous_reference_name[0] = '\0';
-	str = ( char* ) malloc (sizeof(char) * ( ONE_THOUSAND + ONE_THOUSAND ));
+	str = ( char* ) malloc (sizeof(char) * ONE_THOUSAND);
+	temp_str_integer_to_string_conversion = ( char* ) malloc (sizeof(char) * TEN);
 
 	total_number_of_alignments = 0;
 	str[0] = '\0';
@@ -258,25 +260,26 @@ void findSummaryInformation (
 	if ( number_of_reads_mapped_to_the_current_reference_nucleotide > maximum_number_of_reads_mapped_to_a_single_reference_nucleotide )
 		maximum_number_of_reads_mapped_to_a_single_reference_nucleotide = number_of_reads_mapped_to_the_current_reference_nucleotide;
 
-	fprintf (fhw ,
-			"%s" ,
-			"maximum_number_of_reads_mapped_to_a_single_reference_nucleotide:");
-	fprintf (fhw ,
-			"%s" ,
-			convertUnsignedIntegerToString (maximum_number_of_reads_mapped_to_a_single_reference_nucleotide));
-	fprintf (fhw , "%s" , "\n");
+	strcat(str ,
+			"maximum_number_of_reads_mapped_to_a_single_reference_nucleotide: ");
+	convertUnsignedIntegerToString (temp_str_integer_to_string_conversion ,
+			maximum_number_of_reads_mapped_to_a_single_reference_nucleotide);
+	strcat(str , temp_str_integer_to_string_conversion);
+	strcat(str , "\n");
 
-	fprintf (fhw , "%s" , "total_number_of_alignments: ");
-	fprintf (fhw ,
-			"%s" ,
-			convertUnsignedIntegerToString (total_number_of_alignments));
-	fprintf (fhw , "%s" , "\n");
+	strcat(str , "total_number_of_alignments: ");
+	convertUnsignedIntegerToString (temp_str_integer_to_string_conversion ,
+			total_number_of_alignments);
+	strcat(str , temp_str_integer_to_string_conversion);
+	strcat(str , "\n");
 
-	fprintf (fhw , "%s" , "max_read_length:");
-	fprintf (fhw , "%s" , convertUnsignedIntegerToString (max_read_length));
-	fprintf (fhw , "%s" , "\n");
+	strcat(str , "max_read_length:");
+	convertUnsignedIntegerToString (temp_str_integer_to_string_conversion ,
+			max_read_length);
+	strcat(str , temp_str_integer_to_string_conversion);
+	strcat(str , "\n");
 
-	//fprintf (fhw , "%s" , str);
+	fprintf (fhw , "%s" , str);
 
 	fclose (fhw);
 	fclose (fhr);
