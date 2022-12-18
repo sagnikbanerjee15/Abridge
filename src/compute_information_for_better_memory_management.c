@@ -85,10 +85,8 @@ static struct argp argp =
 
 void findSummaryInformation (
 		char *input_alignment_filename,
-		char *ended,
 		char *input_alignment_file_format,
-		char *summary_information_outputfilename,
-		unsigned short int AS_tag_presence)
+		char *summary_information_outputfilename)
 {
 	/********************************************************************
 	 * Variable declaration
