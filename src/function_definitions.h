@@ -47,7 +47,7 @@ struct Reference* allocateMemoryReference (unsigned int n)
 	return s;
 }
 
-struct Sam_Alignment* allocateMemorySam_Alignment ()
+struct Sam_Alignment* allocateMemorySam_Alignment (unsigned int max_read_length)
 {
 	/********************************************************************
 	 * Allocates memory for SAM alignments
@@ -60,47 +60,47 @@ struct Sam_Alignment* allocateMemorySam_Alignment ()
 	/********************************************************************/
 	s = ( struct Sam_Alignment* ) malloc (sizeof(struct Sam_Alignment));
 
-	s->read_name = ( char* ) malloc (sizeof(char) * MAX_SEQ_LEN);
-	s->reference_name = ( char* ) malloc (sizeof(char) * MAX_SEQ_LEN);
+	s->read_name = ( char* ) malloc (sizeof(char) * ONE_HUNDRED);
+	s->reference_name = ( char* ) malloc (sizeof(char) * ONE_HUNDRED);
 	s->start_position = 0;
 	s->mapping_quality_score = ( char* ) malloc (sizeof(char) * TEN);
-	s->cigar = ( char* ) malloc (sizeof(char) * MAX_SEQ_LEN);
-	s->reference_name_next_mate = ( char* ) malloc (sizeof(char) * MAX_SEQ_LEN);
+	s->cigar = ( char* ) malloc (sizeof(char) * max_read_length);
+	s->reference_name_next_mate = ( char* ) malloc (sizeof(char) * max_read_length);
 	s->start_position_next = 0;
-	s->template_length = ( char* ) malloc (sizeof(char) * MAX_SEQ_LEN);
-	s->sequence = ( char* ) malloc (sizeof(char) * MAX_SEQ_LEN);
-	s->quality_scores = ( char* ) malloc (sizeof(char) * MAX_SEQ_LEN);
+	s->template_length = ( char* ) malloc (sizeof(char) * TEN);
+	s->sequence = ( char* ) malloc (sizeof(char) * max_read_length);
+	s->quality_scores = ( char* ) malloc (sizeof(char) * max_read_length);
 
-	s->left_soft_clipped_sequence = ( char* ) malloc (sizeof(char) * MAX_SEQ_LEN);
+	s->left_soft_clipped_sequence = ( char* ) malloc (sizeof(char) * max_read_length);
 	s->left_soft_clipped_sequence[0] = '\0';
-	s->right_soft_clipped_sequence = ( char* ) malloc (sizeof(char) * MAX_SEQ_LEN);
+	s->right_soft_clipped_sequence = ( char* ) malloc (sizeof(char) * max_read_length);
 	s->right_soft_clipped_sequence[0] = '\0';
-	s->left_soft_clipped_qual = ( char* ) malloc (sizeof(char) * MAX_SEQ_LEN);
+	s->left_soft_clipped_qual = ( char* ) malloc (sizeof(char) * max_read_length);
 	s->left_soft_clipped_qual[0] = '\0';
-	s->right_soft_clipped_qual = ( char* ) malloc (sizeof(char) * MAX_SEQ_LEN);
+	s->right_soft_clipped_qual = ( char* ) malloc (sizeof(char) * max_read_length);
 	s->right_soft_clipped_qual[0] = '\0';
 	//s->cigar_items = ( struct Cigar_Items* ) malloc (sizeof(struct Cigar_Items) * MAX_CIGAR_ITEMS);
 	//s->number_of_cigar_items = 0;
 
-	s->cigar_extended = ( char* ) malloc (sizeof(char) * ( MAX_SEQ_LEN * 2 ));
+	s->cigar_extended = ( char* ) malloc (sizeof(char) * ( max_read_length * 2 ));
 	s->cigar_extended[0] = '\0';
-	s->md_extended = ( char* ) malloc (sizeof(char) * ( MAX_SEQ_LEN * 2 ));
+	s->md_extended = ( char* ) malloc (sizeof(char) * ( max_read_length * 2 ));
 	s->md_extended[0] = '\0';
-	s->icigar = ( char* ) malloc (sizeof(char) * ( MAX_SEQ_LEN * 2 ));
+	s->icigar = ( char* ) malloc (sizeof(char) * ( max_read_length * 2 ));
 	s->icigar[0] = '\0';
 	//s->splices = ( char** ) malloc (sizeof(char*) * 100);
 	//for ( i = 0 ; i < 100 ; i++ )
 	//	s->splices[i] = ( char* ) malloc (sizeof(char) * 50);
-	s->soft_clips_removed_sequence = ( char* ) malloc (sizeof(char) * MAX_SEQ_LEN);
+	s->soft_clips_removed_sequence = ( char* ) malloc (sizeof(char) * max_read_length);
 	s->soft_clips_removed_sequence[0] = '\0';
-	s->soft_clips_removed_quality_scores = ( char* ) malloc (sizeof(char) * MAX_SEQ_LEN);
+	s->soft_clips_removed_quality_scores = ( char* ) malloc (sizeof(char) * max_read_length);
 	s->soft_clips_removed_quality_scores[0] = '\0';
 
 	s->NH = ( char* ) malloc (sizeof(char) * 10);
 	strcpy(s->NH , "-1");
 	s->AS = ( char* ) malloc (sizeof(char) * 5);
 	strcpy(s->AS , "X");
-	s->MD = ( char* ) malloc (sizeof(char) * ( MAX_SEQ_LEN * 2 ));
+	s->MD = ( char* ) malloc (sizeof(char) * ( max_read_length * 2 ));
 	strcpy(s->MD , "-1");
 	return s;
 }

@@ -189,9 +189,177 @@ void compressAlignmentFile (
 		unsigned short int run_diagnostics,
 		unsigned short int max_input_reads_in_a_single_nucl_loc,
 		unsigned short int skip_shortening_read_names,
-		unsigned short int AS_tag_presense)
+		unsigned short int AS_tag_presense,
+		unsigned int max_read_length)
 {
+	/****************************************************************************************************************************************
+	 * Variable declaration
+	 ****************************************************************************************************************************************/
+	FILE *fhr;
+	FILE *fhw_pass1;
+	FILE *fhw_unmapped;
+	FILE *fhw_qual;
+	FILE *fhr_name_of_file_with_read_names_to_short_read_names_and_NH;
 
+	char **qual_scores;
+	char **read_names;
+	char **split_line; // List of strings to store each element of a single alignment
+	char **split_tags; // List of strings to store tag information
+	char **split_reference_info;
+	char *temp; //Useless
+	char *line = NULL; // for reading each line
+	char *line_name_of_file_with_read_names_to_short_read_names_and_NH = NULL;
+	char *entry_in_output_file; //entry in output file
+	char *prev_reference_name;
+	char *curr_reference_name;
+	char *reference_id_quick_read;
+	char *samflag_quick_read;
+	char **modified_icigars;
+	char *line_to_be_written_to_file;
+	char *list_of_read_names;
+	char *list_of_qual_scores;
+	char *qual_for_writeToFile;
+	char str[100];
+
+	size_t len = 0;
+	ssize_t line_len;
+
+	short *already_processed;
+
+	int flag;
+	int i, j, k; // Required in loops
+	int number_of_tags;
+	int number_of_fields; // Number of fields in each sam alignment entry
+	int sam_tag_index;
+	int tab_number;
+	int num_items_in_alignment_pool = 0; // Items in pool
+	int samflag_quick_read_index = 0;
+	int compressed_ds_pool_index = 0;
+	int quality_score_index = 0;
+	int number_of_reference_sequences = 0;
+	int reference_sequence_index = 0;
+
+	long long int relative_position_to_previous_read_cluster;
+	long long int previous_position = -1;
+	long long int current_position;
+	long long int number_of_records_written = 0;
+	long long int number_of_records_read = 0;
+	long long int num_pools_written = 0;
+	long long int max_commas = 0;
+	long long int curr_commas = 0;
+
+	struct Sam_Alignment *prev_alignment;
+	struct Sam_Alignment *curr_alignment;
+	struct Sam_Alignment *sam_alignment_instance_diagnostics;
+	struct Sam_Alignment *temp_alignment;
+	struct Sam_Alignment **alignment_pool_same_position;
+	struct Compressed_DS **compressed_ds_pool;
+	struct Compressed_DS **compressed_ds_pool_rearranged;
+	struct Reference_Sequence_Info **reference_info;
+	struct Whole_Genome_Sequence *whole_genome;
+	struct Cigar_Items *cigar_items_instance;
+	/****************************************************************************************************************************************/
+
+	/****************************************************************************************************************************************
+	 * Variable initialization
+	 ****************************************************************************************************************************************/
+	fhr = fopen (input_samfilename , "r");
+	if ( fhr == NULL )
+	{
+		printf ("Error! File %s not found" , input_samfilename);
+		exit (1);
+	}
+	fhw_pass1 = fopen (output_abridgefilename , "w");
+	if ( fhw_pass1 == NULL )
+	{
+		printf ("%s File cannot be created" , output_abridgefilename);
+		exit (1);
+	}
+	fhw_unmapped = fopen (unmapped_filename , "w");
+	if ( fhw_unmapped == NULL )
+	{
+		printf ("%s File cannot be created" , unmapped_filename);
+		exit (1);
+	}
+
+	fhw_qual = fopen (name_of_file_with_quality_scores , "w");
+	if ( fhw_qual == NULL )
+	{
+		printf ("%s File cannot be created" , name_of_file_with_quality_scores);
+		exit (1);
+	}
+	fhr_name_of_file_with_read_names_to_short_read_names_and_NH = fopen (name_of_file_with_read_names_to_short_read_names_and_NH ,
+			"r");
+	if ( fhr_name_of_file_with_read_names_to_short_read_names_and_NH == NULL )
+	{
+		printf ("Error! File %s not found" ,
+				name_of_file_with_read_names_to_short_read_names_and_NH);
+		exit (1);
+	}
+
+	split_line = ( char** ) malloc (sizeof(char*) * ROWS);
+	for ( i = 0 ; i < ROWS ; i++ )
+		split_line[i] = ( char* ) malloc (sizeof(char) * COLS);
+
+	split_tags = ( char** ) malloc (sizeof(char*) * ROWS);
+	for ( i = 0 ; i < ROWS ; i++ )
+		split_tags[i] = ( char* ) malloc (sizeof(char) * COLS);
+
+	split_reference_info = ( char** ) malloc (sizeof(char*) * ROWS);
+	for ( i = 0 ; i < ROWS ; i++ )
+		split_reference_info[i] = ( char* ) malloc (sizeof(char) * COLS);
+
+	already_processed = ( short* ) malloc (sizeof(short) * max_input_reads_in_a_single_nucl_loc);
+	max_input_reads_in_a_single_nucl_loc += 5;
+	compressed_ds_pool = ( struct Compressed_DS** ) malloc (sizeof(struct Compressed_DS*) * max_input_reads_in_a_single_nucl_loc);
+	for ( i = 0 ; i < max_input_reads_in_a_single_nucl_loc ; i++ )
+		compressed_ds_pool[i] = allocateMemoryCompressed_DS (max_input_reads_in_a_single_nucl_loc);
+
+	compressed_ds_pool_rearranged = ( struct Compressed_DS** ) malloc (sizeof(struct Compressed_DS*) * max_input_reads_in_a_single_nucl_loc);
+	for ( i = 0 ; i < max_input_reads_in_a_single_nucl_loc ; i++ )
+		compressed_ds_pool_rearranged[i] = allocateMemoryCompressed_DS (max_input_reads_in_a_single_nucl_loc);
+
+	write_to_file_col1 = ( char* ) malloc (sizeof(char) * MAX_LINE_TO_BE_WRITTEN_TO_FILE);
+	write_to_file_col2 = ( char* ) malloc (sizeof(char) * MAX_LINE_TO_BE_WRITTEN_TO_FILE);
+	write_to_file_col3 = ( char* ) malloc (sizeof(char) * MAX_LINE_TO_BE_WRITTEN_TO_FILE);
+	line_to_be_written_to_file = ( char* ) malloc (sizeof(char) * MAX_LINE_TO_BE_WRITTEN_TO_FILE);
+	list_of_read_names = ( char* ) malloc (sizeof(char) * MAX_LINE_TO_BE_WRITTEN_TO_FILE);
+	list_of_qual_scores = ( char* ) malloc (sizeof(char) * MAX_LINE_TO_BE_WRITTEN_TO_FILE);
+	qual_for_writeToFile = ( char* ) malloc (sizeof(char) * MAX_SEQ_LEN);
+	encoded_string = ( char* ) malloc (sizeof(char) * MAX_LINE_TO_BE_WRITTEN_TO_FILE);
+
+	write_to_file_col1[0] = '\0';
+	write_to_file_col2[0] = '\0';
+	write_to_file_col3[0] = '\0';
+
+	reference_id_quick_read = ( char* ) malloc (sizeof(char) * 1000);
+	samflag_quick_read = ( char* ) malloc (sizeof(char) * 1000);
+	prev_reference_name = ( char* ) malloc (sizeof(char) * 1000);
+	prev_reference_name[0] = '\0';
+	curr_reference_name = ( char* ) malloc (sizeof(char) * 1000);
+	curr_reference_name[0] = '\0';
+
+	curr_alignment = allocateMemorySam_Alignment ();
+	prev_alignment = allocateMemorySam_Alignment ();
+	temp_alignment = allocateMemorySam_Alignment ();
+	cigar_items_instance = ( struct Cigar_Items* ) malloc (sizeof(struct Cigar_Items) * 50);
+	sam_alignment_instance_diagnostics = allocateMemorySam_Alignment ();
+	reference_info = ( struct Reference_Sequence_Info** ) malloc (sizeof(struct Reference_Sequence_Info*) * MAX_REFERENCE_SEQUENCES);
+	for ( i = 0 ; i < MAX_REFERENCE_SEQUENCES ; i++ )
+		reference_info[i] = allocateMemoryReference_Sequence_Info ();
+
+	read_names = ( char** ) malloc (sizeof(char*) * max_input_reads_in_a_single_nucl_loc);
+	for ( i = 0 ; i < max_input_reads_in_a_single_nucl_loc ; i++ )
+		read_names[i] = ( char* ) malloc (sizeof(char) * MAX_SEQ_LEN);
+	temp = ( char* ) malloc (sizeof(char) * MAX_GENERAL_LEN);
+	whole_genome = ( struct Whole_Genome_Sequence* ) malloc (sizeof(struct Whole_Genome_Sequence));
+	qual_scores = ( char** ) malloc (sizeof(char*) * max_input_reads_in_a_single_nucl_loc);
+	for ( i = 0 ; i < max_input_reads_in_a_single_nucl_loc ; i++ )
+		qual_scores[i] = ( char* ) malloc (sizeof(char) * MAX_SEQ_LEN);
+	modified_icigars = ( char** ) malloc (sizeof(char*) * max_input_reads_in_a_single_nucl_loc);
+	for ( i = 0 ; i < max_input_reads_in_a_single_nucl_loc ; i++ )
+		modified_icigars[i] = ( char* ) malloc (sizeof(char) * MAX_SEQ_LEN);
+	/****************************************************************************************************************************************/
 }
 
 int main (int argc, char *argv[])
@@ -292,6 +460,7 @@ int main (int argc, char *argv[])
 			run_diagnostics ,
 			max_input_reads_in_a_single_nucl_loc ,
 			skip_shortening_read_names ,
-			AS_tag_presense);
+			AS_tag_presense ,
+			max_read_length);
 	return 0;
 }
