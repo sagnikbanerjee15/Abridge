@@ -298,16 +298,14 @@ void findSummaryInformation (
 			strlen (str) ,
 			str);
 	fprintf (fhw , "%s" , str);
-
-	//fclose (fhr);
-
 	fclose (fhw);
-	return;
+
 	if ( strcmp (ended , "BAM") == 0 )
 	{
 		bam_destroy1 (aln);
 		sam_close(fp_in);
 	}
+	else fclose (fhr);
 }
 
 int main (int argc, char *argv[])
