@@ -418,7 +418,7 @@ void populateSamAlignmentInstance (
 	/*
 	 * Process soft clipped fields
 	 */
-	if ( isSequenceSoftClipped (dest->cigar) == 0 ) // Process everything when there are no soft clips
+	if ( isSequenceSoftClipped (dest->cigar) == 0 || flag_ignore_soft_clippings == 0 ) // Process everything when there are no soft clips
 	{
 		strcpy(dest->left_soft_clipped_sequence , "");
 		strcpy(dest->right_soft_clipped_sequence , "");
@@ -428,7 +428,8 @@ void populateSamAlignmentInstance (
 		dest->right_soft_clipped_sequence_length = 0;
 		strcpy(dest->soft_clips_removed_sequence , dest->sequence);
 		strcpy(dest->soft_clips_removed_quality_scores , dest->quality_scores);
-		dest->soft_clips_removed_sequence_len = 0;
+		dest->soft_clips_removed_sequence_len = strlen (dest->soft_clips_removed_sequence);
+
 	}
 	else
 	{
@@ -482,6 +483,7 @@ void populateSamAlignmentInstance (
 		dest->soft_clips_removed_quality_scores[j] = '\0';
 		dest->soft_clips_removed_sequence_len = strlen (dest->soft_clips_removed_sequence);
 	}
+
 }
 
 unsigned short int readSingleAlignmentFromSAMAlignmentFile (
