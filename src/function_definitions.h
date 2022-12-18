@@ -60,6 +60,7 @@ struct Sam_Alignment* allocateMemorySam_Alignment (unsigned int max_read_length)
 	/********************************************************************/
 	s = ( struct Sam_Alignment* ) malloc (sizeof(struct Sam_Alignment));
 
+	max_read_length += 5;
 	s->read_name = ( char* ) malloc (sizeof(char) * ONE_HUNDRED);
 	s->reference_name = ( char* ) malloc (sizeof(char) * ONE_HUNDRED);
 	s->start_position = 0;
@@ -88,6 +89,8 @@ struct Sam_Alignment* allocateMemorySam_Alignment (unsigned int max_read_length)
 	s->md_extended[0] = '\0';
 	s->icigar = ( char* ) malloc (sizeof(char) * ( max_read_length * 2 ));
 	s->icigar[0] = '\0';
+	s->qual_for_mismatches_and_indels = ( char* ) malloc (sizeof(char) * max_read_length);
+	s->qual_for_mismatches_and_indels[0] = '\0';
 	//s->splices = ( char** ) malloc (sizeof(char*) * 100);
 	//for ( i = 0 ; i < 100 ; i++ )
 	//	s->splices[i] = ( char* ) malloc (sizeof(char) * 50);

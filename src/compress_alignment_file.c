@@ -196,7 +196,7 @@ void compressAlignmentFile (
 	 * Variable declaration
 	 ****************************************************************************************************************************************/
 	FILE *fhr;
-	FILE *fhw_pass1;
+	FILE *fhw_compressed;
 	FILE *fhw_unmapped;
 	FILE *fhw_qual;
 	FILE *fhr_name_of_file_with_read_names_to_short_read_names_and_NH;
@@ -266,8 +266,8 @@ void compressAlignmentFile (
 		printf ("Error! File %s not found" , input_alignment_filename);
 		exit (1);
 	}
-	fhw_pass1 = fopen (output_abridgefilename , "w");
-	if ( fhw_pass1 == NULL )
+	fhw_compressed = fopen (output_abridgefilename , "w");
+	if ( fhw_compressed == NULL )
 	{
 		printf ("%s File cannot be created" , output_abridgefilename);
 		exit (1);
@@ -318,7 +318,7 @@ void compressAlignmentFile (
 	current_alignment = allocateMemorySam_Alignment (max_read_length);
 	previous_alignment = allocateMemorySam_Alignment (max_read_length);
 	temp_alignment = allocateMemorySam_Alignment (max_read_length);
-	cigar_items_instance = ( struct Cigar_Items* ) malloc (sizeof(struct Cigar_Items) * 50);
+	cigar_items_instance = ( struct Cigar_Items* ) malloc (sizeof(struct Cigar_Items) * ONE_THOUSAND);
 	sam_alignment_instance_diagnostics = allocateMemorySam_Alignment (max_read_length);
 	reference_info = ( struct Reference_Sequence_Info** ) malloc (sizeof(struct Reference_Sequence_Info*) * MAX_REFERENCE_SEQUENCES);
 	for ( i = 0 ; i < MAX_REFERENCE_SEQUENCES ; i++ )
@@ -328,6 +328,40 @@ void compressAlignmentFile (
 	for ( i = 0 ; i < max_input_reads_in_a_single_nucl_loc ; i++ )
 		modified_icigars[i] = ( char* ) malloc (sizeof(char) * MAX_SEQ_LEN);
 	/****************************************************************************************************************************************/
+
+	/*
+	 * Write the first line in output file
+	 */
+	temp[0] = '\0';
+	strcat(temp , "flag_ignore_mismatches:");
+	sprintf(str , "%lld" , flag_ignore_mismatches);
+	strcat(temp , str);
+	strcat(temp , "\t");
+	strcat(temp , "flag_ignore_soft_clippings:");
+	sprintf(str , "%lld" , flag_ignore_soft_clippings);
+	strcat(temp , str);
+	strcat(temp , "\t");
+	strcat(temp , "flag_ignore_unmapped_sequences:");
+	sprintf(str , "%lld" , flag_ignore_unmapped_sequences);
+	strcat(temp , str);
+	strcat(temp , "\t");
+	strcat(temp , "flag_ignore_all_quality_scores:");
+	sprintf(str , "%lld" , flag_ignore_all_quality_scores);
+	strcat(temp , str);
+	strcat(temp , "\t");
+	strcat(temp , "flag_ignore_quality_scores_for_matched_bases:");
+	sprintf(str , "%lld" , flag_ignore_quality_scores_for_matched_bases);
+	strcat(temp , str);
+	strcat(temp , "\t");
+	strcat(temp , "flag_ignore_alignment_scores:");
+	sprintf(str , "%lld" , flag_ignore_alignment_scores);
+	strcat(temp , str);
+	strcat(temp , "\t");
+	strcat(temp , "flag_skip_shortening_read_names:");
+	sprintf(str , "%lld" , skip_shortening_read_names);
+	strcat(temp , str);
+	strcat(temp , "\n");
+	fprintf (fhw_compressed , "%s" , temp);
 }
 
 int main (int argc, char *argv[])
