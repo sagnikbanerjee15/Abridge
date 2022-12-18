@@ -43,7 +43,7 @@ static struct argp_option options[] =
 { "skip_shortening_read_names" , 'f' , 0 , 0 , "Set this flag to skip shortening read names" , 0 } ,
 { "run_diagnostics" , 'd' , 0 , 0 , "Set this flag to run diagnostics and print out a verbose report" , 0 } ,
 
-{ "max_input_reads_in_a_single_nucl_loc" , 'n' , "MAX_READS_IN_ONE_NUCL" , 0 , "Enter the value of the maximum number of input reads mapped to a single nucleotide" , 0 } ,
+{ "max_reads_in_a_single_nucl_loc" , 'n' , "MAX_READS_IN_ONE_NUCL" , 0 , "Enter the value of the maximum number of input reads mapped to a single nucleotide" , 0 } ,
 { 0 , 0 , 0 , 0 , 0 , 0 } // Last entry should be all zeros in all fields
 };
 
@@ -69,7 +69,7 @@ struct arguments
 	unsigned short int skip_shortening_read_names;
 	unsigned short int AS_tag_presense;
 	unsigned int max_read_length;
-	unsigned long long int max_input_reads_in_a_single_nucl_loc;
+	unsigned long long int max_reads_in_a_single_nucl_loc;
 };
 
 static error_t parse_opt (int key, char *arg, struct argp_state *state)
@@ -124,7 +124,7 @@ static error_t parse_opt (int key, char *arg, struct argp_state *state)
 			arguments->flag_ignore_mismatches = 1;
 			break;
 		case 'n':
-			arguments->max_input_reads_in_a_single_nucl_loc = convertStringToUnsignedInteger (arg);
+			arguments->max_reads_in_a_single_nucl_loc = convertStringToUnsignedInteger (arg);
 			break;
 		case 'o':
 			arguments->output_abridge_filename = arg;
@@ -154,7 +154,7 @@ static error_t parse_opt (int key, char *arg, struct argp_state *state)
 					"") == 0 || strcmp (arguments->output_abridge_filename , "") == 0 || strcmp (arguments->reference_filename ,
 					"") == 0 || strcmp (arguments->unmapped_filename , "") == 0 || strcmp (arguments->name_of_file_with_quality_scores ,
 					"") == 0 || strcmp (arguments->name_of_file_with_read_names_to_short_read_names_and_NH ,
-					"") == 0 || arguments->max_input_reads_in_a_single_nucl_loc == 0 )
+					"") == 0 || arguments->max_reads_in_a_single_nucl_loc == 0 )
 			{
 				argp_usage (state);
 			}
@@ -187,7 +187,7 @@ void compressAlignmentFile (
 		unsigned short int flag_ignore_unmapped_sequences,
 		unsigned short int flag_ignore_quality_scores_for_matched_bases,
 		unsigned short int run_diagnostics,
-		unsigned short int max_input_reads_in_a_single_nucl_loc,
+		unsigned short int max_reads_in_a_single_nucl_loc,
 		unsigned short int skip_shortening_read_names,
 		unsigned short int AS_tag_presense,
 		unsigned int max_read_length)
@@ -201,7 +201,7 @@ void compressAlignmentFile (
 	FILE *fhw_qual;
 	FILE *fhr_name_of_file_with_read_names_to_short_read_names_and_NH;
 
-	char **split_on_tabs; // List of strings to store each element of a single alignment
+	char **split_on_tab; // List of strings to store each element of a single alignment
 	char **split_on_colon; // List of strings to store tag information
 	char *temp; //Useless
 	char *line = NULL; // for reading each line
@@ -245,6 +245,11 @@ void compressAlignmentFile (
 	long long int max_commas = 0;
 	long long int curr_commas = 0;
 
+	/* Variables if BAM file is provided*/
+	samFile *fp_in;            // File pointer if BAM file provided
+	bam_hdr_t *bamHdr;         // read header
+	bam1_t *aln = bam_init1 (); // initialize an alignment
+
 	struct Sam_Alignment *previous_alignment;
 	struct Sam_Alignment *current_alignment;
 	struct Sam_Alignment *sam_alignment_instance_diagnostics;
@@ -260,12 +265,21 @@ void compressAlignmentFile (
 	/****************************************************************************************************************************************
 	 * Variable initialization
 	 ****************************************************************************************************************************************/
-	fhr = fopen (input_alignment_filename , "r");
-	if ( fhr == NULL )
+	if ( strcmp (input_alignment_file_format , "SAM") == 0 )
 	{
-		printf ("Error! File %s not found" , input_alignment_filename);
-		exit (1);
+		fhr = fopen (input_alignment_filename , "r");
+		if ( fhr == NULL )
+		{
+			printf ("Error! File %s not found" , input_alignment_filename);
+			exit (1);
+		}
 	}
+	else if ( strcmp (input_alignment_file_format , "BAM") == 0 )
+	{
+		fp_in = hts_open (input_alignment_filename , "r");
+		bamHdr = sam_hdr_read (fp_in);
+	}
+
 	fhw_compressed = fopen (output_abridgefilename , "w");
 	if ( fhw_compressed == NULL )
 	{
@@ -294,16 +308,16 @@ void compressAlignmentFile (
 		exit (1);
 	}
 
-	split_on_tabs = ( char** ) malloc (sizeof(char*) * ONE_HUNDRED);
+	split_on_tab = ( char** ) malloc (sizeof(char*) * ONE_HUNDRED);
 	for ( i = 0 ; i < ONE_HUNDRED ; i++ )
-		split_on_tabs[i] = ( char* ) malloc (sizeof(char) * ( max_read_length + TEN ));
+		split_on_tab[i] = ( char* ) malloc (sizeof(char) * ( max_read_length + TEN ));
 
 	split_on_colon = ( char** ) malloc (sizeof(char*) * TEN);
 	for ( i = 0 ; i < TEN ; i++ )
 		split_on_colon[i] = ( char* ) malloc (sizeof(char) * ONE_HUNDRED);
 
-	already_processed = ( short* ) malloc (sizeof(short) * max_input_reads_in_a_single_nucl_loc);
-	max_input_reads_in_a_single_nucl_loc += 5;
+	already_processed = ( short* ) malloc (sizeof(short) * max_reads_in_a_single_nucl_loc);
+	max_reads_in_a_single_nucl_loc += 5;
 
 	line_to_be_written_to_file = ( char* ) malloc (sizeof(char) * MAX_LINE_TO_BE_WRITTEN_TO_FILE);
 	qual_for_writeToFile = ( char* ) malloc (sizeof(char) * MAX_SEQ_LEN);
@@ -324,8 +338,8 @@ void compressAlignmentFile (
 	for ( i = 0 ; i < MAX_REFERENCE_SEQUENCES ; i++ )
 		reference_info[i] = allocateMemoryReference_Sequence_Info ();
 
-	modified_icigars = ( char** ) malloc (sizeof(char*) * max_input_reads_in_a_single_nucl_loc);
-	for ( i = 0 ; i < max_input_reads_in_a_single_nucl_loc ; i++ )
+	modified_icigars = ( char** ) malloc (sizeof(char*) * max_reads_in_a_single_nucl_loc);
+	for ( i = 0 ; i < max_reads_in_a_single_nucl_loc ; i++ )
 		modified_icigars[i] = ( char* ) malloc (sizeof(char) * MAX_SEQ_LEN);
 	/****************************************************************************************************************************************/
 
@@ -362,8 +376,62 @@ void compressAlignmentFile (
 	strcat(line_to_be_written_to_file , "flag_skip_shortening_read_names:");
 	convertUnsignedIntegerToString (str , skip_shortening_read_names);
 	strcat(line_to_be_written_to_file , str);
+	strcat(line_to_be_written_to_file , "\t");
+
+	strcat(line_to_be_written_to_file , "AS_tag_presense:");
+	convertUnsignedIntegerToString (str , AS_tag_presense);
+	strcat(line_to_be_written_to_file , str);
+	strcat(line_to_be_written_to_file , "\t");
+
+	strcat(line_to_be_written_to_file , "max_read_length:");
+	convertUnsignedIntegerToString (str , max_read_length);
+	strcat(line_to_be_written_to_file , str);
+	strcat(line_to_be_written_to_file , "\t");
+
+	strcat(line_to_be_written_to_file , "max_reads_in_a_single_nucl_loc:");
+	convertUnsignedIntegerToString (str , max_reads_in_a_single_nucl_loc);
+	strcat(line_to_be_written_to_file , str);
+	strcat(line_to_be_written_to_file , "\t");
+
 	strcat(line_to_be_written_to_file , "\n");
 	fprintf (fhw_compressed , "%s" , line_to_be_written_to_file);
+
+	/*
+	 * For SAM file advance the pointer to the first alignment
+	 */
+	if ( strcmp (input_alignment_file_format , "SAM") == 0 )
+	{
+		while ( ( line_len = getline ( &line , &len , fhr) ) != -1 )
+			if ( line[0] != '@' ) break;
+	}
+	if ( strcmp (input_alignment_file_format , "BAM") == 0 )
+	{
+		sam_read1 (fp_in , bamHdr , aln);
+	}
+
+	do
+	{
+
+		if ( strcmp (input_alignment_file_format , "SAM") == 0 )
+		{
+			line_len = getline ( &line , &len , fhr);
+			//printf ("\nLine length %d" , line_len);
+		}
+
+		if ( strcmp (input_alignment_file_format , "BAM") == 0 )
+		{
+			line_len = sam_read1 (fp_in , bamHdr , aln);
+			/*if ( total_number_of_alignments % 10000 == 0 )
+			 printf ("\nLine length %d total_number_of_alignments %d" ,
+			 line_len ,
+			 total_number_of_alignments);
+			 */
+			//fflush (stdout);
+		}
+
+		if ( line_len <= 0 ) break;
+	} while ( 1 );
+
 }
 
 int main (int argc, char *argv[])
@@ -390,7 +458,7 @@ int main (int argc, char *argv[])
 	arguments.flag_ignore_quality_scores_for_matched_bases = 0;
 	arguments.flag_ignore_alignment_scores = 0;
 	arguments.run_diagnostics = 0;
-	arguments.max_input_reads_in_a_single_nucl_loc = 0;
+	arguments.max_reads_in_a_single_nucl_loc = 0;
 	arguments.skip_shortening_read_names = 0;
 
 	argp_parse ( &argp , argc , argv , 0 , 0 , &arguments);
@@ -417,7 +485,7 @@ int main (int argc, char *argv[])
 	unsigned short int AS_tag_presense;
 
 	unsigned int max_read_length;
-	unsigned long long int max_input_reads_in_a_single_nucl_loc;
+	unsigned long long int max_reads_in_a_single_nucl_loc;
 	/****************************************************************************************************************************************/
 
 	/****************************************************************************************************************************************
@@ -440,7 +508,7 @@ int main (int argc, char *argv[])
 	flag_ignore_unmapped_sequences = arguments.flag_ignore_unmapped_sequences;
 	flag_ignore_quality_scores_for_matched_bases = arguments.flag_ignore_quality_scores_for_matched_bases;
 	run_diagnostics = arguments.run_diagnostics;
-	max_input_reads_in_a_single_nucl_loc = arguments.max_input_reads_in_a_single_nucl_loc;
+	max_reads_in_a_single_nucl_loc = arguments.max_reads_in_a_single_nucl_loc;
 	skip_shortening_read_names = arguments.skip_shortening_read_names;
 	AS_tag_presense = arguments.AS_tag_presense;
 	max_read_length = arguments.max_read_length;
@@ -462,7 +530,7 @@ int main (int argc, char *argv[])
 			flag_ignore_unmapped_sequences ,
 			flag_ignore_quality_scores_for_matched_bases ,
 			run_diagnostics ,
-			max_input_reads_in_a_single_nucl_loc ,
+			max_reads_in_a_single_nucl_loc ,
 			skip_shortening_read_names ,
 			AS_tag_presense ,
 			max_read_length);

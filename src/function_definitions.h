@@ -350,7 +350,7 @@ void extractSubString (char *str, char *substr, int start_index, int end_index)
 void populateSamAlignmentInstance (
 		struct Sam_Alignment *dest,
 		char **src,
-		char **split_tags,
+		char **split_on_colon,
 		int number_of_fields,
 		unsigned short int AS_tag_presence)
 {
@@ -389,22 +389,22 @@ void populateSamAlignmentInstance (
 	{
 		//printf("%s\n",src[i]);
 		//fflush ( stdout );
-		splitByDelimiter (src[i] , ':' , split_tags);
-		//sam_tag_index = locateSamTags(split_tags[0]);
+		splitByDelimiter (src[i] , ':' , split_on_colon);
+		//sam_tag_index = locateSamTags(split_on_colon[0]);
 		//dest->tags[i - 11].name = sam_tags[sam_tag_index];
 		if ( i == number_of_fields - 1 )
-			split_tags[2][strlen (split_tags[2])] = '\0';
+			split_on_colon[2][strlen (split_on_colon[2])] = '\0';
 
-		if ( strcmp (split_tags[0] , "NH") == 0 )
-			strcpy(dest->NH , split_tags[2]);
-		else if ( strcmp (split_tags[0] , "MD") == 0 )
-			strcpy(dest->MD , split_tags[2]);
-		else if ( strcmp (split_tags[0] , "AS") == 0 )
+		if ( strcmp (split_on_colon[0] , "NH") == 0 )
+			strcpy(dest->NH , split_on_colon[2]);
+		else if ( strcmp (split_on_colon[0] , "MD") == 0 )
+			strcpy(dest->MD , split_on_colon[2]);
+		else if ( strcmp (split_on_colon[0] , "AS") == 0 )
 		{
-			strcpy(dest->AS , split_tags[2]);
+			strcpy(dest->AS , split_on_colon[2]);
 		}
 
-		//printf("\n Tags %s Parts of the tag %s %s %s ", src[i], split_tags[0], split_tags[1], split_tags[2]);
+		//printf("\n Tags %s Parts of the tag %s %s %s ", src[i], split_on_colon[0], split_on_colon[1], split_on_colon[2]);
 	}
 
 	dest->read_sequence_len = strlen (dest->sequence);
@@ -484,8 +484,8 @@ unsigned short int readSingleAlignmentFromSAMAlignmentFile (
 		char *ended,
 		char *alignment_format,
 		unsigned short int AS_tag_presence,
-		char **split_line,
-		char **split_tags)
+		char **split_on_tab,
+		char **split_on_colon)
 {
 	/*************************************************************************************************************************
 	 * Reads in each alignment and stores the values in them Sam_Alignment object
@@ -502,10 +502,10 @@ unsigned short int readSingleAlignmentFromSAMAlignmentFile (
 	{
 		line_len = getline ( &line , &len , fhr);
 		if ( line_len == -1 ) return -1;
-		number_of_fields = splitByDelimiter (line , '\t' , split_line);
+		number_of_fields = splitByDelimiter (line , '\t' , split_on_tab);
 		populateSamAlignmentInstance (s ,
-				split_line ,
-				split_tags ,
+				split_on_tab ,
+				split_on_colon ,
 				number_of_fields ,
 				AS_tag_presence);
 	}

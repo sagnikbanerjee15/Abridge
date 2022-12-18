@@ -254,7 +254,7 @@ void findSummaryInformation (
 			 line_len ,
 			 total_number_of_alignments);
 			 */
-			fflush (stdout);
+			//fflush (stdout);
 		}
 
 		if ( line_len <= 0 ) break;
