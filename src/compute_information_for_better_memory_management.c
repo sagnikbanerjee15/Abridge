@@ -300,11 +300,10 @@ void findSummaryInformation (
 	fprintf (fhw , "%s" , str);
 	fclose (fhw);
 
-	if ( strcmp (ended , "BAM") == 0 )
+	if ( strcmp (input_alignment_file_format , "BAM") == 0 )
 	{
 		printf ("\nInside here");
 		bam_destroy1 (aln);
-		return;
 		sam_close(fp_in);
 	}
 	else fclose (fhr);
