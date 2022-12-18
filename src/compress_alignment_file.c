@@ -152,8 +152,7 @@ static error_t parse_opt (int key, char *arg, struct argp_state *state)
 					"SAM") != 0 || strcmp (strupr (arguments->input_alignment_file_format) ,
 					"BAM") != 0 || strcmp (arguments->input_alignment_file_format ,
 					"") == 0 || strcmp (arguments->output_abridge_filename , "") == 0 || strcmp (arguments->reference_filename ,
-					"") == 0 || strcmp (arguments->unmapped_filename , "") == 0 || strcmp (arguments->name_of_file_with_max_commas ,
-					"") == 0 || strcmp (arguments->name_of_file_with_quality_scores ,
+					"") == 0 || strcmp (arguments->unmapped_filename , "") == 0 || strcmp (arguments->name_of_file_with_quality_scores ,
 					"") == 0 || strcmp (arguments->name_of_file_with_read_names_to_short_read_names_and_NH ,
 					"") == 0 || arguments->max_input_reads_in_a_single_nucl_loc == 0 )
 			{
@@ -231,7 +230,6 @@ int main (int argc, char *argv[])
 	char output_abridgefilename[MAX_FILENAME_LENGTH];
 	char reference_filename[MAX_FILENAME_LENGTH];
 	char unmapped_filename[MAX_FILENAME_LENGTH];
-	char name_of_file_with_max_commas[MAX_FILENAME_LENGTH];
 	char name_of_file_with_quality_scores[MAX_FILENAME_LENGTH];
 	char name_of_file_with_read_names_to_short_read_names_and_NH[MAX_FILENAME_LENGTH];
 	char ended[TEN];
