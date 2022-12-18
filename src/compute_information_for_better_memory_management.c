@@ -294,7 +294,9 @@ void findSummaryInformation (
 	strcat(str , "\n");
 	strcat(str , "\0");
 
-	printf ("\nLength of line to be written to file %s" , strlen (str));
+	printf ("\nLength of line to be written to file %d\nLine: %s" ,
+			strlen (str) ,
+			str);
 	fprintf (fhw , "%s" , str);
 
 	fclose (fhw);
