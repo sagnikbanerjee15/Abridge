@@ -28,7 +28,7 @@ static struct argp_option options[] =
 { "output_abridge_filename" , 'o' , "TEXT_FILENAME" , 0 , "Enter the name of the compressed file (please note that this is not the final compressed file)" , 0 } ,
 { "reference_filename" , 'g' , "reference_filename" , 0 , "Enter the name of the genome file in fasta format" , 0 } ,
 { "unmapped_filename" , 'u' , "UNMAPPED_READS_FILENAME" , 0 , "Enter the name of the file where the unmapped reads will be stored" , 0 } ,
-{ "name_of_file_with_max_commas" , 'c' , "MAX_COMMAS_FILENAME" , 0 , "Enter the name of the file that contains the value of maximum number of commas" , 0 } ,
+{ "max_read_length" , 'c' , "MAX_READ_LENGTH" , 0 , "Maximum read length of short reads" , 0 } ,
 { "name_of_file_with_quality_scores" , 'q' , "QUALITY_SCORES_FILENAME" , 0 , "Enter the name of the file where the quality scores will be stored. This file will be compressed later" , 0 } ,
 { "name_of_file_with_read_names_to_short_read_names_and_NH" , 'r' , "SHORT_NAMES_NH_FILENAME" , 0 , "Enter the name of the file that contains the mapping between the long name to the short name and the NH values" , 0 } ,
 { "ended" , 'k' , "PE_OR_SE" , 0 , "Enter SE or PE to indicate whether the alignment file is SE or PE" , 0 } ,
@@ -57,7 +57,6 @@ struct arguments
 	char *reference_filename;
 	char *ended;
 	char *unmapped_filename;
-	char *name_of_file_with_max_commas;
 	char *name_of_file_with_quality_scores;
 	char *name_of_file_with_read_names_to_short_read_names_and_NH;
 	unsigned short int flag_ignore_soft_clippings;
@@ -69,6 +68,7 @@ struct arguments
 	unsigned short int flag_ignore_alignment_scores;
 	unsigned short int skip_shortening_read_names;
 	unsigned short int AS_tag_presense;
+	unsigned int max_read_length;
 	unsigned long long int max_input_reads_in_a_single_nucl_loc;
 };
 
@@ -94,7 +94,7 @@ static error_t parse_opt (int key, char *arg, struct argp_state *state)
 			arguments->flag_ignore_quality_scores_for_matched_bases = 1;
 			break;
 		case 'c':
-			arguments->name_of_file_with_max_commas = arg;
+			arguments->max_read_length = convertStringToUnsignedInteger (arg);
 			break;
 		case 'd':
 			arguments->run_diagnostics = 1;
@@ -171,11 +171,35 @@ static error_t parse_opt (int key, char *arg, struct argp_state *state)
 static struct argp argp =
 { options , parse_opt , args_doc , doc , 0 , 0 , 0 };
 
+void compressAlignmentFile (
+		char *reference_filename,
+		char *input_alignment_filename,
+		char *input_alignment_file_format,
+		char *output_abridgefilename,
+		char *ended,
+		char *unmapped_filename,
+		char *name_of_file_with_quality_scores,
+		char *name_of_file_with_read_names_to_short_read_names_and_NH,
+
+		unsigned short int flag_ignore_alignment_scores,
+		unsigned short int flag_ignore_soft_clippings,
+		unsigned short int flag_ignore_mismatches,
+		unsigned short int flag_ignore_all_quality_scores,
+		unsigned short int flag_ignore_unmapped_sequences,
+		unsigned short int flag_ignore_quality_scores_for_matched_bases,
+		unsigned short int run_diagnostics,
+		unsigned short int max_input_reads_in_a_single_nucl_loc,
+		unsigned short int skip_shortening_read_names,
+		unsigned short int AS_tag_presense)
+{
+
+}
+
 int main (int argc, char *argv[])
 {
-	/********************************************************************
+	/****************************************************************************************************************************************
 	 * Named CLI
-	 ********************************************************************/
+	 ****************************************************************************************************************************************/
 	struct arguments arguments;
 
 	// Parse our arguments; every option seen by parse_opt will be reflected in arguments.
@@ -185,7 +209,6 @@ int main (int argc, char *argv[])
 	arguments.output_abridge_filename = "";
 	arguments.reference_filename = "";
 	arguments.unmapped_filename = "";
-	arguments.name_of_file_with_max_commas = "";
 	arguments.name_of_file_with_quality_scores = "";
 	arguments.ended = "";
 	arguments.name_of_file_with_read_names_to_short_read_names_and_NH = "";
@@ -200,9 +223,9 @@ int main (int argc, char *argv[])
 	arguments.skip_shortening_read_names = 0;
 
 	argp_parse ( &argp , argc , argv , 0 , 0 , &arguments);
-	/********************************************************************
+	/****************************************************************************************************************************************
 	 * Variable declaration
-	 ********************************************************************/
+	 ****************************************************************************************************************************************/
 	char input_alignment_filename[MAX_FILENAME_LENGTH];
 	char input_alignment_file_format[TEN];
 	char output_abridgefilename[MAX_FILENAME_LENGTH];
@@ -213,29 +236,28 @@ int main (int argc, char *argv[])
 	char name_of_file_with_read_names_to_short_read_names_and_NH[MAX_FILENAME_LENGTH];
 	char ended[TEN];
 
-	short int flag_ignore_soft_clippings;
-	short int flag_ignore_mismatches;
-	short int flag_ignore_all_quality_scores;
-	short int flag_ignore_unmapped_sequences;
-	short int run_diagnostics;
-	short int flag_ignore_quality_scores_for_matched_bases;
-	short int flag_ignore_alignment_scores;
-	short int skip_shortening_read_names;
-	short int AS_tag_presense;
+	unsigned short int flag_ignore_soft_clippings;
+	unsigned short int flag_ignore_mismatches;
+	unsigned short int flag_ignore_all_quality_scores;
+	unsigned short int flag_ignore_unmapped_sequences;
+	unsigned short int run_diagnostics;
+	unsigned short int flag_ignore_quality_scores_for_matched_bases;
+	unsigned short int flag_ignore_alignment_scores;
+	unsigned short int skip_shortening_read_names;
+	unsigned short int AS_tag_presense;
 
+	unsigned int max_read_length;
 	unsigned long long int max_input_reads_in_a_single_nucl_loc;
-	/********************************************************************/
+	/****************************************************************************************************************************************/
 
-	/********************************************************************
+	/****************************************************************************************************************************************
 	 * Variable initialization
-	 ********************************************************************/
+	 ****************************************************************************************************************************************/
 	strcpy(reference_filename , arguments.reference_filename);
 	strcpy(input_alignment_filename , arguments.input_alignment_filename);
 	strcpy(output_abridgefilename , arguments.output_abridge_filename);
 	strcpy(ended , arguments.ended);
 	strcpy(unmapped_filename , arguments.unmapped_filename);
-	strcpy(name_of_file_with_max_commas ,
-			arguments.name_of_file_with_max_commas);
 	strcpy(name_of_file_with_quality_scores ,
 			arguments.name_of_file_with_quality_scores);
 	strcpy(name_of_file_with_read_names_to_short_read_names_and_NH ,
@@ -251,6 +273,27 @@ int main (int argc, char *argv[])
 	max_input_reads_in_a_single_nucl_loc = arguments.max_input_reads_in_a_single_nucl_loc;
 	skip_shortening_read_names = arguments.skip_shortening_read_names;
 	AS_tag_presense = arguments.AS_tag_presense;
-	/********************************************************************/
+	max_read_length = arguments.max_read_length;
+	/****************************************************************************************************************************************/
+
+	compressAlignmentFile (reference_filename ,
+			input_alignment_filename ,
+			input_alignment_file_format ,
+			output_abridgefilename ,
+			ended ,
+			unmapped_filename ,
+			name_of_file_with_quality_scores ,
+			name_of_file_with_read_names_to_short_read_names_and_NH ,
+
+			flag_ignore_alignment_scores ,
+			flag_ignore_soft_clippings ,
+			flag_ignore_mismatches ,
+			flag_ignore_all_quality_scores ,
+			flag_ignore_unmapped_sequences ,
+			flag_ignore_quality_scores_for_matched_bases ,
+			run_diagnostics ,
+			max_input_reads_in_a_single_nucl_loc ,
+			skip_shortening_read_names ,
+			AS_tag_presense);
 	return 0;
 }
