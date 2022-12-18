@@ -170,7 +170,7 @@ void findSummaryInformation (
 	current_reference_name[0] = '\0';
 	previous_reference_name = ( char* ) malloc (sizeof(char) * ONE_HUNDRED);
 	previous_reference_name[0] = '\0';
-	str = ( char* ) malloc (sizeof(char) * ONE_THOUSAND);
+	str = ( char* ) malloc (sizeof(char) * ( ONE_THOUSAND + ONE_THOUSAND ));
 
 	total_number_of_alignments = 0;
 	str[0] = '\0';
@@ -189,6 +189,7 @@ void findSummaryInformation (
 	do
 	{
 		total_number_of_alignments += 1;
+		if ( total_number_of_alignments == 100 ) break;
 		if ( total_number_of_alignments % 100000 == 0 )
 			printf ("\nTotal number of alignments %d" ,
 					total_number_of_alignments);
