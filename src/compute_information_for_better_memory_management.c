@@ -258,21 +258,25 @@ void findSummaryInformation (
 	if ( number_of_reads_mapped_to_the_current_reference_nucleotide > maximum_number_of_reads_mapped_to_a_single_reference_nucleotide )
 		maximum_number_of_reads_mapped_to_a_single_reference_nucleotide = number_of_reads_mapped_to_the_current_reference_nucleotide;
 
-	strcat(str ,
-			"maximum_number_of_reads_mapped_to_a_single_reference_nucleotide: ");
-	strcat(str ,
+	fprintf (fhw ,
+			"%s" ,
+			"maximum_number_of_reads_mapped_to_a_single_reference_nucleotide:");
+	fprintf (fhw ,
+			"%s" ,
 			convertUnsignedIntegerToString (maximum_number_of_reads_mapped_to_a_single_reference_nucleotide));
-	strcat(str , "\n");
+	fprintf (fhw , "%s" , "\n");
 
-	strcat(str , "total_number_of_alignments: ");
-	strcat(str , convertUnsignedIntegerToString (total_number_of_alignments));
-	strcat(str , "\n");
+	fprintf (fhw , "%s" , "total_number_of_alignments: ");
+	fprintf (fhw ,
+			"%s" ,
+			convertUnsignedIntegerToString (total_number_of_alignments));
+	fprintf (fhw , "%s" , "\n");
 
-	strcat(str , "max_read_length:");
-	strcat(str , convertUnsignedIntegerToString (max_read_length));
-	strcat(str , "\n");
+	fprintf (fhw , "%s" , "max_read_length:");
+	fprintf (fhw , "%s" , convertUnsignedIntegerToString (max_read_length));
+	fprintf (fhw , "%s" , "\n");
 
-	fprintf (fhw , "%s" , str);
+	//fprintf (fhw , "%s" , str);
 
 	fclose (fhw);
 	fclose (fhr);
