@@ -122,7 +122,7 @@ void findMaximumNumberOfReadsMappedToOneNucleotide (
 	size_t len = 0;
 	ssize_t line_len;
 
-	char str[100];
+	char *str;
 	char *temp;        // Useless
 	char *line = NULL; // for reading each line
 	char **split_line; // List of strings to store each element of a single alignment
@@ -171,8 +171,10 @@ void findMaximumNumberOfReadsMappedToOneNucleotide (
 	current_reference_name[0] = '\0';
 	previous_reference_name = ( char* ) malloc (sizeof(char) * ONE_HUNDRED);
 	previous_reference_name[0] = '\0';
+	str = ( char* ) malloc (sizeof(char) * ONE_THOUSAND);
 
 	total_number_of_alignments = 0;
+	str[0] = '\0';
 	/********************************************************************/
 
 	if ( strcmp (input_alignment_file_format , "SAM") == 0 )
