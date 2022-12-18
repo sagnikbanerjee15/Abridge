@@ -31,6 +31,8 @@ static struct argp_option options[] =
 { "name_of_file_with_max_commas" , 'c' , "MAX_COMMAS_FILENAME" , 0 , "Enter the name of the file that contains the value of maximum number of commas" , 0 } ,
 { "name_of_file_with_quality_scores" , 'q' , "QUALITY_SCORES_FILENAME" , 0 , "Enter the name of the file where the quality scores will be stored. This file will be compressed later" , 0 } ,
 { "name_of_file_with_read_names_to_short_read_names_and_NH" , 'r' , "SHORT_NAMES_NH_FILENAME" , 0 , "Enter the name of the file that contains the mapping between the long name to the short name and the NH values" , 0 } ,
+{ "ended" , 'k' , "PE_OR_SE" , 0 , "Enter SE or PE to indicate whether the alignment file is SE or PE" , 0 } ,
+{ "AS_tag_presense" , 'l' , "AS_TAG_PRESENSE" , 0 , "Enter 1 or 0 depending on whether the AS tag is present or not" , 0 } ,
 
 { "flag_ignore_soft_clippings" , 's' , 0 , 0 , "Set this flag to ignore soft clippings" , 0 } ,
 { "flag_ignore_mismatches" , 'm' , 0 , 0 , "Set this flag to ignore mismatches" , 0 } ,
@@ -53,6 +55,7 @@ struct arguments
 	char *input_alignment_file_format;
 	char *output_abridge_filename;
 	char *reference_filename;
+	char *ended;
 	char *unmapped_filename;
 	char *name_of_file_with_max_commas;
 	char *name_of_file_with_quality_scores;
@@ -65,6 +68,7 @@ struct arguments
 	unsigned short int flag_ignore_quality_scores_for_matched_bases;
 	unsigned short int flag_ignore_alignment_scores;
 	unsigned short int skip_shortening_read_names;
+	unsigned short int AS_tag_presense;
 	unsigned long long int max_input_reads_in_a_single_nucl_loc;
 };
 
@@ -109,6 +113,12 @@ static error_t parse_opt (int key, char *arg, struct argp_state *state)
 			break;
 		case 'j':
 			arguments->input_alignment_file_format = arg;
+			break;
+		case 'k':
+			arguments->ended = arg;
+			break;
+		case 'l':
+			arguments->AS_tag_presense = convertStringToUnsignedInteger (arg);
 			break;
 		case 'm':
 			arguments->flag_ignore_mismatches = 1;
@@ -177,6 +187,7 @@ int main (int argc, char *argv[])
 	arguments.unmapped_filename = "";
 	arguments.name_of_file_with_max_commas = "";
 	arguments.name_of_file_with_quality_scores = "";
+	arguments.ended = "";
 	arguments.name_of_file_with_read_names_to_short_read_names_and_NH = "";
 	arguments.flag_ignore_soft_clippings = 0;
 	arguments.flag_ignore_mismatches = 0;
@@ -200,6 +211,7 @@ int main (int argc, char *argv[])
 	char name_of_file_with_max_commas[MAX_FILENAME_LENGTH];
 	char name_of_file_with_quality_scores[MAX_FILENAME_LENGTH];
 	char name_of_file_with_read_names_to_short_read_names_and_NH[MAX_FILENAME_LENGTH];
+	char ended[TEN];
 
 	short int flag_ignore_soft_clippings;
 	short int flag_ignore_mismatches;
@@ -209,6 +221,7 @@ int main (int argc, char *argv[])
 	short int flag_ignore_quality_scores_for_matched_bases;
 	short int flag_ignore_alignment_scores;
 	short int skip_shortening_read_names;
+	short int AS_tag_presense;
 
 	unsigned long long int max_input_reads_in_a_single_nucl_loc;
 	/********************************************************************/
@@ -219,6 +232,7 @@ int main (int argc, char *argv[])
 	strcpy(reference_filename , arguments.reference_filename);
 	strcpy(input_alignment_filename , arguments.input_alignment_filename);
 	strcpy(output_abridgefilename , arguments.output_abridge_filename);
+	strcpy(ended , arguments.ended);
 	strcpy(unmapped_filename , arguments.unmapped_filename);
 	strcpy(name_of_file_with_max_commas ,
 			arguments.name_of_file_with_max_commas);
@@ -236,6 +250,7 @@ int main (int argc, char *argv[])
 	run_diagnostics = arguments.run_diagnostics;
 	max_input_reads_in_a_single_nucl_loc = arguments.max_input_reads_in_a_single_nucl_loc;
 	skip_shortening_read_names = arguments.skip_shortening_read_names;
+	AS_tag_presense = arguments.AS_tag_presense;
 	/********************************************************************/
 	return 0;
 }
