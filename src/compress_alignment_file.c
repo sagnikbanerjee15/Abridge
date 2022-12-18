@@ -201,8 +201,6 @@ void compressAlignmentFile (
 	FILE *fhw_qual;
 	FILE *fhr_name_of_file_with_read_names_to_short_read_names_and_NH;
 
-	char **qual_scores;
-	char **read_names;
 	char **split_on_tabs; // List of strings to store each element of a single alignment
 	char **split_on_colon; // List of strings to store tag information
 	char *temp; //Useless
@@ -247,8 +245,8 @@ void compressAlignmentFile (
 	long long int max_commas = 0;
 	long long int curr_commas = 0;
 
-	struct Sam_Alignment *prev_alignment;
-	struct Sam_Alignment *curr_alignment;
+	struct Sam_Alignment *previous_alignment;
+	struct Sam_Alignment *current_alignment;
 	struct Sam_Alignment *sam_alignment_instance_diagnostics;
 	struct Sam_Alignment *temp_alignment;
 	struct Sam_Alignment **alignment_pool_same_position;
@@ -324,23 +322,15 @@ void compressAlignmentFile (
 	curr_reference_name = ( char* ) malloc (sizeof(char) * 1000);
 	curr_reference_name[0] = '\0';
 
-	curr_alignment = allocateMemorySam_Alignment (max_read_length);
-	prev_alignment = allocateMemorySam_Alignment (max_read_length);
+	current_alignment = allocateMemorySam_Alignment (max_read_length);
+	previous_alignment = allocateMemorySam_Alignment (max_read_length);
 	temp_alignment = allocateMemorySam_Alignment (max_read_length);
 	cigar_items_instance = ( struct Cigar_Items* ) malloc (sizeof(struct Cigar_Items) * 50);
-	sam_alignment_instance_diagnostics = allocateMemorySam_Alignment ();
+	sam_alignment_instance_diagnostics = allocateMemorySam_Alignment (max_read_length);
 	reference_info = ( struct Reference_Sequence_Info** ) malloc (sizeof(struct Reference_Sequence_Info*) * MAX_REFERENCE_SEQUENCES);
 	for ( i = 0 ; i < MAX_REFERENCE_SEQUENCES ; i++ )
 		reference_info[i] = allocateMemoryReference_Sequence_Info ();
 
-	read_names = ( char** ) malloc (sizeof(char*) * max_input_reads_in_a_single_nucl_loc);
-	for ( i = 0 ; i < max_input_reads_in_a_single_nucl_loc ; i++ )
-		read_names[i] = ( char* ) malloc (sizeof(char) * MAX_SEQ_LEN);
-	temp = ( char* ) malloc (sizeof(char) * MAX_GENERAL_LEN);
-	whole_genome = ( struct Whole_Genome_Sequence* ) malloc (sizeof(struct Whole_Genome_Sequence));
-	qual_scores = ( char** ) malloc (sizeof(char*) * max_input_reads_in_a_single_nucl_loc);
-	for ( i = 0 ; i < max_input_reads_in_a_single_nucl_loc ; i++ )
-		qual_scores[i] = ( char* ) malloc (sizeof(char) * MAX_SEQ_LEN);
 	modified_icigars = ( char** ) malloc (sizeof(char*) * max_input_reads_in_a_single_nucl_loc);
 	for ( i = 0 ; i < max_input_reads_in_a_single_nucl_loc ; i++ )
 		modified_icigars[i] = ( char* ) malloc (sizeof(char) * MAX_SEQ_LEN);
