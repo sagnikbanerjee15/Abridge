@@ -333,7 +333,7 @@ void compressAlignmentFile (
 	 * Write the first line in output file
 	 */
 	line_to_be_written_to_file[0] = '\0';
-	strcat(line_to_be_written_to_file);
+	strcat(line_to_be_written_to_file , "flag_ignore_mismatches:");
 	convertUnsignedIntegerToString (str , flag_ignore_mismatches);
 	strcat(line_to_be_written_to_file , str);
 	strcat(line_to_be_written_to_file , "\t");
