@@ -190,17 +190,18 @@ void findSummaryInformation (
 	{
 		total_number_of_alignments += 1;
 		//if ( total_number_of_alignments == 100 ) break;
-		if ( total_number_of_alignments % 100000 == 0 )
-			printf ("\nTotal number of alignments %d" ,
-					total_number_of_alignments);
+		/*if ( total_number_of_alignments % 100000 == 0 )
+		 printf ("\nTotal number of alignments %d" ,
+		 total_number_of_alignments);
+		 */
 
 		if ( strcmp (input_alignment_file_format , "BAM") == 0 )
 		{
 			current_reference_position = aln->core.pos + 1;
 			if ( current_reference_position == 0 )
 			{
-				printf ("\nBreaking unaligned read encountered");
-				break; //Unaligned read}
+				//printf ("\nBreaking unaligned read encountered");
+				break;//Unaligned read}
 			}
 			current_reference_name = bamHdr->target_name[aln->core.tid];
 			current_read_length = aln->core.l_qseq;
@@ -213,8 +214,8 @@ void findSummaryInformation (
 			current_reference_position = convertStringToUnsignedInteger (split_line[3]);
 			if ( current_reference_position == 0 )
 			{
-				printf ("\nBreaking unaligned read encountered");
-				break; //Unaligned read}
+				//printf ("\nBreaking unaligned read encountered");
+				break;//Unaligned read}
 			}
 		}
 
@@ -268,8 +269,6 @@ void findSummaryInformation (
 
 		if ( line_len <= 0 ) break;
 	} while ( 1 );
-	printf ("\nWill start writing to file now");
-	fflush (stdout);
 
 	if ( number_of_reads_mapped_to_the_current_reference_nucleotide > maximum_number_of_reads_mapped_to_a_single_reference_nucleotide )
 		maximum_number_of_reads_mapped_to_a_single_reference_nucleotide = number_of_reads_mapped_to_the_current_reference_nucleotide;
@@ -294,9 +293,6 @@ void findSummaryInformation (
 	strcat(str , "\n");
 	strcat(str , "\0");
 
-	printf ("\nLength of line to be written to file %d\nLine: %s" ,
-			strlen (str) ,
-			str);
 	fprintf (fhw , "%s" , str);
 	fclose (fhw);
 
