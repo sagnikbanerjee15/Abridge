@@ -202,7 +202,6 @@ void findSummaryInformation (
 				printf ("\n Breaking unaligned read encountered");
 				break; //Unaligned read}
 			}
-			if ( current_reference_position == 0 ) break; //Unaligned read
 			current_reference_name = bamHdr->target_name[aln->core.tid];
 			current_read_length = aln->core.l_qseq;
 		}
@@ -292,7 +291,7 @@ void findSummaryInformation (
 			max_read_length);
 	strcat(str , temp_str_integer_to_string_conversion);
 	strcat(str , "\n");
-
+	return;
 	fprintf (fhw , "%s" , str);
 
 	fclose (fhw);
