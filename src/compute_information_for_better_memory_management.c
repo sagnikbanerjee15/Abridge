@@ -302,7 +302,6 @@ void findSummaryInformation (
 
 	if ( strcmp (input_alignment_file_format , "BAM") == 0 )
 	{
-		printf ("\nInside here");
 		bam_destroy1 (aln);
 		sam_close(fp_in);
 	}
