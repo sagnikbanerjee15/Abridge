@@ -190,10 +190,9 @@ void findSummaryInformation (
 	{
 		total_number_of_alignments += 1;
 		//if ( total_number_of_alignments == 100 ) break;
-		/*if ( total_number_of_alignments % 100000 == 0 )
-		 printf ("\nTotal number of alignments %d" ,
-		 total_number_of_alignments);
-		 */
+		if ( total_number_of_alignments % 100000 == 0 )
+			printf ("\nTotal number of alignments %d" ,
+					total_number_of_alignments);
 
 		if ( strcmp (input_alignment_file_format , "BAM") == 0 )
 		{
