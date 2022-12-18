@@ -291,9 +291,9 @@ void findSummaryInformation (
 			max_read_length);
 	strcat(str , temp_str_integer_to_string_conversion);
 	strcat(str , "\n");
-	return;
-	fprintf (fhw , "%s" , str);
 
+	fprintf (fhw , "%s" , str);
+	return;
 	fclose (fhw);
 	fclose (fhr);
 
