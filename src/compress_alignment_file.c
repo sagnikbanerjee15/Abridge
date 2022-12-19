@@ -256,8 +256,7 @@ void compressAlignmentFile (
 	struct Sam_Alignment *sam_alignment_instance_diagnostics;
 	struct Sam_Alignment *temp_alignment;
 	struct Sam_Alignment **alignment_pool_same_position;
-	struct Compressed_DS **compressed_ds_pool;
-	struct Compressed_DS **compressed_ds_pool_rearranged;
+	struct Compressed_DS **sam_alignment_instance_pool;
 	struct Reference_Sequence_Info **reference_info;
 	struct Whole_Genome_Sequence *whole_genome;
 	struct Cigar_Items *cigar_items_instance;
@@ -342,6 +341,10 @@ void compressAlignmentFile (
 	modified_icigars = ( char** ) malloc (sizeof(char*) * max_reads_in_a_single_nucl_loc);
 	for ( i = 0 ; i < max_reads_in_a_single_nucl_loc ; i++ )
 		modified_icigars[i] = ( char* ) malloc (sizeof(char) * MAX_SEQ_LEN);
+
+	sam_alignment_instance_pool = ( struct Sam_Alignment* ) malloc (sizeof(struct Sam_Alignment*) * max_reads_in_a_single_nucl_loc);
+	for ( i = 0 ; i < max_reads_in_a_single_nucl_loc ; i++ )
+		sam_alignment_instance_pool = allocateMemorySam_Alignment (max_read_length);
 	/****************************************************************************************************************************************/
 
 	/*
@@ -412,6 +415,43 @@ void compressAlignmentFile (
 
 	do
 	{
+
+		/***************************************************************************************
+		 * Read a line from the short read names file
+		 ****************************************************************************************/
+		/*
+		 if ( skip_shortening_read_names == 0 )
+		 {
+		 */
+		getline ( &line_name_of_file_with_read_names_to_short_read_names_and_NH ,
+				&len ,
+				fhr_name_of_file_with_read_names_to_short_read_names_and_NH);
+
+		splitByDelimiter (line_name_of_file_with_read_names_to_short_read_names_and_NH ,
+				'\t' ,
+				split_on_tab);
+		strcpy(current_alignment->read_name , split_on_tab[3]);
+		strcpy(current_alignment->NH , split_on_tab[2]);
+
+		/*}
+		 */
+
+		/****************************************************************************************/
+
+		if ( current_alignment->samflag == 4 )
+		{
+			if ( flag_ignore_unmapped_sequences == 0 )
+			{
+				//Write the unmapped reads into file
+				fprintf (fhw_unmapped , "%s" , current_alignment->seq);
+				fprintf (fhw_unmapped , "%s" , "\n");
+				for ( i = 0 ; current_alignment->qual[i] != '\0' ; i++ )
+					current_alignment->qual[i] -= QUAL_SCORE_ADJUSTMENT;
+				fprintf (fhw_unmapped , "%s" , current_alignment->qual);
+				fprintf (fhw_unmapped , "%s" , "\n");
+			}
+			continue;
+		}
 
 		if ( strcmp (input_alignment_file_format , "SAM") == 0 )
 		{
