@@ -3,18 +3,18 @@
 #include <stdlib.h>
 #include <htslib/sam.h>
 
+/*
+ * Usage: readBam <bamfilename>
+ */
+
 int main (int argc, char *argv[])
 {
 	samFile *fp_in = hts_open (argv[1] , "r"); // open bam file
 	bam_hdr_t *bamHdr = sam_hdr_read (fp_in); // read header
 	bam1_t *aln = bam_init1 ();               // initialize an alignment
 
-	char *chrom = argv[2];
-	int locus = atoi (argv[3]);
 	int comp, i;
 	int number_of_record_to_read = 10;
-
-	printf ("%s\t%d\n" , chrom , locus);
 
 	// header parse
 	// uint32_t *tar = bamHdr->text ;
