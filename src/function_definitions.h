@@ -526,6 +526,8 @@ void populateBamAlignmentInstance (struct Sam_Alignment *dest, // Final Sam alig
 		unsigned short int flag_ignore_unmapped_sequences,
 		unsigned short int flag_ignore_quality_scores_for_matched_bases)
 {
+
+	int i;
 	strcpy(dest->read_name , bam_get_qname (aln));
 	dest->samflag = aln->core.flag;
 	strcpy(dest->reference_name , bamHdr->target_name[aln->core.tid]); // contig name (chromosome)
