@@ -347,6 +347,45 @@ void extractSubString (char *str, char *substr, int start_index, int end_index)
 
 }
 
+void generateiCIGARString (
+		struct Sam_Alignment *sam_alignment_instance,
+		unsigned short int AS_tag_presence,
+		unsigned short int flag_ignore_alignment_scores,
+		unsigned short int flag_ignore_soft_clippings,
+		unsigned short int flag_ignore_mismatches,
+		unsigned short int flag_ignore_all_quality_scores,
+		unsigned short int flag_ignore_unmapped_sequences,
+		unsigned short int flag_ignore_quality_scores_for_matched_bases,
+		char *ended)
+{
+	/*************************************************************************************************************************
+	 * Generate the integrated CIGAR string from CIGAR and MD
+	 *************************************************************************************************************************/
+
+	/********************************************************************
+	 * Variable declarations
+	 ********************************************************************/
+	int left_soft_clip_point = 0;
+	int right_soft_clip_point = 0;
+	int i;
+	int flag;
+	int print_outputs = 0;
+	int perfect_alignment_indicator = 0;
+	//int spliced_alignment_indicator = 0;
+	char str[1000];
+	char temp_str[5];
+	char M_replacement_character;
+	char dummy;
+
+	unsigned int number_of_cigar_items;
+	struct Cigar_Items cigar_items_instance[MAX_SEQ_LEN];
+	/********************************************************************/
+
+	splitCigar (sam_alignment_instance->cigar ,
+			&number_of_cigar_items ,
+			cigar_items_instance);
+}
+
 void processSoftClips (
 		struct Sam_Alignment *dest,
 		unsigned short int AS_tag_presence,
@@ -355,10 +394,11 @@ void processSoftClips (
 		unsigned short int flag_ignore_mismatches,
 		unsigned short int flag_ignore_all_quality_scores,
 		unsigned short int flag_ignore_unmapped_sequences,
-		unsigned short int flag_ignore_quality_scores_for_matched_bases)
+		unsigned short int flag_ignore_quality_scores_for_matched_bases,
+		unsigned int max_read_length)
 {
 
-	struct Cigar_Items cigar_items_instance[MAX_SEQ_LEN];
+	struct Cigar_Items cigar_items_instance[max_read_length];
 	unsigned short int total_number_of_cigar_items;
 	unsigned short int left_soft_clip_point;
 	unsigned short int right_soft_clip_point;
@@ -498,18 +538,6 @@ void populateSamAlignmentInstance (
 
 	dest->read_sequence_len = strlen (dest->sequence);
 
-	/*
-	 * Process soft clipped fields
-	 */
-	processSoftClips (dest ,
-			AS_tag_presence ,
-			flag_ignore_alignment_scores ,
-			flag_ignore_soft_clippings ,
-			flag_ignore_mismatches ,
-			flag_ignore_all_quality_scores ,
-			flag_ignore_unmapped_sequences ,
-			flag_ignore_quality_scores_for_matched_bases);
-
 }
 
 void populateBamAlignmentInstance (struct Sam_Alignment *dest, // Final Sam alignment DS
@@ -608,6 +636,30 @@ unsigned short int prepareSingleRecordFromAlignmentFile (
 				flag_ignore_unmapped_sequences ,
 				flag_ignore_quality_scores_for_matched_bases);
 	}
+	/*
+	 * Process soft clipped fields - find the soft clipped portions of the reads and prepare the corresponding fields
+	 */
+	processSoftClips (sam_alignment_instance ,
+			AS_tag_presence ,
+			flag_ignore_alignment_scores ,
+			flag_ignore_soft_clippings ,
+			flag_ignore_mismatches ,
+			flag_ignore_all_quality_scores ,
+			flag_ignore_unmapped_sequences ,
+			flag_ignore_quality_scores_for_matched_bases);
+
+	/*
+	 * Generate iCIGAR string
+	 */
+	generateiCIGARString (sam_alignment_instance ,
+			AS_tag_presence ,
+			flag_ignore_alignment_scores ,
+			flag_ignore_soft_clippings ,
+			flag_ignore_mismatches ,
+			flag_ignore_all_quality_scores ,
+			flag_ignore_unmapped_sequences ,
+			flag_ignore_quality_scores_for_matched_bases ,
+			ended);
 	return 0;
 }
 
