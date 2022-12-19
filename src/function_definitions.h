@@ -547,7 +547,7 @@ void populateBamAlignmentInstance (struct Sam_Alignment *dest, // Final Sam alig
 	qseq[i] = '\0';
 }
 
-unsigned short int readSingleAlignmentFromAlignmentFile (
+unsigned short int prepareSingleRecordFromAlignmentFile (
 		char *line,
 		samFile *fp_in,           // File pointer if BAM file provided
 		bam_hdr_t *bamHdr,         // read header

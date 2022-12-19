@@ -33,7 +33,7 @@ static struct argp_option options[] =
 { "name_of_file_with_quality_scores" , 'q' , "QUALITY_SCORES_FILENAME" , 0 , "Enter the name of the file where the quality scores will be stored. This file will be compressed later" , 0 } ,
 { "name_of_file_with_read_names_to_short_read_names_and_NH" , 'r' , "SHORT_NAMES_NH_FILENAME" , 0 , "Enter the name of the file that contains the mapping between the long name to the short name and the NH values" , 0 } ,
 { "ended" , 'k' , "PE_OR_SE" , 0 , "Enter SE or PE to indicate whether the alignment file is SE or PE" , 0 } ,
-{ "AS_tag_presense" , 'l' , "AS_TAG_PRESENSE" , 0 , "Enter 1 or 0 depending on whether the AS tag is present or not" , 0 } ,
+{ "AS_tag_presence" , 'l' , "AS_tag_presence" , 0 , "Enter 1 or 0 depending on whether the AS tag is present or not" , 0 } ,
 
 { "flag_ignore_soft_clippings" , 's' , 0 , 0 , "Set this flag to ignore soft clippings" , 0 } ,
 { "flag_ignore_mismatches" , 'm' , 0 , 0 , "Set this flag to ignore mismatches" , 0 } ,
@@ -68,7 +68,7 @@ struct arguments
 	unsigned short int flag_ignore_quality_scores_for_matched_bases;
 	unsigned short int flag_ignore_alignment_scores;
 	unsigned short int skip_shortening_read_names;
-	unsigned short int AS_tag_presense;
+	unsigned short int AS_tag_presence;
 	unsigned int max_read_length;
 	unsigned long long int max_reads_in_a_single_nucl_loc;
 };
@@ -119,7 +119,7 @@ static error_t parse_opt (int key, char *arg, struct argp_state *state)
 			arguments->ended = arg;
 			break;
 		case 'l':
-			arguments->AS_tag_presense = convertStringToUnsignedInteger (arg);
+			arguments->AS_tag_presence = convertStringToUnsignedInteger (arg);
 			break;
 		case 'm':
 			arguments->flag_ignore_mismatches = 1;
@@ -190,7 +190,7 @@ void compressAlignmentFile (
 		unsigned short int run_diagnostics,
 		unsigned short int max_reads_in_a_single_nucl_loc,
 		unsigned short int skip_shortening_read_names,
-		unsigned short int AS_tag_presense,
+		unsigned short int AS_tag_presence,
 		unsigned int max_read_length)
 {
 	/****************************************************************************************************************************************
@@ -379,8 +379,8 @@ void compressAlignmentFile (
 	strcat(line_to_be_written_to_file , str);
 	strcat(line_to_be_written_to_file , "\t");
 
-	strcat(line_to_be_written_to_file , "AS_tag_presense:");
-	convertUnsignedIntegerToString (str , AS_tag_presense);
+	strcat(line_to_be_written_to_file , "AS_tag_presence:");
+	convertUnsignedIntegerToString (str , AS_tag_presence);
 	strcat(line_to_be_written_to_file , str);
 	strcat(line_to_be_written_to_file , "\t");
 
@@ -417,6 +417,22 @@ void compressAlignmentFile (
 		{
 			line_len = getline ( &line , &len , fhr);
 			//printf ("\nLine length %d" , line_len);
+			prepareSingleRecordFromAlignmentFile (line , fp_in , // File pointer if BAM file provided
+					bamHdr , // read header
+					aln ,
+					fhr ,
+					current_alignment ,
+					ended ,
+					input_alignment_file_format ,
+					AS_tag_presence ,
+					flag_ignore_alignment_scores ,
+					flag_ignore_soft_clippings ,
+					flag_ignore_mismatches ,
+					flag_ignore_all_quality_scores ,
+					flag_ignore_unmapped_sequences ,
+					flag_ignore_quality_scores_for_matched_bases ,
+					split_on_tab ,
+					split_on_colon);
 		}
 
 		if ( strcmp (input_alignment_file_format , "BAM") == 0 )
@@ -442,8 +458,8 @@ int main (int argc, char *argv[])
 	 ****************************************************************************************************************************************/
 	struct arguments arguments;
 
-	// Parse our arguments; every option seen by parse_opt will be reflected in arguments.
-	// Default values.
+// Parse our arguments; every option seen by parse_opt will be reflected in arguments.
+// Default values.
 	arguments.input_alignment_filename = ""; // Empty string - only contains null character
 	arguments.input_alignment_file_format = "";
 	arguments.output_abridge_filename = "";
@@ -483,7 +499,7 @@ int main (int argc, char *argv[])
 	unsigned short int flag_ignore_quality_scores_for_matched_bases;
 	unsigned short int flag_ignore_alignment_scores;
 	unsigned short int skip_shortening_read_names;
-	unsigned short int AS_tag_presense;
+	unsigned short int AS_tag_presence;
 
 	unsigned int max_read_length;
 	unsigned long long int max_reads_in_a_single_nucl_loc;
@@ -511,7 +527,7 @@ int main (int argc, char *argv[])
 	run_diagnostics = arguments.run_diagnostics;
 	max_reads_in_a_single_nucl_loc = arguments.max_reads_in_a_single_nucl_loc;
 	skip_shortening_read_names = arguments.skip_shortening_read_names;
-	AS_tag_presense = arguments.AS_tag_presense;
+	AS_tag_presence = arguments.AS_tag_presence;
 	max_read_length = arguments.max_read_length;
 	/****************************************************************************************************************************************/
 
@@ -533,7 +549,7 @@ int main (int argc, char *argv[])
 			run_diagnostics ,
 			max_reads_in_a_single_nucl_loc ,
 			skip_shortening_read_names ,
-			AS_tag_presense ,
+			AS_tag_presence ,
 			max_read_length);
 	return 0;
 }
