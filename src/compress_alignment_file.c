@@ -443,11 +443,13 @@ void compressAlignmentFile (
 			if ( flag_ignore_unmapped_sequences == 0 )
 			{
 				//Write the unmapped reads into file
-				fprintf (fhw_unmapped , "%s" , current_alignment->seq);
+				fprintf (fhw_unmapped , "%s" , current_alignment->sequence);
 				fprintf (fhw_unmapped , "%s" , "\n");
 				for ( i = 0 ; current_alignment->qual[i] != '\0' ; i++ )
-					current_alignment->qual[i] -= QUAL_SCORE_ADJUSTMENT;
-				fprintf (fhw_unmapped , "%s" , current_alignment->qual);
+					current_alignment->quality_scores[i] -= QUAL_SCORE_ADJUSTMENT;
+				fprintf (fhw_unmapped ,
+						"%s" ,
+						current_alignment->quality_scores);
 				fprintf (fhw_unmapped , "%s" , "\n");
 			}
 			continue;
