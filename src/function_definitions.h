@@ -591,6 +591,7 @@ unsigned short int prepareSingleRecordFromAlignmentFile (
 		unsigned short int flag_ignore_all_quality_scores,
 		unsigned short int flag_ignore_unmapped_sequences,
 		unsigned short int flag_ignore_quality_scores_for_matched_bases,
+		unsigned int max_read_length,
 		char **split_on_tab,
 		char **split_on_colon)
 {
@@ -646,7 +647,8 @@ unsigned short int prepareSingleRecordFromAlignmentFile (
 			flag_ignore_mismatches ,
 			flag_ignore_all_quality_scores ,
 			flag_ignore_unmapped_sequences ,
-			flag_ignore_quality_scores_for_matched_bases);
+			flag_ignore_quality_scores_for_matched_bases ,
+			max_read_length);
 
 	/*
 	 * Generate iCIGAR string

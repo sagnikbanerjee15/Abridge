@@ -474,6 +474,7 @@ void compressAlignmentFile (
 					flag_ignore_all_quality_scores ,
 					flag_ignore_unmapped_sequences ,
 					flag_ignore_quality_scores_for_matched_bases ,
+					max_read_length ,
 					split_on_tab ,
 					split_on_colon);
 		}
