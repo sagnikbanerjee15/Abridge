@@ -41,6 +41,9 @@ int main (int argc, char *argv[])
 			qseq[i] = seq_nt16_str[bam_seqi(q , i)]; // gets nucleotide id and converts them into IUPAC id.
 		}
 		qseq[i] = '\0';
+
+		char *cigar = ( char* ) malloc (100);
+		bam_parse_cigar (cigar , &cigar , aln);
 		printf ("\nCIGAR %d" , aln->core.n_cigar);
 		printf ("\nSequence %s length of sequence %lu %u" ,
 				qseq ,
