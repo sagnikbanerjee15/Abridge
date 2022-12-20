@@ -47,6 +47,15 @@ struct Reference* allocateMemoryReference (unsigned int n)
 	return s;
 }
 
+struct Cigar_Items* allocateMemoryCigar_Items ()
+{
+	struct Cigar_Items *instance;
+	instance = ( struct Cigar_Items ) malloc (sizeof(struct Cigar_Items) * 1);
+	instance->def = '';
+	instance->len = 0;
+	return instance;
+}
+
 struct Sam_Alignment* allocateMemorySam_Alignment (unsigned int max_read_length)
 {
 	/********************************************************************
@@ -356,7 +365,8 @@ void generateiCIGARString (
 		unsigned short int flag_ignore_all_quality_scores,
 		unsigned short int flag_ignore_unmapped_sequences,
 		unsigned short int flag_ignore_quality_scores_for_matched_bases,
-		char *ended)
+		char *ended,
+		struct Cigar_Items *cigar_items_instance)
 {
 	/*************************************************************************************************************************
 	 * Generate the integrated CIGAR string from CIGAR and MD
@@ -377,13 +387,13 @@ void generateiCIGARString (
 	char M_replacement_character;
 	char dummy;
 
-	unsigned int number_of_cigar_items;
-	struct Cigar_Items cigar_items_instance[MAX_SEQ_LEN];
+	unsigned int number_of_cigar_items = 0;
 	/********************************************************************/
 
 	splitCigar (sam_alignment_instance->cigar ,
 			&number_of_cigar_items ,
 			cigar_items_instance);
+
 }
 
 void processSoftClips (
@@ -395,10 +405,10 @@ void processSoftClips (
 		unsigned short int flag_ignore_all_quality_scores,
 		unsigned short int flag_ignore_unmapped_sequences,
 		unsigned short int flag_ignore_quality_scores_for_matched_bases,
-		unsigned int max_read_length)
+		unsigned int max_read_length,
+		struct Cigar_Items *cigar_items_instance)
 {
 
-	struct Cigar_Items cigar_items_instance[max_read_length];
 	unsigned short int total_number_of_cigar_items;
 	unsigned short int left_soft_clip_point;
 	unsigned short int right_soft_clip_point;
@@ -578,7 +588,7 @@ void populateBamAlignmentInstance (struct Sam_Alignment *dest, // Final Sam alig
 unsigned short int prepareSingleRecordFromAlignmentFile (
 		char *line,
 		samFile *fp_in,           // File pointer if BAM file provided
-		bam_hdr_t *bamHdr,         // read header
+		bam_hdr_t *bamHdr,           // read header
 		bam1_t *aln,
 		FILE *fhr,
 		struct Sam_Alignment *sam_alignment_instance,
@@ -593,7 +603,8 @@ unsigned short int prepareSingleRecordFromAlignmentFile (
 		unsigned short int flag_ignore_quality_scores_for_matched_bases,
 		unsigned int max_read_length,
 		char **split_on_tab,
-		char **split_on_colon)
+		char **split_on_colon,
+		struct Cigar_Items *cigar_items_instance)
 {
 	/*************************************************************************************************************************
 	 * Reads in each alignment and stores the values in them Sam_Alignment object
@@ -648,7 +659,8 @@ unsigned short int prepareSingleRecordFromAlignmentFile (
 			flag_ignore_all_quality_scores ,
 			flag_ignore_unmapped_sequences ,
 			flag_ignore_quality_scores_for_matched_bases ,
-			max_read_length);
+			max_read_length ,
+			cigar_items_instance);
 
 	/*
 	 * Generate iCIGAR string
@@ -661,7 +673,8 @@ unsigned short int prepareSingleRecordFromAlignmentFile (
 			flag_ignore_all_quality_scores ,
 			flag_ignore_unmapped_sequences ,
 			flag_ignore_quality_scores_for_matched_bases ,
-			ended);
+			ended ,
+			cigar_items_instance);
 	return 0;
 }
 

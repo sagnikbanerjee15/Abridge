@@ -332,7 +332,9 @@ void compressAlignmentFile (
 	current_alignment = allocateMemorySam_Alignment (max_read_length);
 	previous_alignment = allocateMemorySam_Alignment (max_read_length);
 	temp_alignment = allocateMemorySam_Alignment (max_read_length);
-	cigar_items_instance = ( struct Cigar_Items* ) malloc (sizeof(struct Cigar_Items) * ONE_THOUSAND);
+	cigar_items_instance = ( struct Cigar_Items* ) malloc (sizeof(struct Cigar_Items) * max_read_length);
+	for ( i = 0 ; i < max_read_length ; i++ )
+		cigar_items_instance[i] = allocateMemoryallocateMemoryCigar_Items ();
 	sam_alignment_instance_diagnostics = allocateMemorySam_Alignment (max_read_length);
 	reference_info = ( struct Reference_Sequence_Info** ) malloc (sizeof(struct Reference_Sequence_Info*) * MAX_REFERENCE_SEQUENCES);
 	for ( i = 0 ; i < MAX_REFERENCE_SEQUENCES ; i++ )
@@ -476,7 +478,8 @@ void compressAlignmentFile (
 					flag_ignore_quality_scores_for_matched_bases ,
 					max_read_length ,
 					split_on_tab ,
-					split_on_colon);
+					split_on_colon ,
+					cigar_items_instance);
 		}
 
 		if ( strcmp (input_alignment_file_format , "BAM") == 0 )
