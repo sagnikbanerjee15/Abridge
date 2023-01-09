@@ -259,7 +259,7 @@ void compressAlignmentFile (
 	struct Compressed_DS **sam_alignment_instance_pool;
 	struct Reference_Sequence_Info **reference_info;
 	struct Whole_Genome_Sequence *whole_genome;
-	struct Cigar_Items *cigar_items_instance;
+	struct Cigar_Items **cigar_items_instance;
 	/****************************************************************************************************************************************/
 
 	/****************************************************************************************************************************************
@@ -332,7 +332,7 @@ void compressAlignmentFile (
 	current_alignment = allocateMemorySam_Alignment (max_read_length);
 	previous_alignment = allocateMemorySam_Alignment (max_read_length);
 	temp_alignment = allocateMemorySam_Alignment (max_read_length);
-	cigar_items_instance = ( struct Cigar_Items* ) malloc (sizeof(struct Cigar_Items) * max_read_length);
+	cigar_items_instance = ( struct Cigar_Items** ) malloc (sizeof(struct Cigar_Items*) * max_read_length);
 	for ( i = 0 ; i < max_read_length ; i++ )
 		cigar_items_instance[i] = allocateMemoryCigar_Items ();
 	sam_alignment_instance_diagnostics = allocateMemorySam_Alignment (max_read_length);
