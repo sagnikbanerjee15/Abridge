@@ -377,7 +377,6 @@ void generateiCIGARString (
 	 ********************************************************************/
 	int left_soft_clip_point = 0;
 	int right_soft_clip_point = 0;
-	int i;
 	int flag;
 	int print_outputs = 0;
 	int perfect_alignment_indicator = 0;
@@ -387,12 +386,127 @@ void generateiCIGARString (
 	char M_replacement_character;
 	char dummy;
 
-	unsigned int number_of_cigar_items = 0;
-	/********************************************************************/
+	unsigned short int cigar_items_index;
+	unsigned short int total_number_of_cigar_items;
+	unsigned short int expanded_cigar_string_index;
 
-	splitCigar (sam_alignment_instance->cigar ,
-			&number_of_cigar_items ,
+	unsigned short int cigar_expansion_iterator = 0;
+	unsigned short int MD_index = 0;
+
+	unsigned short int expanded_md_string_index = 0;
+	unsigned short int expanded_md_string_length = 0;
+
+	unsigned short int num;
+	unsigned short int i, j;
+	/********************************************************************/
+	expanded_cigar_string_index = 0;
+	sam_alignment_instance->cigar_extended[0] = '\0';
+
+	total_number_of_cigar_items = splitCigar (sam_alignment_instance->cigar ,
+			&total_number_of_cigar_items ,
 			cigar_items_instance);
+
+	for ( cigar_items_index = 0 ;
+			cigar_items_index < total_number_of_cigar_items ;
+			cigar_items_index++ )
+	{
+		switch ( cigar_items_instance[cigar_items_index].def )
+		{
+			case 'S':
+				for ( cigar_expansion_iterator = 0 ;
+						cigar_expansion_iterator < cigar_items_instance[cigar_items_index].len ;
+						cigar_expansion_iterator++ )
+					sam_alignment_instance->cigar_extended[expanded_cigar_string_index++ ] = 'S';
+				break;
+			case 'M':
+				for ( cigar_expansion_iterator = 0 ;
+						cigar_expansion_iterator < cigar_items_instance[cigar_items_index].len ;
+						cigar_expansion_iterator++ )
+					sam_alignment_instance->cigar_extended[expanded_cigar_string_index++ ] = 'M';
+				break;
+			case '=':
+				for ( cigar_expansion_iterator = 0 ;
+						cigar_expansion_iterator < cigar_items_instance[cigar_items_index].len ;
+						cigar_expansion_iterator++ )
+					sam_alignment_instance->cigar_extended[expanded_cigar_string_index++ ] = 'M';
+				break;
+			case 'X':
+				for ( cigar_expansion_iterator = 0 ;
+						cigar_expansion_iterator < cigar_items_instance[cigar_items_index].len ;
+						cigar_expansion_iterator++ )
+					sam_alignment_instance->cigar_extended[expanded_cigar_string_index++ ] = 'X';
+				break;
+			case 'D':
+				for ( cigar_expansion_iterator = 0 ;
+						cigar_expansion_iterator < cigar_items_instance[cigar_items_index].len ;
+						cigar_expansion_iterator++ )
+					sam_alignment_instance->cigar_extended[expanded_cigar_string_index++ ] = 'D';
+				break;
+			case 'I':
+				for ( cigar_expansion_iterator = 0 ;
+						cigar_expansion_iterator < cigar_items_instance[cigar_items_index].len ;
+						cigar_expansion_iterator++ )
+					sam_alignment_instance->cigar_extended[expanded_cigar_string_index++ ] = 'I';
+				break;
+			case 'N':
+				break;
+		}
+	}
+
+	/************************************************************************************************************************
+	 * Expand the MD string
+	 ************************************************************************************************************************/
+	MD_index = 0;
+	num = 0;
+	while ( sam_alignment_instance->MD[MD_index] != '\0' )
+	{
+		if ( isdigit (sam_alignment_instance->MD[MD_index]) != 0 ) // md[i] is a digit
+			num = num * 10 + sam_alignment_instance->MD[MD_index] - 48;
+		else if ( sam_alignment_instance->MD[MD_index] == '^' )
+		{
+			for ( j = 0 ; j < num ; j++ )
+				sam_alignment_instance->md_extended[expanded_md_string_index++ ] = '=';
+			num = 0;
+			MD_index += 1;
+			while ( isdigit (sam_alignment_instance->MD[MD_index]) == 0 ) // Iterate till you pick up all the deletions and ignore them for now
+				MD_index += 1;
+			MD_index -= 1;
+		}
+		else
+		{
+			for ( j = 0 ; j < num ; j++ )
+				sam_alignment_instance->md_extended[expanded_md_string_index++ ] = '=';
+			sam_alignment_instance->md_extended[expanded_md_string_index++ ] = 'X';
+			num = 0;
+		}
+		MD_index += 1;
+	}
+	for ( j = 0 ; j < num ; j++ )
+		sam_alignment_instance->md_extended[expanded_md_string_index++ ] = '=';
+	sam_alignment_instance->md_extended[expanded_md_string_index++ ] = '\0';
+	expanded_md_string_length = expanded_md_string_index - 1;
+
+	/*
+	 * Add insert symbols to md_extended
+	 */
+	j = 0;
+	for ( i = 0 ; i < sam_alignment_instance->read_sequence_len ; i++ )
+	{
+		if ( sam_alignment_instance->cigar_extended[i] >= 33 && sam_alignment_instance->cigar_extended[i] <= 37 )
+		{
+			insertCharacterInString (sam_alignment_instance->md_extended ,
+					&expanded_md_string_length ,
+					sam_alignment_instance->cigar_extended[i] ,
+					i ,
+					1);
+			j = -1;
+		}
+	}
+	/************************************************************************************************************************/
+
+	printf ("\n%s\n%s" ,
+			sam_alignment_instance->cigar_extended ,
+			sam_alignment_instance->md_extended);
 
 }
 
