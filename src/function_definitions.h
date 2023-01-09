@@ -402,7 +402,7 @@ void generateiCIGARString (
 	expanded_cigar_string_index = 0;
 	sam_alignment_instance->cigar_extended[0] = '\0';
 
-	total_number_of_cigar_items = splitCigar (sam_alignment_instance->cigar ,
+	splitCigar (sam_alignment_instance->cigar ,
 			&total_number_of_cigar_items ,
 			cigar_items_instance);
 
