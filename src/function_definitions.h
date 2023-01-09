@@ -51,7 +51,7 @@ struct Cigar_Items* allocateMemoryCigar_Items ()
 {
 	struct Cigar_Items *instance;
 	instance = ( struct Cigar_Items* ) malloc (sizeof(struct Cigar_Items) * 1);
-	instance->def = '';
+	instance->def = ' ';
 	instance->len = 0;
 	return instance;
 }
