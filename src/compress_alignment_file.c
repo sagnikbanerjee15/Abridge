@@ -334,7 +334,7 @@ void compressAlignmentFile (
 	temp_alignment = allocateMemorySam_Alignment (max_read_length);
 	cigar_items_instance = ( struct Cigar_Items* ) malloc (sizeof(struct Cigar_Items) * max_read_length);
 	for ( i = 0 ; i < max_read_length ; i++ )
-		cigar_items_instance[i] = allocateMemoryallocateMemoryCigar_Items ();
+		cigar_items_instance[i] = allocateMemoryCigar_Items ();
 	sam_alignment_instance_diagnostics = allocateMemorySam_Alignment (max_read_length);
 	reference_info = ( struct Reference_Sequence_Info** ) malloc (sizeof(struct Reference_Sequence_Info*) * MAX_REFERENCE_SEQUENCES);
 	for ( i = 0 ; i < MAX_REFERENCE_SEQUENCES ; i++ )

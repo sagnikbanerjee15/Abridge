@@ -47,14 +47,14 @@ struct Reference* allocateMemoryReference (unsigned int n)
 	return s;
 }
 
-/*struct Cigar_Items* allocateMemoryCigar_Items ()
- {
- struct Cigar_Items *instance;
- instance = ( struct Cigar_Items ) malloc (sizeof(struct Cigar_Items) * 1);
- instance->def = '';
- instance->len = 0;
- return instance;
- }*/
+struct Cigar_Items* allocateMemoryCigar_Items ()
+{
+	struct Cigar_Items *instance;
+	instance = ( struct Cigar_Items ) malloc (sizeof(struct Cigar_Items) * 1);
+	instance->def = '';
+	instance->len = 0;
+	return instance;
+}
 
 struct Sam_Alignment* allocateMemorySam_Alignment (unsigned int max_read_length)
 {
@@ -358,7 +358,7 @@ void extractSubString (char *str, char *substr, int start_index, int end_index)
 
 void insertCharacterInString (
 		char *str,
-		int *str_length,
+		unsigned short int *str_length,
 		char ins,
 		int loc,
 		int number_of_insertions_to_be_made)
