@@ -356,6 +356,24 @@ void extractSubString (char *str, char *substr, int start_index, int end_index)
 
 }
 
+void insertCharacterInString (
+		char *str,
+		int *str_length,
+		char ins,
+		int loc,
+		int number_of_insertions_to_be_made)
+{
+	/*
+	 * Inserts a character. Assumes that a large
+	 */
+	int i = ( *str_length ) + number_of_insertions_to_be_made;
+	for ( ; i > loc ; i-- )
+		str[i] = str[i - number_of_insertions_to_be_made];
+	( *str_length ) += number_of_insertions_to_be_made;
+	while ( number_of_insertions_to_be_made-- )
+		str[i++ ] = ins;
+}
+
 void generateiCIGARString (
 		struct Sam_Alignment *sam_alignment_instance,
 		unsigned short int AS_tag_presence,
