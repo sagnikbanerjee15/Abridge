@@ -452,7 +452,7 @@ void generateiCIGARString (
 				for ( cigar_expansion_iterator = 0 ;
 						cigar_expansion_iterator < cigar_items_instance[cigar_items_index].len ;
 						cigar_expansion_iterator++ )
-					sam_alignment_instance->cigar_extended[expanded_cigar_string_index++ ] = 'X';
+					sam_alignment_instance->cigar_extended[expanded_cigar_string_index++ ] = 'M';
 				break;
 			case 'D':
 				for ( cigar_expansion_iterator = 0 ;
