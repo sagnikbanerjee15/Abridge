@@ -575,7 +575,7 @@ int main (int argc, char *argv[])
 	AS_tag_presence = arguments.AS_tag_presence;
 	max_read_length = arguments.max_read_length;
 	/****************************************************************************************************************************************/
-
+	return 0;
 	compressAlignmentFile (reference_filename ,
 			input_alignment_filename ,
 			input_alignment_file_format ,
