@@ -624,7 +624,8 @@ void generateiCIGARString (
 	}
 	/************************************************************************************************************************/
 
-	printf ("\n%s\n%s" ,
+	printf ("\nCIGAR=%s\n%s\n%s" ,
+			sam_alignment_instance->cigar ,
 			sam_alignment_instance->cigar_extended ,
 			sam_alignment_instance->md_extended);
 
