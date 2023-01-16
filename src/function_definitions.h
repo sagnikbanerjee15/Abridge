@@ -534,7 +534,7 @@ void generateiCIGARString (
 				break;
 			case 'N':
 			{
-				sam_alignment_instance->cigar_extended[expanded_cigar_string_index] = 'D';
+				sam_alignment_instance->cigar_extended[expanded_cigar_string_index] = 'N';
 				sam_alignment_instance->cigar_extended_reference_skips[expanded_cigar_string_index] = cigar_items_instance[cigar_items_index].len;
 				expanded_cigar_string_index++;
 			}
@@ -596,8 +596,8 @@ void generateiCIGARString (
 			sam_alignment_instance->md_extended[expanded_md_string_index++ ] = 'S';
 		}
 	}
-	sam_alignment_instance->md_extended[expanded_md_string_index++ ] = '\0';
-	expanded_md_string_length = expanded_md_string_index - 1;
+	sam_alignment_instance->md_extended[expanded_md_string_index] = '\0';
+	expanded_md_string_length = expanded_md_string_index;
 
 	/*************************************************************************************************************************
 	 * Adjust the expanded MD string to accomodate insert characters, N and D
@@ -626,8 +626,8 @@ void generateiCIGARString (
 	/************************************************************************************************************************/
 
 	printf ("\nCIGAR=%s\tMD=%s\n%s\n%s" ,
-			sam_alignment_instance->MD ,
 			sam_alignment_instance->cigar ,
+			sam_alignment_instance->MD ,
 			sam_alignment_instance->cigar_extended ,
 			sam_alignment_instance->md_extended);
 
