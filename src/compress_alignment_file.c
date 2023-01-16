@@ -400,8 +400,6 @@ void compressAlignmentFile (
 	strcat(line_to_be_written_to_file , "\n");
 	fprintf (fhw_compressed , "%s" , line_to_be_written_to_file);
 
-	printf ("\n%s" , input_alignment_file_format);
-	return;
 	/*
 	 * For SAM file advance the pointer to the first alignment
 	 */
