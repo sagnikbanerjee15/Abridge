@@ -537,8 +537,8 @@ void generateiCIGARString (
 				insertCharacterInString (sam_alignment_instance->sequence_with_deletions_and_splice_indicators ,
 						&sequence_with_deletions_and_splice_indicators_length ,
 						'D' ,
-						i ,
-						cigar_items_instance[cigar_items_index].len);
+						insertion_nucleotides_start_index ,
+						1);
 			}
 				break;
 			case 'N':
@@ -550,7 +550,7 @@ void generateiCIGARString (
 				insertCharacterInString (sam_alignment_instance->sequence_with_deletions_and_splice_indicators ,
 						&sequence_with_deletions_and_splice_indicators_length ,
 						'N' ,
-						i ,
+						insertion_nucleotides_start_index ,
 						1);
 			}
 				break;
