@@ -353,6 +353,7 @@ def constructFileNames( input_filename, options ):
     name_of_file_dictionary = f"{options.output_directory}/inputalignedfilename_dictionary"
     fclqc_output_filename = f"{options.output_directory}/inputalignedfilename_qual_compressed_fclqc"
 
+    error_file_compute_information_for_better_memory_management = f"compute_information_for_better_memory_management.error"
     error_file_compress_ = f"{outputfilename}.error"
     error_file_prep_abridge_index = f"{index_outputfilename}.error"
     error_file_qual_rle = f"{name_of_file_with_quality_scores_rle}.error"
@@ -383,7 +384,7 @@ def compressSamFile( options , list_of_softwares_with_versions, volumes_list ):
     delete_these_files, other_files, error_files = constructFileNames( input_filename, options )
     summary_information_outputfilename = delete_these_files
     outputfilename, index_outputfilename, unmapped_outputfilename, name_of_file_with_quality_scores, name_of_file_with_quality_scores_rle, name_of_file_dictionary, fclqc_output_filename = other_files
-    error_file_max_input_reads, error_file_compress_, error_file_qual_rle, error_file_prep_abridge_index, error_file_7z_compression, error_file_zpaq_compression, error_file_brotli_compression, error_file_7z_decompression, error_file_zpaq_decompression, error_file_brotli_decompression, error_fclqc = error_files
+    error_file_compute_information_for_better_memory_management, error_file_compress_, error_file_qual_rle, error_file_prep_abridge_index, error_file_7z_compression, error_file_zpaq_compression, error_file_brotli_compression, error_file_7z_decompression, error_file_zpaq_decompression, error_file_brotli_decompression, error_fclqc = error_files
     # compressed_abridged_filename_7z, compressed_abridged_filename_br,compressed_abridged_filename_zpaq = compressed_files
 
     if options.single_ended == True:
@@ -406,7 +407,7 @@ def compressSamFile( options , list_of_softwares_with_versions, volumes_list ):
         cmd += f")"
         cmd += f"1> /dev/null "
         if options.keep_intermediate_error_files == True:
-            cmd += f"2> {error_file_max_input_reads}"
+            cmd += f"2> {error_file_compute_information_for_better_memory_management}"
         else:
             cmd += f"2> /dev/null"
         if options.quiet == False:
