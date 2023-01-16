@@ -541,7 +541,7 @@ void generateiCIGARString (
 				break;
 		}
 	}
-	expanded_cigar_string_length = expanded_cigar_string_index - 1;
+	expanded_cigar_string_length = expanded_cigar_string_index;
 	sam_alignment_instance->cigar_extended[expanded_cigar_string_length] = '\0';
 
 	/************************************************************************************************************************
