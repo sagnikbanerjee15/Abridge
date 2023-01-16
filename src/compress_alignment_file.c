@@ -413,7 +413,7 @@ void compressAlignmentFile (
 	{
 		sam_read1 (fp_in , bamHdr , aln);
 	}
-	return;
+	//return;
 	do
 	{
 
