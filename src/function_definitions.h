@@ -542,6 +542,7 @@ void generateiCIGARString (
 		}
 	}
 	expanded_cigar_string_length = expanded_cigar_string_index - 1;
+	sam_alignment_instance->cigar_extended[expanded_cigar_string_length] = '\0';
 
 	/************************************************************************************************************************
 	 * Expand the MD string
@@ -550,13 +551,13 @@ void generateiCIGARString (
 	num = 0;
 
 	// Check if left soft clip exists
-	if ( cigar_items_instance[total_number_of_cigar_items - 1].def == 'S' )
+	if ( cigar_items_instance[0].def == 'S' )
 	{
 		for ( cigar_expansion_iterator = 0 ;
-				cigar_expansion_iterator < cigar_items_instance[total_number_of_cigar_items - 1].len ;
+				cigar_expansion_iterator < cigar_items_instance[0].len ;
 				cigar_expansion_iterator++ )
 		{
-			sam_alignment_instance->MD[MD_index++ ] = 'S';
+			sam_alignment_instance->md_extended[expanded_md_string_index++ ] = 'S';
 		}
 	}
 	while ( sam_alignment_instance->MD[MD_index] != '\0' )
@@ -586,13 +587,13 @@ void generateiCIGARString (
 		sam_alignment_instance->md_extended[expanded_md_string_index++ ] = '=';
 
 	// Check if right soft clip exists
-	if ( cigar_items_instance[0].def == 'S' )
+	if ( cigar_items_instance[total_number_of_cigar_items - 1].def == 'S' )
 	{
 		for ( cigar_expansion_iterator = 0 ;
-				cigar_expansion_iterator < cigar_items_instance[0].len ;
+				cigar_expansion_iterator < cigar_items_instance[total_number_of_cigar_items - 1].len ;
 				cigar_expansion_iterator++ )
 		{
-			sam_alignment_instance->MD[MD_index++ ] = 'S';
+			sam_alignment_instance->md_extended[expanded_md_string_index++ ] = 'S';
 		}
 	}
 	sam_alignment_instance->md_extended[expanded_md_string_index++ ] = '\0';
@@ -624,7 +625,8 @@ void generateiCIGARString (
 	}
 	/************************************************************************************************************************/
 
-	printf ("\nCIGAR=%s\n%s\n%s" ,
+	printf ("\nCIGAR=%s\tMD=%s\n%s\n%s" ,
+			sam_alignment_instance->MD ,
 			sam_alignment_instance->cigar ,
 			sam_alignment_instance->cigar_extended ,
 			sam_alignment_instance->md_extended);
