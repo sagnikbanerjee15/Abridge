@@ -149,9 +149,7 @@ static error_t parse_opt (int key, char *arg, struct argp_state *state)
 		case ARGP_KEY_END:
 			// Reached the last key.
 			// Check if our REQUIRED "options" have been set to non-default values
-			if ( strcmp (arguments->input_alignment_filename , "") == 0 || strcmp (strupr (arguments->input_alignment_file_format) ,
-					"SAM") != 0 || strcmp (strupr (arguments->input_alignment_file_format) ,
-					"BAM") != 0 || strcmp (arguments->input_alignment_file_format ,
+			if ( strcmp (arguments->input_alignment_filename , "") == 0 || strcmp (arguments->input_alignment_file_format ,
 					"") == 0 || strcmp (arguments->output_abridge_filename , "") == 0 || strcmp (arguments->reference_filename ,
 					"") == 0 || strcmp (arguments->unmapped_filename , "") == 0 || strcmp (arguments->name_of_file_with_quality_scores ,
 					"") == 0 || strcmp (arguments->name_of_file_with_read_names_to_short_read_names_and_NH ,
