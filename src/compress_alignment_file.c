@@ -411,7 +411,7 @@ void compressAlignmentFile (
 	 fflush (stdout);
 	 return;
 	 */
-	if ( strcmp (input_alignment_file_format , "SAM") == 0 )
+	if ( strcmp (input_alignment_file_format , "") == 0 )
 	{
 		printf ("Entering here");
 		fflush (stdout);
@@ -470,8 +470,8 @@ void compressAlignmentFile (
 		{
 			line_len = getline ( &line , &len , fhr);
 			//printf ("\nLine length %d" , line_len);
-			prepareSingleRecordFromAlignmentFile (line , fp_in , // File pointer if BAM file provided
-					bamHdr , // read header
+			prepareSingleRecordFromAlignmentFile (line , fp_in ,// File pointer if BAM file provided
+					bamHdr ,		// read header
 					aln ,
 					fhr ,
 					current_alignment ,
