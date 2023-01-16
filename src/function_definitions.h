@@ -548,6 +548,17 @@ void generateiCIGARString (
 	 ************************************************************************************************************************/
 	MD_index = 0;
 	num = 0;
+
+	// Check if left soft clip exists
+	if ( cigar_items_instance[total_number_of_cigar_items - 1].def == 'S' )
+	{
+		for ( cigar_expansion_iterator = 0 ;
+				cigar_expansion_iterator < cigar_items_instance[total_number_of_cigar_items - 1].len ;
+				cigar_expansion_iterator++ )
+		{
+			sam_alignment_instance->MD[MD_index++ ] = 'S';
+		}
+	}
 	while ( sam_alignment_instance->MD[MD_index] != '\0' )
 	{
 		if ( isdigit (sam_alignment_instance->MD[MD_index]) != 0 ) // md[i] is a digit
@@ -566,19 +577,30 @@ void generateiCIGARString (
 		{
 			for ( j = 0 ; j < num ; j++ )
 				sam_alignment_instance->md_extended[expanded_md_string_index++ ] = '=';
-			sam_alignment_instance->md_extended[expanded_md_string_index++ ] = sam_alignment_instance->MD[MD_index];
+			sam_alignment_instance->md_extended[expanded_md_string_index++ ] = returnEncodedMismatchCharacter (sam_alignment_instance->MD[MD_index]);
 			num = 0;
 		}
 		MD_index += 1;
 	}
 	for ( j = 0 ; j < num ; j++ )
 		sam_alignment_instance->md_extended[expanded_md_string_index++ ] = '=';
+
+	// Check if right soft clip exists
+	if ( cigar_items_instance[0].def == 'S' )
+	{
+		for ( cigar_expansion_iterator = 0 ;
+				cigar_expansion_iterator < cigar_items_instance[0].len ;
+				cigar_expansion_iterator++ )
+		{
+			sam_alignment_instance->MD[MD_index++ ] = 'S';
+		}
+	}
 	sam_alignment_instance->md_extended[expanded_md_string_index++ ] = '\0';
 	expanded_md_string_length = expanded_md_string_index - 1;
 
-	/*
-	 * Add insert symbols to md_extended
-	 */
+	/*************************************************************************************************************************
+	 * Adjust the expanded MD string to accomodate insert characters, N and D
+	 *************************************************************************************************************************/
 	j = 0;
 	for ( i = 0 ; i < expanded_cigar_string_length ; i++ )
 	{
