@@ -649,6 +649,36 @@ void generateiCIGARString (
 	}
 	/************************************************************************************************************************/
 
+	/*************************************************************************************************************************
+	 * Make final adjustments to insert and mismatch characters to represent the nucleotide in the read and not in the reference
+	 *************************************************************************************************************************/
+	for ( i = 0 ; i < expanded_cigar_string_length ; i++ )
+	{
+		switch ( sam_alignment_instance->md_extended[i] )
+		{
+			//Insert characters:
+			case '!':
+			case '"':
+			case '#':
+			case '$':
+			case '%':
+				sam_alignment_instance->md_extended[i] = returnEncodedInsertionCharacter (sam_alignment_instance->sequence_with_deletions_and_splice_indicators[i]);
+				break;
+
+				//Mismatch characters
+			case '&':
+			case '\'':
+			case '(':
+			case ')':
+			case '*':
+				sam_alignment_instance->md_extended[i] = returnEncodedMismatchCharacter (sam_alignment_instance->sequence_with_deletions_and_splice_indicators[i]);
+				break;
+
+		}
+	}
+
+	/************************************************************************************************************************/
+
 	printf ("\nCIGAR=%s\tMD=%s\n%s\n%s\n%s" ,
 			sam_alignment_instance->cigar ,
 			sam_alignment_instance->MD ,
