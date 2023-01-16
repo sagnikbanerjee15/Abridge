@@ -405,22 +405,15 @@ void compressAlignmentFile (
 	 * For SAM file advance the pointer to the first alignment
 	 */
 
-	printf ("\n%s %d %d" ,
-			input_alignment_file_format ,
-			strcmp (input_alignment_file_format , "SAM") ,
-			strcmp (input_alignment_file_format , "BAM"));
-	fflush (stdout);
 	if ( strcmp (input_alignment_file_format , "SAM") == 0 )
 	{
-		printf ("\nEntering here");
-		//fflush (stdout);
 		while ( ( line_len = getline ( &line , &len , fhr) ) != -1 )
 			if ( line[0] != '@' ) break;
 	}
-	/*if ( strcmp (input_alignment_file_format , "BAM") == 0 )
-	 {
-	 //sam_read1 (fp_in , bamHdr , aln);
-	 }*/
+	if ( strcmp (input_alignment_file_format , "BAM") == 0 )
+	{
+		sam_read1 (fp_in , bamHdr , aln);
+	}
 	return;
 	do
 	{
