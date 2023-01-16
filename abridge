@@ -446,7 +446,10 @@ def compressSamFile( options , tags_present, list_of_softwares_with_versions, vo
         cmd += f" --max_read_length {max_read_length}"
         cmd += f" --name_of_file_with_quality_scores {name_of_file_with_quality_scores} "
         cmd += f" --name_of_file_with_read_names_to_short_read_names_and_NH {options.output_directory}/sorted_read_names_with_NH_and_short_read_names_sorted_by_pos "
-        cmd += f" --ended SE "
+        if options.single_ended==True:
+            cmd += f" --ended SE "
+        else:
+            cmd += f" --ended PE "
         cmd += f" --AS_tag_presence {tags_present['AS']}"
 
         if options.ignore_soft_clippings == True:
@@ -478,6 +481,7 @@ def compressSamFile( options , tags_present, list_of_softwares_with_versions, vo
         software = "abridge"
         version = list_of_softwares_with_versions[software]
         executeCommand(options, software, version, volumes_list,f"{options.singularity_images}/{software}:{version}", '10g' , cmd)
+        return
     else:
         # Paired ended
 
