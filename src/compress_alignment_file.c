@@ -406,6 +406,7 @@ void compressAlignmentFile (
 	printf ("\n%s %d" ,
 			input_alignment_file_format ,
 			strcmp (input_alignment_file_format , "SAM"));
+	fflush (stdout);
 	//return;
 	if ( strcmp (input_alignment_file_format , "SAM") == 0 )
 	{
