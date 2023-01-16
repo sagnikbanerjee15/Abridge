@@ -407,7 +407,7 @@ void compressAlignmentFile (
 			input_alignment_file_format ,
 			strcmp (input_alignment_file_format , "SAM"));
 	fflush (stdout);
-	return;
+	//return;
 	if ( strcmp (input_alignment_file_format , "SAM") == 0 )
 	{
 		printf ("Entering here");
@@ -417,7 +417,7 @@ void compressAlignmentFile (
 	}
 	if ( strcmp (input_alignment_file_format , "BAM") == 0 )
 	{
-		sam_read1 (fp_in , bamHdr , aln);
+		//sam_read1 (fp_in , bamHdr , aln);
 	}
 	return;
 	do
