@@ -625,11 +625,12 @@ void generateiCIGARString (
 	}
 	/************************************************************************************************************************/
 
-	printf ("\nCIGAR=%s\tMD=%s\n%s\n%s" ,
+	printf ("\nCIGAR=%s\tMD=%s\n%s\n%s\n%s" ,
 			sam_alignment_instance->cigar ,
 			sam_alignment_instance->MD ,
 			sam_alignment_instance->cigar_extended ,
-			sam_alignment_instance->md_extended);
+			sam_alignment_instance->md_extended ,
+			sam_alignment_instance->sequence);
 
 	printf ("\n@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
 
