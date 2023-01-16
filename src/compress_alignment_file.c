@@ -414,8 +414,8 @@ void compressAlignmentFile (
 	{
 		printf ("Entering here");
 		//fflush (stdout);
-		while ( ( line_len = getline ( &line , &len , fhr) ) != -1 )
-			if ( line[0] != '@' ) break;
+		//while ( ( line_len = getline ( &line , &len , fhr) ) != -1 )
+		//	if ( line[0] != '@' ) break;
 	}
 	/*if ( strcmp (input_alignment_file_format , "BAM") == 0 )
 	 {
