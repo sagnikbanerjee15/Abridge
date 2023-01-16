@@ -401,6 +401,7 @@ void compressAlignmentFile (
 	fprintf (fhw_compressed , "%s" , line_to_be_written_to_file);
 
 	printf ("\n%s" , input_alignment_file_format);
+	return;
 	/*
 	 * For SAM file advance the pointer to the first alignment
 	 */
@@ -558,6 +559,7 @@ int main (int argc, char *argv[])
 	 ****************************************************************************************************************************************/
 	strcpy(reference_filename , arguments.reference_filename);
 	strcpy(input_alignment_filename , arguments.input_alignment_filename);
+	strcpy(input_alignment_file_format , arguments.input_alignment_file_format);
 	strcpy(output_abridgefilename , arguments.output_abridge_filename);
 	strcpy(ended , arguments.ended);
 	strcpy(unmapped_filename , arguments.unmapped_filename);
