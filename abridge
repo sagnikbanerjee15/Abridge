@@ -436,9 +436,9 @@ def compressSamFile( options , tags_present, list_of_softwares_with_versions, vo
         cmd = f"(/usr/bin/time --verbose "
         cmd += f" compress_alignment_file "
         cmd += f" --input_alignment_filename {input_filename}"
-        if input_filename[:-4] == ".sam":
+        if input_filename[-4:] == ".sam":
             cmd += f" --input_alignment_file_format SAM"
-        elif input_filename[:-4] == ".bam":
+        elif input_filename[-4:] == ".bam":
             cmd += f" --input_alignment_file_format BAM"
         cmd += f" --output_abridge_filename {outputfilename} "
         cmd += f" --reference_filename {options.reference}"   
