@@ -346,7 +346,7 @@ void compressAlignmentFile (
 	for ( i = 0 ; i < max_reads_in_a_single_nucl_loc ; i++ )
 		sam_alignment_instance_pool = allocateMemorySam_Alignment (max_read_length);
 	/****************************************************************************************************************************************/
-	return;
+
 	/*
 	 * Write the first line in output file
 	 */
@@ -412,7 +412,7 @@ void compressAlignmentFile (
 	{
 		sam_read1 (fp_in , bamHdr , aln);
 	}
-
+	return;
 	do
 	{
 
