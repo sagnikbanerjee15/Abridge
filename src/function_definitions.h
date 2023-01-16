@@ -628,6 +628,8 @@ void generateiCIGARString (
 			sam_alignment_instance->cigar_extended ,
 			sam_alignment_instance->md_extended);
 
+	printf ("========================================================================================================================================================================================================================");
+
 }
 
 void processSoftClips (
