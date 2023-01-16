@@ -403,12 +403,14 @@ void compressAlignmentFile (
 	/*
 	 * For SAM file advance the pointer to the first alignment
 	 */
-	printf ("\n%s %d %d" ,
-			input_alignment_file_format ,
-			strcmp (input_alignment_file_format , "SAM") ,
-			strcmp (input_alignment_file_format , "BAM"));
-	fflush (stdout);
-	return;
+
+	/*printf ("\n%s %d %d" ,
+	 input_alignment_file_format ,
+	 strcmp (input_alignment_file_format , "SAM") ,
+	 strcmp (input_alignment_file_format , "BAM"));
+	 fflush (stdout);
+	 return;
+	 */
 	if ( strcmp (input_alignment_file_format , "SAM") == 0 )
 	{
 		printf ("Entering here");
