@@ -401,9 +401,11 @@ def compressSamFile( options , list_of_softwares_with_versions, volumes_list ):
         if options.quiet == False:
             logging.info( f"Starting compression for {input_filename}" )
 
+        input_alignment_file_format = "BAM" if "bam" in input_filename else "sam"
         cmd = f"(/usr/bin/time --verbose "
         cmd += f" compute_information_for_better_memory_management  "
-        cmd += f" --input_sam_filename {input_filename} "
+        cmd += f" --input_alignment_filename {input_filename} "
+        cmd += f" --input_alignment_file_format {input_alignment_file_format}"
         cmd += f" --summary_information_outputfilename {summary_information_outputfilename}"
         cmd += f")"
         cmd += f"1> /dev/null "
