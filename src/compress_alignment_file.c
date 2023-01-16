@@ -417,8 +417,8 @@ void compressAlignmentFile (
 	{
 		printf ("Entering here");
 		//fflush (stdout);
-		//while ( ( line_len = getline ( &line , &len , fhr) ) != -1 )
-		//	if ( line[0] != '@' ) break;
+		while ( ( line_len = getline ( &line , &len , fhr) ) != -1 )
+			if ( line[0] != '@' ) break;
 	}
 	/*if ( strcmp (input_alignment_file_format , "BAM") == 0 )
 	 {
@@ -472,7 +472,7 @@ void compressAlignmentFile (
 		{
 			line_len = getline ( &line , &len , fhr);
 			//printf ("\nLine length %d" , line_len);
-			prepareSingleRecordFromAlignmentFile (line , fp_in ,// File pointer if BAM file provided
+			prepareSingleRecordFromAlignmentFile (line , fp_in , // File pointer if BAM file provided
 					bamHdr ,		// read header
 					aln ,
 					fhr ,
