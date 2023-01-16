@@ -342,6 +342,7 @@ def runCommand( eachpinput ):
 def constructFileNames( input_filename, options ):
     name_of_input_file_without_location = input_filename.split( "/" )[-1][:-4]
 
+    # Input filenames for each program
     summary_information_outputfilename = f"{options.output_directory}/inputalignedfilename_summary_information"
     frequency_of_flags_filename = f"{options.output_directory}/inputalignedfilename_frequency_of_flags"
 
@@ -353,7 +354,7 @@ def constructFileNames( input_filename, options ):
     name_of_file_dictionary = f"{options.output_directory}/inputalignedfilename_dictionary"
     fclqc_output_filename = f"{options.output_directory}/inputalignedfilename_qual_compressed_fclqc"
 
-    error_file_compute_information_for_better_memory_management = f"compute_information_for_better_memory_management.error"
+    error_file_compute_information_for_better_memory_management = f"{options.error_directory}/compute_information_for_better_memory_management.error"
     error_file_compress_ = f"{outputfilename}.error"
     error_file_prep_abridge_index = f"{index_outputfilename}.error"
     error_file_qual_rle = f"{name_of_file_with_quality_scores_rle}.error"
@@ -369,7 +370,7 @@ def constructFileNames( input_filename, options ):
     error_file_brotli_decompression = f"{options.error_directory}/brotli_decompression.error"
 
     delete_these_files = [summary_information_outputfilename]
-    other_files = [outputfilename, index_outputfilename, unmapped_outputfilename, name_of_file_with_quality_scores, name_of_file_with_quality_scores_rle, name_of_file_dictionary, fclqc_output_filename]
+    other_files = [summary_information_outputfilename, outputfilename, index_outputfilename, unmapped_outputfilename, name_of_file_with_quality_scores, name_of_file_with_quality_scores_rle, name_of_file_dictionary, fclqc_output_filename]
     error_files = [error_file_compute_information_for_better_memory_management, error_file_compress_, error_file_qual_rle, error_file_prep_abridge_index, error_file_7z_compression, error_file_zpaq_compression, error_file_brotli_compression, error_file_7z_decompression, error_file_zpaq_decompression, error_file_brotli_decompression, error_fclqc]
     # compressed_files = [compressed_abridged_filename_br,compressed_abridged_filename_zpaq]
     return  delete_these_files, other_files, error_files
@@ -382,8 +383,8 @@ def compressSamFile( options , list_of_softwares_with_versions, volumes_list ):
     input_filename = options.inputalignedfilename
     name_of_input_file_without_location = input_filename.split( "/" )[-1]
     delete_these_files, other_files, error_files = constructFileNames( input_filename, options )
-    summary_information_outputfilename = delete_these_files
-    outputfilename, index_outputfilename, unmapped_outputfilename, name_of_file_with_quality_scores, name_of_file_with_quality_scores_rle, name_of_file_dictionary, fclqc_output_filename = other_files
+    #summary_information_outputfilename = delete_these_files
+    summary_information_outputfilename, outputfilename, index_outputfilename, unmapped_outputfilename, name_of_file_with_quality_scores, name_of_file_with_quality_scores_rle, name_of_file_dictionary, fclqc_output_filename = other_files
     error_file_compute_information_for_better_memory_management, error_file_compress_, error_file_qual_rle, error_file_prep_abridge_index, error_file_7z_compression, error_file_zpaq_compression, error_file_brotli_compression, error_file_7z_decompression, error_file_zpaq_decompression, error_file_brotli_decompression, error_fclqc = error_files
     # compressed_abridged_filename_7z, compressed_abridged_filename_br,compressed_abridged_filename_zpaq = compressed_files
 
@@ -425,7 +426,7 @@ def compressSamFile( options , list_of_softwares_with_versions, volumes_list ):
         input_filename = options.inputalignedfilename
         if options.quiet == False:
             logging.info( f"Starting for {input_filename}" )
-        max_input_reads_in_a_single_nucl_loc = int( open( name_of_max_input_reads_file, "r" ).read().strip() )
+        max_input_reads_in_a_single_nucl_loc = int( open( summary_information_outputfilename, "r" ).read().strip() )
         if options.quiet == False:
             logging.info( f"{name_of_input_file_without_location} max_input_reads_in_a_single_nucl_loc = {max_input_reads_in_a_single_nucl_loc}" )
 
