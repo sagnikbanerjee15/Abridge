@@ -94,6 +94,7 @@ struct Sam_Alignment* allocateMemorySam_Alignment (unsigned int max_read_length)
 
 	s->cigar_extended = ( char* ) malloc (sizeof(char) * ( max_read_length * 2 ));
 	s->cigar_extended[0] = '\0';
+	s->cigar_extended_reference_skips = ( unsigned short int* ) malloc (sizeof(unsigned short int) * ( max_read_length ) * 2);
 	s->md_extended = ( char* ) malloc (sizeof(char) * ( max_read_length * 2 ));
 	s->md_extended[0] = '\0';
 	s->icigar = ( char* ) malloc (sizeof(char) * ( max_read_length * 2 ));
@@ -374,6 +375,42 @@ void insertCharacterInString (
 		str[i++ ] = ins;
 }
 
+char returnEncodedInsertionCharacter (char nucleotide)
+{
+	switch ( nucleotide )
+	{
+		case 'A':
+			return '!';
+		case 'T':
+			return '"';
+		case 'G':
+			return '#';
+		case 'C':
+			return '$';
+		case 'N':
+			return '%';
+	}
+	return ' ';
+}
+
+char returnEncodedMismatchCharacter (char nucleotide)
+{
+	switch ( nucleotide )
+	{
+		case 'A':
+			return '&';
+		case 'T':
+			return '\'';
+		case 'G':
+			return '(';
+		case 'C':
+			return ')';
+		case 'N':
+			return '*';
+	}
+	return ' ';
+}
+
 void generateiCIGARString (
 		struct Sam_Alignment *sam_alignment_instance,
 		unsigned short int AS_tag_presence,
@@ -407,6 +444,8 @@ void generateiCIGARString (
 	unsigned short int cigar_items_index;
 	unsigned short int total_number_of_cigar_items;
 	unsigned short int expanded_cigar_string_index;
+	unsigned short int expanded_cigar_string_length;
+	unsigned short int insertion_nucleotides_start_index;
 
 	unsigned short int cigar_expansion_iterator = 0;
 	unsigned short int MD_index = 0;
@@ -424,6 +463,7 @@ void generateiCIGARString (
 			&total_number_of_cigar_items ,
 			cigar_items_instance);
 
+	insertion_nucleotides_start_index = 0;
 	for ( cigar_items_index = 0 ;
 			cigar_items_index < total_number_of_cigar_items ;
 			cigar_items_index++ )
@@ -434,42 +474,74 @@ void generateiCIGARString (
 				for ( cigar_expansion_iterator = 0 ;
 						cigar_expansion_iterator < cigar_items_instance[cigar_items_index].len ;
 						cigar_expansion_iterator++ )
-					sam_alignment_instance->cigar_extended[expanded_cigar_string_index++ ] = 'S';
+				{
+					sam_alignment_instance->cigar_extended[expanded_cigar_string_index] = 'S';
+					sam_alignment_instance->cigar_extended_reference_skips[expanded_cigar_string_index] = 1;
+					expanded_cigar_string_index++;
+				}
+				insertion_nucleotides_start_index += cigar_items_instance[cigar_items_index].len;
 				break;
 			case 'M':
 				for ( cigar_expansion_iterator = 0 ;
 						cigar_expansion_iterator < cigar_items_instance[cigar_items_index].len ;
 						cigar_expansion_iterator++ )
-					sam_alignment_instance->cigar_extended[expanded_cigar_string_index++ ] = 'M';
+				{
+					sam_alignment_instance->cigar_extended[expanded_cigar_string_index] = 'M';
+					sam_alignment_instance->cigar_extended_reference_skips[expanded_cigar_string_index] = 1;
+					expanded_cigar_string_index++;
+				}
+				insertion_nucleotides_start_index += cigar_items_instance[cigar_items_index].len;
 				break;
 			case '=':
 				for ( cigar_expansion_iterator = 0 ;
 						cigar_expansion_iterator < cigar_items_instance[cigar_items_index].len ;
 						cigar_expansion_iterator++ )
-					sam_alignment_instance->cigar_extended[expanded_cigar_string_index++ ] = 'M';
+				{
+					sam_alignment_instance->cigar_extended[expanded_cigar_string_index] = 'M';
+					sam_alignment_instance->cigar_extended_reference_skips[expanded_cigar_string_index] = 1;
+					expanded_cigar_string_index++;
+				}
+				insertion_nucleotides_start_index += cigar_items_instance[cigar_items_index].len;
 				break;
 			case 'X':
 				for ( cigar_expansion_iterator = 0 ;
 						cigar_expansion_iterator < cigar_items_instance[cigar_items_index].len ;
 						cigar_expansion_iterator++ )
+				{
 					sam_alignment_instance->cigar_extended[expanded_cigar_string_index++ ] = 'M';
-				break;
-			case 'D':
-				for ( cigar_expansion_iterator = 0 ;
-						cigar_expansion_iterator < cigar_items_instance[cigar_items_index].len ;
-						cigar_expansion_iterator++ )
-					sam_alignment_instance->cigar_extended[expanded_cigar_string_index++ ] = 'D';
+					sam_alignment_instance->cigar_extended_reference_skips[expanded_cigar_string_index] = 1;
+					expanded_cigar_string_index++;
+				}
+				insertion_nucleotides_start_index += cigar_items_instance[cigar_items_index].len;
 				break;
 			case 'I':
 				for ( cigar_expansion_iterator = 0 ;
 						cigar_expansion_iterator < cigar_items_instance[cigar_items_index].len ;
 						cigar_expansion_iterator++ )
-					sam_alignment_instance->cigar_extended[expanded_cigar_string_index++ ] = 'I';
+				{
+					sam_alignment_instance->cigar_extended[expanded_cigar_string_index] = returnEncodedInsertionCharacter (sam_alignment_instance->sequence[insertion_nucleotides_start_index + cigar_expansion_iterator]);
+					sam_alignment_instance->cigar_extended_reference_skips[expanded_cigar_string_index] = 1;
+					expanded_cigar_string_index++;
+				}
+				insertion_nucleotides_start_index += cigar_items_instance[cigar_items_index].len;
+				break;
+			case 'D':
+			{
+				sam_alignment_instance->cigar_extended[expanded_cigar_string_index] = 'D';
+				sam_alignment_instance->cigar_extended_reference_skips[expanded_cigar_string_index] = cigar_items_instance[cigar_items_index].len;
+				expanded_cigar_string_index++;
+			}
 				break;
 			case 'N':
+			{
+				sam_alignment_instance->cigar_extended[expanded_cigar_string_index] = 'D';
+				sam_alignment_instance->cigar_extended_reference_skips[expanded_cigar_string_index] = cigar_items_instance[cigar_items_index].len;
+				expanded_cigar_string_index++;
+			}
 				break;
 		}
 	}
+	expanded_cigar_string_length = expanded_cigar_string_index - 1;
 
 	/************************************************************************************************************************
 	 * Expand the MD string
@@ -486,7 +558,7 @@ void generateiCIGARString (
 				sam_alignment_instance->md_extended[expanded_md_string_index++ ] = '=';
 			num = 0;
 			MD_index += 1;
-			while ( isdigit (sam_alignment_instance->MD[MD_index]) == 0 ) // Iterate till you pick up all the deletions and ignore them for now
+			while ( isdigit (sam_alignment_instance->MD[MD_index]) == 0 ) // Iterate till you pick up all the deletions and ignore them
 				MD_index += 1;
 			MD_index -= 1;
 		}
@@ -494,7 +566,7 @@ void generateiCIGARString (
 		{
 			for ( j = 0 ; j < num ; j++ )
 				sam_alignment_instance->md_extended[expanded_md_string_index++ ] = '=';
-			sam_alignment_instance->md_extended[expanded_md_string_index++ ] = 'X';
+			sam_alignment_instance->md_extended[expanded_md_string_index++ ] = sam_alignment_instance->MD[MD_index];
 			num = 0;
 		}
 		MD_index += 1;
@@ -508,7 +580,7 @@ void generateiCIGARString (
 	 * Add insert symbols to md_extended
 	 */
 	j = 0;
-	for ( i = 0 ; i < sam_alignment_instance->read_sequence_len ; i++ )
+	for ( i = 0 ; i < expanded_cigar_string_length ; i++ )
 	{
 		if ( sam_alignment_instance->cigar_extended[i] >= 33 && sam_alignment_instance->cigar_extended[i] <= 37 )
 		{
@@ -518,6 +590,14 @@ void generateiCIGARString (
 					i ,
 					1);
 			j = -1;
+		}
+		else if ( sam_alignment_instance->cigar_extended[i] == 'N' || sam_alignment_instance->cigar_extended[i] == 'D' )
+		{
+			insertCharacterInString (sam_alignment_instance->md_extended ,
+					&expanded_md_string_length ,
+					sam_alignment_instance->cigar_extended[i] ,
+					i ,
+					1);
 		}
 	}
 	/************************************************************************************************************************/
