@@ -466,7 +466,7 @@ def compressSamFile( options , tags_present, list_of_softwares_with_versions, vo
         if options.skip_shortening_read_names == True:
             cmd += f" --skip_shortening_read_names"
         
-        cmd += f" --max_reads_in_a_single_nucl_loc {max_reads_in_a_single_nucl_loc}"
+        cmd += f" --max_reads_in_a_single_nucl_loc {max_input_reads_in_a_single_nucl_loc}"
         
         cmd += f") "
         cmd += f"1> /dev/null "
