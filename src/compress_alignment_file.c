@@ -346,7 +346,7 @@ void compressAlignmentFile (
 	for ( i = 0 ; i < max_reads_in_a_single_nucl_loc ; i++ )
 		sam_alignment_instance_pool = allocateMemorySam_Alignment (max_read_length);
 	/****************************************************************************************************************************************/
-
+	return;
 	/*
 	 * Write the first line in output file
 	 */
@@ -575,7 +575,7 @@ int main (int argc, char *argv[])
 	AS_tag_presence = arguments.AS_tag_presence;
 	max_read_length = arguments.max_read_length;
 	/****************************************************************************************************************************************/
-	return 0;
+
 	compressAlignmentFile (reference_filename ,
 			input_alignment_filename ,
 			input_alignment_file_format ,
