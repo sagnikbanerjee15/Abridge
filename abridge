@@ -428,7 +428,7 @@ def compressSamFile( options , list_of_softwares_with_versions, volumes_list ):
         input_filename = options.inputalignedfilename
         if options.quiet == False:
             logging.info( f"Starting for {input_filename}" )
-        max_input_reads_in_a_single_nucl_loc = int( open( summary_information_outputfilename, "r" ).read().strip() )
+        max_input_reads_in_a_single_nucl_loc, total_number_of_alignments, max_read_length = [int(row.split(":")[-1].strip()) for row in open( summary_information_outputfilename, "r" ).read().split("\n")]
         if options.quiet == False:
             logging.info( f"{name_of_input_file_without_location} max_input_reads_in_a_single_nucl_loc = {max_input_reads_in_a_single_nucl_loc}" )
 
