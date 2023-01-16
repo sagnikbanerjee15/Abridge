@@ -227,8 +227,8 @@ int main (int argc, char *argv[])
 	/********************************************************************
 	 * Variable declaration
 	 ********************************************************************/
-	char read_name_to_line_numbers[FILENAME_LENGTH];
-	char read_name_to_line_numbers_to_shortened_read_names[FILENAME_LENGTH];
+	char read_name_to_line_numbers[MAX_FILENAME_LENGTH];
+	char read_name_to_line_numbers_to_shortened_read_names[MAX_FILENAME_LENGTH];
 
 	/********************************************************************/
 
