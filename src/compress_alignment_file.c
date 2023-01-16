@@ -406,6 +406,7 @@ void compressAlignmentFile (
 	 */
 	if ( strcmp (input_alignment_file_format , "SAM") == 0 )
 	{
+		printf ("Entering here");
 		while ( ( line_len = getline ( &line , &len , fhr) ) != -1 )
 			if ( line[0] != '@' ) break;
 	}
