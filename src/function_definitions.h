@@ -448,6 +448,7 @@ void generateiCIGARString (
 	unsigned short int expanded_cigar_string_length;
 	unsigned short int insertion_nucleotides_start_index;
 	unsigned short int sequence_with_deletions_and_splice_indicators_length;
+	unsigned short int index_for_N_and_D_insertion_in_sequence;
 
 	unsigned short int cigar_expansion_iterator = 0;
 	unsigned short int MD_index = 0;
@@ -467,6 +468,7 @@ void generateiCIGARString (
 			cigar_items_instance);
 
 	insertion_nucleotides_start_index = 0;
+	index_for_N_and_D_insertion_in_sequence = 0;
 	for ( cigar_items_index = 0 ;
 			cigar_items_index < total_number_of_cigar_items ;
 			cigar_items_index++ )
@@ -483,6 +485,7 @@ void generateiCIGARString (
 					expanded_cigar_string_index++;
 				}
 				insertion_nucleotides_start_index += cigar_items_instance[cigar_items_index].len;
+				index_for_N_and_D_insertion_in_sequence += cigar_items_instance[cigar_items_index].len;
 				break;
 			case 'M':
 				for ( cigar_expansion_iterator = 0 ;
@@ -494,6 +497,7 @@ void generateiCIGARString (
 					expanded_cigar_string_index++;
 				}
 				insertion_nucleotides_start_index += cigar_items_instance[cigar_items_index].len;
+				index_for_N_and_D_insertion_in_sequence += cigar_items_instance[cigar_items_index].len;
 				break;
 			case '=':
 				for ( cigar_expansion_iterator = 0 ;
@@ -505,6 +509,7 @@ void generateiCIGARString (
 					expanded_cigar_string_index++;
 				}
 				insertion_nucleotides_start_index += cigar_items_instance[cigar_items_index].len;
+				index_for_N_and_D_insertion_in_sequence += cigar_items_instance[cigar_items_index].len;
 				break;
 			case 'X':
 				for ( cigar_expansion_iterator = 0 ;
@@ -516,6 +521,7 @@ void generateiCIGARString (
 					expanded_cigar_string_index++;
 				}
 				insertion_nucleotides_start_index += cigar_items_instance[cigar_items_index].len;
+				index_for_N_and_D_insertion_in_sequence += cigar_items_instance[cigar_items_index].len;
 				break;
 			case 'I':
 				for ( cigar_expansion_iterator = 0 ;
@@ -527,6 +533,7 @@ void generateiCIGARString (
 					expanded_cigar_string_index++;
 				}
 				insertion_nucleotides_start_index += cigar_items_instance[cigar_items_index].len;
+				index_for_N_and_D_insertion_in_sequence += cigar_items_instance[cigar_items_index].len;
 				break;
 			case 'D':
 			{
@@ -537,9 +544,10 @@ void generateiCIGARString (
 				insertCharacterInString (sam_alignment_instance->sequence_with_deletions_and_splice_indicators ,
 						&sequence_with_deletions_and_splice_indicators_length ,
 						'D' ,
-						insertion_nucleotides_start_index ,
+						index_for_N_and_D_insertion_in_sequence ,
 						1);
 			}
+				index_for_N_and_D_insertion_in_sequence += cigar_items_instance[cigar_items_index].len;
 				break;
 			case 'N':
 			{
@@ -549,10 +557,11 @@ void generateiCIGARString (
 
 				insertCharacterInString (sam_alignment_instance->sequence_with_deletions_and_splice_indicators ,
 						&sequence_with_deletions_and_splice_indicators_length ,
-						'N' ,
-						insertion_nucleotides_start_index ,
+						'X' ,
+						index_for_N_and_D_insertion_in_sequence ,
 						1);
 			}
+				index_for_N_and_D_insertion_in_sequence += cigar_items_instance[cigar_items_index].len;
 				break;
 		}
 	}
