@@ -349,6 +349,7 @@ def constructFileNames( input_filename, options ):
     outputfilename = f"{options.output_directory}/inputalignedfilename_compressed"
     index_outputfilename = f"{options.output_directory}/inputalignedfilename_index"
     unmapped_outputfilename = f"{options.output_directory}/inputalignedfilename_unmapped"
+    name_of_file_with_max_commas = f"{options.output_directory}/inputaligned_max_commas"
     name_of_file_with_quality_scores = f"{options.output_directory}/inputalignedfilename_qual"
     name_of_file_with_quality_scores_rle = f"{options.output_directory}/{name_of_input_file_without_location}_qual_rle"
     name_of_file_dictionary = f"{options.output_directory}/inputalignedfilename_dictionary"
