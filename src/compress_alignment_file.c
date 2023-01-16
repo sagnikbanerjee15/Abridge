@@ -408,9 +408,6 @@ void compressAlignmentFile (
 			input_alignment_file_format ,
 			strcmp (input_alignment_file_format , "SAM") ,
 			strcmp (input_alignment_file_format , "BAM"));
-	fflush (stdout);
-	getline ( &line , &len , fhr);
-	return;
 
 	if ( strcmp (input_alignment_file_format , "SAM") == 0 )
 	{
