@@ -263,7 +263,6 @@ void compressAlignmentFile (
 	/****************************************************************************************************************************************
 	 * Variable initialization
 	 ****************************************************************************************************************************************/
-	printf ("\ninput_alignment_filename = %s" , input_alignment_filename);
 	if ( strcmp (input_alignment_file_format , "SAM") == 0 )
 	{
 		fhr = fopen (input_alignment_filename , "r");
