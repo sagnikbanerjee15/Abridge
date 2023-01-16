@@ -263,6 +263,7 @@ void compressAlignmentFile (
 	/****************************************************************************************************************************************
 	 * Variable initialization
 	 ****************************************************************************************************************************************/
+	printf ("\ninput_alignment_filename = %s" , input_alignment_filename);
 	if ( strcmp (input_alignment_file_format , "SAM") == 0 )
 	{
 		fhr = fopen (input_alignment_filename , "r");
@@ -408,14 +409,13 @@ void compressAlignmentFile (
 			input_alignment_file_format ,
 			strcmp (input_alignment_file_format , "SAM") ,
 			strcmp (input_alignment_file_format , "BAM"));
-
+	fflush (stdout);
 	if ( strcmp (input_alignment_file_format , "SAM") == 0 )
 	{
 		printf ("Entering here");
 		//fflush (stdout);
 		while ( ( line_len = getline ( &line , &len , fhr) ) != -1 )
-			;
-		//if ( line[0] != '@' ) break;
+			if ( line[0] != '@' ) break;
 	}
 	/*if ( strcmp (input_alignment_file_format , "BAM") == 0 )
 	 {
