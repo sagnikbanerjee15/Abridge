@@ -415,7 +415,7 @@ void compressAlignmentFile (
 
 	if ( temp1 == 0 )
 	{
-		//printf ("Entering here");
+		printf ("Entering here");
 		//fflush (stdout);
 		//while ( ( line_len = getline ( &line , &len , fhr) ) != -1 )
 		//	if ( line[0] != '@' ) break;
