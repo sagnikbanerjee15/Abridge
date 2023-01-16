@@ -411,11 +411,11 @@ void compressAlignmentFile (
 	fflush (stdout);
 
 	unsigned int temp1 = strcmp (input_alignment_file_format , "SAM");
-
+	return;
 	if ( temp1 == 0 )
 	{
 		printf ("Entering here");
-		fflush (stdout);
+		//fflush (stdout);
 		//while ( ( line_len = getline ( &line , &len , fhr) ) != -1 )
 		//	if ( line[0] != '@' ) break;
 	}
