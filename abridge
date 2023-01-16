@@ -349,7 +349,6 @@ def constructFileNames( input_filename, options ):
     outputfilename = f"{options.output_directory}/inputalignedfilename_compressed"
     index_outputfilename = f"{options.output_directory}/inputalignedfilename_index"
     unmapped_outputfilename = f"{options.output_directory}/inputalignedfilename_unmapped"
-    name_of_file_with_max_commas = f"{options.output_directory}/inputaligned_max_commas"
     name_of_file_with_quality_scores = f"{options.output_directory}/inputalignedfilename_qual"
     name_of_file_with_quality_scores_rle = f"{options.output_directory}/{name_of_input_file_without_location}_qual_rle"
     name_of_file_dictionary = f"{options.output_directory}/inputalignedfilename_dictionary"
@@ -376,7 +375,7 @@ def constructFileNames( input_filename, options ):
     # compressed_files = [compressed_abridged_filename_br,compressed_abridged_filename_zpaq]
     return  delete_these_files, other_files, error_files
 
-def compressSamFile( options , list_of_softwares_with_versions, volumes_list ):
+def compressSamFile( options , tag_presence, list_of_softwares_with_versions, volumes_list ):
     """
     """
     pool = multiprocessing.Pool( processes = int( options.cpu ) )
@@ -435,15 +434,25 @@ def compressSamFile( options , list_of_softwares_with_versions, volumes_list ):
             logging.info( f"{name_of_input_file_without_location} max_input_reads_in_a_single_nucl_loc = {max_input_reads_in_a_single_nucl_loc}" )
 
         cmd = f"(/usr/bin/time --verbose "
-        cmd += f" compressSamFileSingleEnded "
-        cmd += f" --reference_filename {options.reference}"        
-        cmd += f" --name_of_file_with_quality_scores {name_of_file_with_quality_scores} "
-        cmd += f" --input_sam_filename {input_filename} "
+        cmd += f" compress_alignment_file "
+        cmd += f" --input_alignment_filename {input_filename}"
+        if input_filename[:-4] == ".sam":
+            cmd += f" --input_alignment_file_format SAM"
+        elif input_filename[:-4] == ".bam":
+            cmd += f" --input_alignment_file_format BAM"
         cmd += f" --output_abridge_filename {outputfilename} "
+        cmd += f" --reference_filename {options.reference}"   
         cmd += f" --unmapped_filename {unmapped_outputfilename} "
+        cmd += f" --max_read_length {max_read_length}"
+        cmd += f" --name_of_file_with_quality_scores {name_of_file_with_quality_scores} "
+        cmd += f" --name_of_file_with_read_names_to_short_read_names_and_NH {options.output_directory}/sorted_read_names_with_NH_and_short_read_names_sorted_by_pos "
+        cmd += f" --ended SE "
+        cmd += f" --AS_tag_presence {tags_present['AS']}"
+        
+        
         cmd += f" --max_input_reads_in_a_single_nucl_loc {max_input_reads_in_a_single_nucl_loc} "
         cmd += f" --name_of_file_with_max_commas {name_of_file_with_max_commas} "
-        cmd += f" --name_of_file_with_read_names_to_short_read_names_and_NH {options.output_directory}/sorted_read_names_with_NH_and_short_read_names_sorted_by_pos "
+        
         
         if options.ignore_soft_clippings == True:
             cmd += f" --flag_ignore_soft_clippings"
@@ -461,6 +470,8 @@ def compressSamFile( options , list_of_softwares_with_versions, volumes_list ):
             cmd += f" --flag_ignore_alignment_scores "
         if options.skip_shortening_read_names == True:
             cmd += f" --skip_shortening_read_names"
+        
+        cmd += f" --max_reads_in_a_single_nucl_loc {max_reads_in_a_single_nucl_loc}"
         
         cmd += f") "
         cmd += f"1> /dev/null "
@@ -1387,7 +1398,7 @@ def main():
         if options.quiet == False:
             logging.info( f"findEndedness() execution is complete" )
         
-        compressSamFile( options, list_of_softwares_with_versions, volumes_list )
+        compressSamFile( options, tags_present, list_of_softwares_with_versions, volumes_list )
         if options.quiet == False:
             logging.info( f"compressSamFile() execution is complete" )
 
