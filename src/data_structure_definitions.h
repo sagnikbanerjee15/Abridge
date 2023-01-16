@@ -126,6 +126,7 @@ struct Sam_Alignment
 	//struct Cigar_Items *cigar_items;
 	//int number_of_cigar_items;
 
+	char *sequence_with_deletions_and_splice_indicators;
 	char *cigar_extended; // Required for generating iCIGAR
 	unsigned short int *cigar_extended_reference_skips; //Has the exact same length as that of the cigar_extended but stores the number of nucleotides of reference that is skipped. Value is defined only for 'N' and 'D'
 	char *md_extended;    // Required for generating iCIGAR

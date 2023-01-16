@@ -80,6 +80,7 @@ struct Sam_Alignment* allocateMemorySam_Alignment (unsigned int max_read_length)
 	s->template_length = ( char* ) malloc (sizeof(char) * TEN);
 	s->sequence = ( char* ) malloc (sizeof(char) * max_read_length);
 	s->quality_scores = ( char* ) malloc (sizeof(char) * max_read_length);
+	s->sequence_with_deletions_and_splice_indicators = ( char* ) malloc (sizeof(char) * max_read_length * 2);
 
 	s->left_soft_clipped_sequence = ( char* ) malloc (sizeof(char) * max_read_length);
 	s->left_soft_clipped_sequence[0] = '\0';
@@ -446,6 +447,7 @@ void generateiCIGARString (
 	unsigned short int expanded_cigar_string_index;
 	unsigned short int expanded_cigar_string_length;
 	unsigned short int insertion_nucleotides_start_index;
+	unsigned short int sequence_with_deletions_and_splice_indicators_length;
 
 	unsigned short int cigar_expansion_iterator = 0;
 	unsigned short int MD_index = 0;
@@ -456,6 +458,7 @@ void generateiCIGARString (
 	unsigned short int num;
 	unsigned short int i, j;
 	/********************************************************************/
+	sequence_with_deletions_and_splice_indicators_length = strlen (sam_alignment_instance->sequence_with_deletions_and_splice_indicators);
 	expanded_cigar_string_index = 0;
 	sam_alignment_instance->cigar_extended[0] = '\0';
 
@@ -530,6 +533,12 @@ void generateiCIGARString (
 				sam_alignment_instance->cigar_extended[expanded_cigar_string_index] = 'D';
 				sam_alignment_instance->cigar_extended_reference_skips[expanded_cigar_string_index] = cigar_items_instance[cigar_items_index].len;
 				expanded_cigar_string_index++;
+
+				insertCharacterInString (sam_alignment_instance->sequence_with_deletions_and_splice_indicators ,
+						&sequence_with_deletions_and_splice_indicators_length ,
+						'D' ,
+						i ,
+						cigar_items_instance[cigar_items_index].len);
 			}
 				break;
 			case 'N':
@@ -537,6 +546,12 @@ void generateiCIGARString (
 				sam_alignment_instance->cigar_extended[expanded_cigar_string_index] = 'N';
 				sam_alignment_instance->cigar_extended_reference_skips[expanded_cigar_string_index] = cigar_items_instance[cigar_items_index].len;
 				expanded_cigar_string_index++;
+
+				insertCharacterInString (sam_alignment_instance->sequence_with_deletions_and_splice_indicators ,
+						&sequence_with_deletions_and_splice_indicators_length ,
+						'N' ,
+						i ,
+						1);
 			}
 				break;
 		}
@@ -630,7 +645,7 @@ void generateiCIGARString (
 			sam_alignment_instance->MD ,
 			sam_alignment_instance->cigar_extended ,
 			sam_alignment_instance->md_extended ,
-			sam_alignment_instance->sequence);
+			sam_alignment_instance->sequence_with_deletions_and_splice_indicators);
 
 	printf ("\n@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
 
@@ -760,6 +775,8 @@ void populateSamAlignmentInstance (
 	dest->start_position_next = convertStringToUnsignedInteger (src[7]);
 	strcpy(dest->template_length , src[8]);
 	strcpy(dest->sequence , strupr (src[9]));
+	strcpy(dest->sequence_with_deletions_and_splice_indicators ,
+			dest->sequence);
 	strcpy(dest->quality_scores , src[10]);
 	for ( i = 0 ; dest->quality_scores[i] != '\0' ; i++ )
 		dest->quality_scores[i] += QUAL_SCORE_ADJUSTMENT;
