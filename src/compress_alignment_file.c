@@ -364,7 +364,7 @@ void compressAlignmentFile (
 	convertUnsignedIntegerToString (str , flag_ignore_unmapped_sequences);
 	strcat(line_to_be_written_to_file , str);
 	strcat(line_to_be_written_to_file , "\t");
-	strcat(temp , "flag_ignore_all_quality_scores:");
+	strcat(line_to_be_written_to_file , "flag_ignore_all_quality_scores:");
 	convertUnsignedIntegerToString (str , flag_ignore_all_quality_scores);
 	strcat(line_to_be_written_to_file , str);
 	strcat(line_to_be_written_to_file , "\t");
