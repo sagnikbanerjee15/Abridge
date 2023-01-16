@@ -375,7 +375,7 @@ def constructFileNames( input_filename, options ):
     # compressed_files = [compressed_abridged_filename_br,compressed_abridged_filename_zpaq]
     return  delete_these_files, other_files, error_files
 
-def compressSamFile( options , tag_presence, list_of_softwares_with_versions, volumes_list ):
+def compressSamFile( options , tag_present, list_of_softwares_with_versions, volumes_list ):
     """
     """
     pool = multiprocessing.Pool( processes = int( options.cpu ) )
