@@ -76,7 +76,6 @@ def parseCommandLineArguments():
     optional_named.add_argument( "--force", help = "Setting this argument will remove the output directory and start the computation from scratch", action = "store_true" )
     optional_named.add_argument( "--preserve_all_intermediate_files", help = "Set this option to preserve all the intermediate files", action = "store_true" )
     optional_named.add_argument( "--software_directory", help = "Enter the directory with all the software. Providing this argument will ensure faster execution", default = None )
-    optional_named.add_argument( "--singularity_images", help = "Enter the name of the directory where all singularity images are present", default = None)
     
     # optional_named.add_argument( "-aq", "--save_exact_quality_scores", help = "Adjust quality scores for matched bases to achieve better encoding. For more details please check ...", action = "store_true" )
     # optional_named.add_argument( "-p", "--positions", help = "Enter the position as chromosome:start-end from which reads will be retrieved" )
@@ -374,7 +373,7 @@ def constructFileNames( input_filename, options ):
     # compressed_files = [compressed_abridged_filename_br,compressed_abridged_filename_zpaq]
     return  delete_these_files, other_files, error_files
 
-def compressSamFile( options , tags_presence, list_of_softwares_with_versions, volumes_list ):
+def compressSamFile( options , list_of_softwares_with_versions, volumes_list ):
     """
     """
     pool = multiprocessing.Pool( processes = int( options.cpu ) )
@@ -1382,7 +1381,7 @@ def main():
         if options.quiet == False:
             logging.info( f"findEndedness() execution is complete" )
         
-        compressSamFile( options, tag_present, list_of_softwares_with_versions, volumes_list )
+        compressSamFile( options, list_of_softwares_with_versions, volumes_list )
         if options.quiet == False:
             logging.info( f"compressSamFile() execution is complete" )
 
