@@ -547,7 +547,7 @@ void generateiCIGARString (
 						index_for_N_and_D_insertion_in_sequence ,
 						1);
 			}
-				index_for_N_and_D_insertion_in_sequence += cigar_items_instance[cigar_items_index].len;
+				index_for_N_and_D_insertion_in_sequence += 1;
 				break;
 			case 'N':
 			{
@@ -561,7 +561,7 @@ void generateiCIGARString (
 						index_for_N_and_D_insertion_in_sequence ,
 						1);
 			}
-				index_for_N_and_D_insertion_in_sequence += cigar_items_instance[cigar_items_index].len;
+				index_for_N_and_D_insertion_in_sequence += 1;
 				break;
 		}
 	}
