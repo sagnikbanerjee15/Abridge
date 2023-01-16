@@ -408,7 +408,7 @@ void compressAlignmentFile (
 			input_alignment_file_format ,
 			strcmp (input_alignment_file_format , "SAM") ,
 			strcmp (input_alignment_file_format , "BAM"));
-	return;
+
 	if ( strcmp (input_alignment_file_format , "SAM") == 0 )
 	{
 		printf ("Entering here");
