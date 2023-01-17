@@ -822,8 +822,10 @@ void generateiCIGARString (
 				str[1] = '\0';
 				strcat(sam_alignment_instance->icigar , str);
 			}
-			strcat(sam_alignment_instance->icigar ,
-					sam_alignment_instance->cigar_extended[i]);
+
+			str[0] = sam_alignment_instance->cigar_extended[i];
+			str[1] = '\0';
+			strcat(sam_alignment_instance->icigar , str);
 		}
 	}
 
