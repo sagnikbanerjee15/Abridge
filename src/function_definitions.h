@@ -717,7 +717,7 @@ void generateiCIGARString (
 				i++;
 			i--;
 		}
-		else if ( sam_alignment_instance->cigar_extended[i] == 'S' ) //Cehck for right soft clip
+		else if ( sam_alignment_instance->cigar_extended[i] == 'S' ) //Check for right soft clip
 		{
 			if ( runlength != 0 )
 			{
@@ -825,6 +825,18 @@ void generateiCIGARString (
 			strcat(sam_alignment_instance->icigar ,
 					sam_alignment_instance->cigar_extended[i]);
 		}
+	}
+
+	if ( runlength != 0 )
+	{
+		convertUnsignedIntegerToString (str , ( unsigned long long ) runlength);
+		strcat(sam_alignment_instance->icigar , str);
+
+		runlength = 0;
+
+		str[0] = 'M';
+		str[1] = '\0';
+		strcat(sam_alignment_instance->icigar , str);
 	}
 
 	/************************************************************************************************************************/
