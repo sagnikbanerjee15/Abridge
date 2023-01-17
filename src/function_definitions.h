@@ -140,6 +140,20 @@ char* strupr (char *s)
 	return s;
 }
 
+char* strlwr (char *s)
+{
+	/*************************************************************************************************************************
+	 * Convert string to uppercase
+	 *************************************************************************************************************************/
+	char *pc = s;
+	while ( *pc )
+	{
+		*pc = tolower ( *pc); /* toupper() requires <ctype.h> */
+		++pc;
+	}
+	return s;
+}
+
 void readCompleteReference (
 		char *reference_filename,
 		struct Reference *reference)
@@ -456,8 +470,13 @@ void generateiCIGARString (
 	unsigned short int expanded_md_string_index = 0;
 	unsigned short int expanded_md_string_length = 0;
 
+	unsigned short int icigar_index;
+	unsigned short int icigar_length;
+
 	unsigned short int num;
 	unsigned short int i, j;
+
+	unsigned short int runlength;
 	/********************************************************************/
 	sequence_with_deletions_and_splice_indicators_length = strlen (sam_alignment_instance->sequence_with_deletions_and_splice_indicators);
 	expanded_cigar_string_index = 0;
@@ -676,17 +695,91 @@ void generateiCIGARString (
 
 		}
 	}
+	/************************************************************************************************************************/
+
+	/*************************************************************************************************************************
+	 * Construct the iCIGAR from all the information
+	 *************************************************************************************************************************/
+	icigar_index = 0;
+	runlength = 0;
+	sam_alignment_instance->icigar[0] = '\0';
+	for ( i = 0 ; i < expanded_cigar_string_length ; i++ )
+	{
+
+		if ( i == 0 && sam_alignment_instance->cigar_extended[i] == 'S' ) //Check for left soft clip
+		{
+			if ( flag_ignore_soft_clippings == 0 )
+			{
+				strcat(sam_alignment_instance->icigar ,
+						strlwr (sam_alignment_instance->left_soft_clipped_sequence));
+			}
+			while ( sam_alignment_instance->cigar_extended[i] == 'S' )
+				i++;
+			i--;
+		}
+		else if ( sam_alignment_instance->cigar_extended[i] == 'S' ) //Cehck for right soft clip
+		{
+			if ( flag_ignore_soft_clippings == 0 )
+			{
+				strcat(sam_alignment_instance->icigar ,
+						strlwr (sam_alignment_instance->right_soft_clipped_sequence));
+			}
+			break;
+		}
+		else if ( sam_alignment_instance->cigar_extended[i] == 'M' ) // Match or mismatch
+		{
+			if ( sam_alignment_instance->md_extended[i] == '=' )
+				runlength++; // a match
+			else // mismatch found
+			{
+				convertUnsignedIntegerToString (str ,
+						( unsigned long long ) runlength);
+				strcat(sam_alignment_instance->icigar , str);
+
+				str[0] = sam_alignment_instance->md_extended[i];
+				str[1] = '\0';
+
+				strcat(sam_alignment_instance->icigar , str);
+			}
+		}
+		else if ( sam_alignment_instance->cigar_extended[i] == 'D' ) // Deletion from reference
+		{
+			convertUnsignedIntegerToString (str ,
+					( unsigned long long ) sam_alignment_instance->cigar_extended_reference_skips[i]);
+			strcat(sam_alignment_instance->icigar , str);
+
+			str[0] = 'D';
+			str[1] = '\0';
+			strcat(sam_alignment_instance->icigar , str);
+		}
+		else if ( sam_alignment_instance->cigar_extended[i] == 'N' ) // Splices
+		{
+			convertUnsignedIntegerToString (str ,
+					( unsigned long long ) sam_alignment_instance->cigar_extended_reference_skips[i]);
+			strcat(sam_alignment_instance->icigar , str);
+
+			str[0] = 'N';
+			str[1] = '\0';
+			strcat(sam_alignment_instance->icigar , str);
+		}
+		else // Insertions
+		{
+			strcat(sam_alignment_instance->icigar ,
+					sam_alignment_instance->cigar_extended[i]);
+		}
+	}
 
 	/************************************************************************************************************************/
 
-	printf ("\nCIGAR=%s\tMD=%s\n%s\n%s\n%s" ,
+	printf ("\nCIGAR=%s\tMD=%s\n%s\n%s\n%s\n%s" ,
 			sam_alignment_instance->cigar ,
 			sam_alignment_instance->MD ,
 			sam_alignment_instance->cigar_extended ,
 			sam_alignment_instance->md_extended ,
-			sam_alignment_instance->sequence_with_deletions_and_splice_indicators);
+			sam_alignment_instance->sequence_with_deletions_and_splice_indicators ,
+			sam_alignment_instance->icigar);
 
-	printf ("\n@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+	printf ("\n@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
 
 }
 
