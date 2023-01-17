@@ -719,6 +719,18 @@ void generateiCIGARString (
 		}
 		else if ( sam_alignment_instance->cigar_extended[i] == 'S' ) //Cehck for right soft clip
 		{
+			if ( runlength != 0 )
+			{
+				convertUnsignedIntegerToString (str ,
+						( unsigned long long ) runlength);
+				strcat(sam_alignment_instance->icigar , str);
+
+				runlength = 0;
+
+				str[0] = 'M';
+				str[1] = '\0';
+				strcat(sam_alignment_instance->icigar , str);
+			}
 			if ( flag_ignore_soft_clippings == 0 )
 			{
 				strcat(sam_alignment_instance->icigar ,
@@ -732,18 +744,40 @@ void generateiCIGARString (
 				runlength++; // a match
 			else // mismatch found
 			{
-				convertUnsignedIntegerToString (str ,
-						( unsigned long long ) runlength);
-				strcat(sam_alignment_instance->icigar , str);
+				if ( runlength != 0 )
+				{
+					convertUnsignedIntegerToString (str ,
+							( unsigned long long ) runlength);
+					strcat(sam_alignment_instance->icigar , str);
+
+					runlength = 0;
+
+					str[0] = 'M';
+					str[1] = '\0';
+					strcat(sam_alignment_instance->icigar , str);
+				}
 
 				str[0] = sam_alignment_instance->md_extended[i];
 				str[1] = '\0';
-
 				strcat(sam_alignment_instance->icigar , str);
+
 			}
 		}
 		else if ( sam_alignment_instance->cigar_extended[i] == 'D' ) // Deletion from reference
 		{
+			if ( runlength != 0 )
+			{
+				convertUnsignedIntegerToString (str ,
+						( unsigned long long ) runlength);
+				strcat(sam_alignment_instance->icigar , str);
+
+				runlength = 0;
+
+				str[0] = 'M';
+				str[1] = '\0';
+				strcat(sam_alignment_instance->icigar , str);
+			}
+
 			convertUnsignedIntegerToString (str ,
 					( unsigned long long ) sam_alignment_instance->cigar_extended_reference_skips[i]);
 			strcat(sam_alignment_instance->icigar , str);
@@ -754,6 +788,18 @@ void generateiCIGARString (
 		}
 		else if ( sam_alignment_instance->cigar_extended[i] == 'N' ) // Splices
 		{
+			if ( runlength != 0 )
+			{
+				convertUnsignedIntegerToString (str ,
+						( unsigned long long ) runlength);
+				strcat(sam_alignment_instance->icigar , str);
+
+				runlength = 0;
+
+				str[0] = 'M';
+				str[1] = '\0';
+				strcat(sam_alignment_instance->icigar , str);
+			}
 			convertUnsignedIntegerToString (str ,
 					( unsigned long long ) sam_alignment_instance->cigar_extended_reference_skips[i]);
 			strcat(sam_alignment_instance->icigar , str);
@@ -764,6 +810,18 @@ void generateiCIGARString (
 		}
 		else // Insertions
 		{
+			if ( runlength != 0 )
+			{
+				convertUnsignedIntegerToString (str ,
+						( unsigned long long ) runlength);
+				strcat(sam_alignment_instance->icigar , str);
+
+				runlength = 0;
+
+				str[0] = 'M';
+				str[1] = '\0';
+				strcat(sam_alignment_instance->icigar , str);
+			}
 			strcat(sam_alignment_instance->icigar ,
 					sam_alignment_instance->cigar_extended[i]);
 		}
