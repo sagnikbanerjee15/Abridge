@@ -849,7 +849,7 @@ void generateiCIGARString (
 			sam_alignment_instance->sequence_with_deletions_and_splice_indicators ,
 			sam_alignment_instance->icigar);
 
-	printf ("\n@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+	printf ("\n\n");
 
 }
 
@@ -874,7 +874,7 @@ void processSoftClips (
 	/*************************************************************************************************************************
 	 * Processes the Sam_Alignemnt data structure and constructs the soft clips
 	 *************************************************************************************************************************/
-	if ( isSequenceSoftClipped (dest->cigar) == 0 || flag_ignore_soft_clippings == 0 ) // Process everything when there are no soft clips
+	if ( isSequenceSoftClipped (dest->cigar) == 0 || flag_ignore_soft_clippings == 1 ) // Process everything when there are no soft clips
 	{
 		strcpy(dest->left_soft_clipped_sequence , "");
 		strcpy(dest->right_soft_clipped_sequence , "");
