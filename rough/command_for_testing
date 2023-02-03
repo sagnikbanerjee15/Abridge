@@ -1,0 +1,10 @@
+ROOT_DIRECTORY=/Users/sagnik/work/ABRIDGE/testing
+
+
+abridge \
+--compress \
+--reference ${ROOT_DIRECTORY}/reference/Arabidopsis_thaliana.TAIR10.dna.toplevel.fa \
+--output_directory ${ROOT_DIRECTORY}/SRR13711353_SE \
+--inputalignedfilename ${ROOT_DIRECTORY}/alignments/SRR13711353_SE_all_tags_sorted_1.sam \
+--error_directory ${ROOT_DIRECTORY}/SRR13711353_SE \
+--framework docker \

@@ -1,0 +1,2 @@
+
+time main -c huge_sample.fastq huge_sample_fclqc parameter.json
