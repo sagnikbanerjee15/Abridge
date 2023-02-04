@@ -188,6 +188,9 @@ def validateCommandLineArguments( options ):
         options.remove_temp_directory = False
     else:
         options.remove_temp_directory = True
+    
+    cmd = f"mkdir -p {options.temp_directory}"
+    os.system(cmd)
         
     # Set up symlink to reference
     cmd = f"ln -s {options.reference} {options.temp_directory}/reference.fasta"
