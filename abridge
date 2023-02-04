@@ -206,7 +206,7 @@ def validateCommandLineArguments( options ):
         options.inputalignedfilename = abs_path
         os.system(cmd)
     
-    if options.decompress is not None:
+    if options.decompress ==True:
         extension = options.inputabrfilename.split(".")[-1]
         abs_path = os.path.abspath(f"{options.temp_directory}/inputaligned.{extension}")
         cmd = f"ln -s {os.path.abspath(options.inputabrfilename)} {abs_path}"
