@@ -195,6 +195,7 @@ def validateCommandLineArguments( options ):
     # Set up symlink to reference
     abs_path = os.path.abspath(f"{options.temp_directory}/reference.fasta")
     cmd = f"ln -s {os.path.abspath(options.reference)} {abs_path}"
+    options.reference = abs_path
     os.system(cmd)
     
     # set up symlink to the input alignment file
@@ -202,6 +203,14 @@ def validateCommandLineArguments( options ):
         extension = options.inputalignedfilename.split(".")[-1]
         abs_path = os.path.abspath(f"{options.temp_directory}/inputaligned.{extension}")
         cmd = f"ln -s {os.path.abspath(options.inputalignedfilename)} {abs_path}"
+        options.inputalignedfilename = abs_path
+        os.system(cmd)
+    
+    if options.decompress is not None:
+        extension = options.inputabrfilename.split(".")[-1]
+        abs_path = os.path.abspath(f"{options.temp_directory}/inputaligned.{extension}")
+        cmd = f"ln -s {os.path.abspath(options.inputabrfilename)} {abs_path}"
+        options.inputabrfilename = abs_path
         os.system(cmd)
     
     options.reference = f"{options.temp_directory}/reference.fasta"
