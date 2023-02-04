@@ -1203,6 +1203,7 @@ def main():
             logging.info( f"Position sorted SAM input file has been generated" )
         
         tags_present = returnTagList(options, options.inputalignedfilename, f"{options.temp_directory}/temp_file_tags")
+        print(tags_present)
         if tags_present["MD"] == 0:
             ################################################################################################################################################################################################################################################
             # Use samtools to add MD tag
