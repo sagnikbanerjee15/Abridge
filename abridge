@@ -30,7 +30,11 @@ def parseCommandLineArguments():
     Compress alignments for storage, decompress from compressed file, and generate coverages.
     The main purpose of this software is to achieve high compression and fast decompression. 
     Hence, ABRIDGE is not optimized to retrieve data from random locations
-    In addition to that, ABRIDGE can be used to generate coverage information also""", formatter_class = RawTextHelpFormatter )
+    In addition to that, ABRIDGE can be used to generate coverage information.
+    Mandatory inputs to ABRIDGE include the alignment file, the reference and the name
+    of the output file. Users can optionally provide a temporary directory where all 
+    intermediate operations will be executed. 
+    """, formatter_class = RawTextHelpFormatter )
     
     required_named = parser.add_argument_group( 'Required arguments' )
     optional_named = parser.add_argument_group( 'Optional arguments' )
@@ -38,7 +42,7 @@ def parseCommandLineArguments():
     ################################################################################################################################################################################################################################################
     # Required arguments
     ################################################################################################################################################################################################################################################
-    required_named.add_argument( "--output_directory", help = "Enter the name of the output directory. If nothing is specified then the compressed file will be put in the same location as the input samfile", required = True )
+    required_named.add_argument( "--outputfilename", help = "Enter the name of the output filename", required = True )
     required_named.add_argument( "--reference", help = "Enter a single fasta file for the reference", required = True )
 
     input_group = parser.add_mutually_exclusive_group( required = True )
@@ -54,6 +58,10 @@ def parseCommandLineArguments():
     ################################################################################################################################################################################################################################################
     # Optional arguments    
     ################################################################################################################################################################################################################################################
+    optional_named.add_argument( "--temp_directory", help = """Enter the name of the temporary directory where all intermediate operations will be executed. 
+                                                            All error files will be stored in this directory. If you do not wish to retrieve those please ignore this parameter.
+                                                            Providing an argument will prevent clean up of intermediate files""")
+    
     # Compression
     optional_named.add_argument( "--skip_shortening_read_names", help = "Request abridge to skip the step to reduce the size of read names. Please note that setting this option will enable faster compression but lead to a poor ratio of compression", action = "store_true" )
     optional_named.add_argument( "--ignore_alignment_scores", help = "Request abrigde to store the mapping quality scores and the alignment score (provided it is available through the AS tag)", action = "store_true" )
@@ -65,18 +73,14 @@ def parseCommandLineArguments():
     
     # Decompression
     optional_named.add_argument( "--quality", help = "Enter dummy quality scores while decompressing", default = 'I' )
-    optional_named.add_argument( "--ignore_sequence", help = "No nucleotide sequence will be produced during decompression", action = "store_true" )
+    optional_named.add_argument( "--ignore_sequence", help = "Dummy nucleotide sequence will be produced during decompression. A string of A's will be generated", action = "store_true" )
     
     optional_named.add_argument( "--quiet", help = "Prevent abridge from printing any log information. By default logging is enables", action = "store_true" )
     optional_named.add_argument( "--cpu", help = "Enter the number of CPU cores to be used. This option will be used during compression or decompression.", default = 1 )
     optional_named.add_argument( "--run_diagnostics", help = "abridge will run diagnostics on the cigar compression and decompression. It will exit on discovery of any discrepancies", action = "store_true" )
-    optional_named.add_argument( "--keep_intermediate_error_files", help = "Set this argument if you wish to preserve the intermediate error files to assess time and memory usage. Default behaviour is to delete those", action = "store_true" )
-    optional_named.add_argument( "--error_directory", help = "Enter a directory where all error files will be stored. If nothing is specified then error files will be stored in the output directory" )
-    #optional_named.add_argument( "--framework", help = "Enter your choice of framework", choices = ["docker", "singularity"], default = "docker" )
     optional_named.add_argument( "--force", help = "Setting this argument will remove the output directory and start the computation from scratch", action = "store_true" )
-    optional_named.add_argument( "--preserve_all_intermediate_files", help = "Set this option to preserve all the intermediate files", action = "store_true" )
-    optional_named.add_argument( "--software_directory", help = "Enter the directory with all the software. Providing this argument will ensure faster execution", default = None )
     
+    # Coverage generation
     # optional_named.add_argument( "-aq", "--save_exact_quality_scores", help = "Adjust quality scores for matched bases to achieve better encoding. For more details please check ...", action = "store_true" )
     # optional_named.add_argument( "-p", "--positions", help = "Enter the position as chromosome:start-end from which reads will be retrieved" )
     # optional_named.add_argument( "-rp", "--read_prefix", help = "Enter a read prefix for decompression - valid only for random access" )
@@ -90,6 +94,8 @@ def parseCommandLineArguments():
     parser.add_argument( "--reference_to_length", help = argparse.SUPPRESS )
     parser.add_argument( "--outputfilename", help = argparse.SUPPRESS )
     parser.add_argument( "--compile_programs", action = "store_true", help = argparse.SUPPRESS )  # Force abridge to compile the C programs
+    parser.add_argument( "--outputs_and_errors_directory", action = "store_true", help = argparse.SUPPRESS)
+    parser.add_argument( "--remove_temp_directory", action = "store_true", help = argparse.SUPPRESS)
 
     # Future enhancements
     compress_decompress_group.add_argument( "--generate_overlapping_coverage", help = argparse.SUPPRESS, action = "store_true" )  # Future - This option can be used in conjuction with --positions to construct coverage from a specific location # help="Enter the name of the compressed file from which you wish to generate an overlapping coverage of reads ",
@@ -152,7 +158,7 @@ def executeCommand(options, software, version, volumes_list, singularity_sif_loc
                           name = software,
                             version = version,
                             image_location = f"ghcr.io/sagnikbanerjee15/dockerized_tools_and_pipelines/{software}",
-                            container_name = f"{options.output_directory.split('/')[-1]}",
+                            container_name = f"{options.temp_directory.split('/')[-1]}",
                             volumes = volumes_list,
                             command = cmd,
                             cpus = options.cpu,
@@ -163,7 +169,7 @@ def executeCommand(options, software, version, volumes_list, singularity_sif_loc
                             name = software,
                             version = version,
                             image_location = singularity_sif_location,
-                            container_name = f"{options.output_directory.split('/')[-1]}",
+                            container_name = f"{options.temp_directory.split('/')[-1]}",
                             volumes = volumes_list,
                             command = cmd,
                             cpus = options.cpu,
@@ -174,8 +180,24 @@ def executeCommand(options, software, version, volumes_list, singularity_sif_loc
 def validateCommandLineArguments( options ):
     """
     """
+    length_of_temp_directory_name = 10
+    if options.temp_directory == None:
+        random_string = ''.join(random.choices(string.ascii_uppercase + string.ascii_lowercase, k = length_of_temp_directory_name))
+        while os.path.dirname(random_string) == True:
+            random_string = ''.join(random.choices(string.ascii_uppercase + string.ascii_lowercase, k = length_of_temp_directory_name))
+        options.temp_directory = random_string
+        options.remove_temp_directory = False
+    else:
+        options.remove_temp_directory = True
+        
+    # Set up symlink to reference
+    cmd = f"ln -s {options.reference} {options.temp_directory}/reference.fasta"
+    os.system(cmd)
+    
+    options.reference = f"{options.temp_directory}/reference.fasta"
+    
     if options.compress == True and options.inputalignedfilename is None and options.inputabrfilename is not None:
-        print( "For compression you need to provide a list of space spearated samfiles using -ialigned " )
+        print( "For compression you need to provide a single alignment file using -ialigned " )
         if options.quiet == False:
             logging.info( "For compression you need to provide one aligned file in either SAM or BAM format using -ialigned " )
         sys.exit()
@@ -184,6 +206,7 @@ def validateCommandLineArguments( options ):
         if options.quiet == False:
             logging.info( "For decompression you need to provide a list of abridge compressed files using -iabr" )
         sys.exit()
+        
     if options.inputalignedfilename is not None:
         inputfiles = options.inputalignedfilename
     else:
@@ -203,30 +226,13 @@ def validateCommandLineArguments( options ):
                 logging.info( f"The input file {options.inputalignedfilename} needs to be in sam format. Exiting..." )
             sys.exit()
 
-    options.files_for_removal = []
-    options.softwares = {}
 
     if options.generate_overlapping_coverage == True or options.generate_non_overlapping_coverage == True:
-        options.output_directory = "/".join( options.inputabrfilename.split( "/" )[:-1] ) + "/" + str( int( time.time() ) )
-        os.system( f"mkdir -p {options.output_directory}" )
-
-    """
-    if options.random == True and options.positions == None:
-        print( "You need to enter at least one location from where reads will be retrieved" )
-        sys.exit()
-
-    if options.random == True and options.inputabrfilename is None:
-        print( f"You need to provide one compressed file for random access" )
-        sys.exit()
-
-    if options.random == True and options.inputalignedfilename is not None:
-        print( f"You need to provide one compressed file for random access" )
-        sys.exit()
-    """
-    if options.error_directory == None:
-        options.error_directory = options.output_directory
-    else:
-        os.system( f"mkdir -p {options.error_directory}" )
+        options.temp_directory = "/".join( options.inputabrfilename.split( "/" )[:-1] ) + "/" + str( int( time.time() ) )
+        os.system( f"mkdir -p {options.temp_directory}" )
+    
+    options.outputs_and_errors_directory = f"{options.temp_directory}/output_and_errors"
+    os.system( f"mkdir -p {options.outputs_and_errors_directory}" )
 
     """
     options.softwares["determineEndedness"] = "determineEndedness"
@@ -286,49 +292,12 @@ def validateCommandLineArguments( options ):
         input_filename_without_location = options.inputalignedfilename.split( "/" )[-1][:-4]
     else:
         input_filename_without_location = options.inputabrfilename.split( "/" )[-1][:-8]
-    options.outputfilename = f"{options.output_directory}/{input_filename_without_location}.abridge"
-    
-    if options.software_directory != "":
-        options.singularity_images = options.software_directory
-    else:
-        options.singularity_images = f"{options.singularity_images}"
-
-def checkSAMAlignments( options, logging ):
-    """NOT CALLED REMOVE IN NEXT VERSION
-    """
-
-    if "SO:coordinate" not in open( f"{options.inputalignedfilename}", "r" ).readline():
-        print( f"The file {options.inputalignedfilename} is not sorted. Exiting" )
-        if options.quiet == False:
-            logging.info( f"The file {options.inputalignedfilename} is not sorted. Exiting" )
-        sys.exit()
-
-    # Verify that all the headers are exactly same
-    headers = []
-
-    fhr = open( f"{options.inputalignedfilename}", "r" )
-    header = ""
-    for line in fhr:
-        if line[:3] == '@SQ' or line[:3] == "@HD":
-            header += line
-        else:
-            if "NH:i" in line or "XM:i" in line:
-                NH_present = 1
-            else:
-                NH_present = 0
-            break
-    headers.append( header )
-    if len( set( headers ) ) != 1:
-        print( "All the headers must be same. Please check your bamfile. Exiting..." )
-        if options.quiet == False:
-            logging.info( "All the headers must be same. Please check your bamfile. Exiting..." )
-            sys.exit()
-    return NH_present
+    options.outputfilename = f"{options.temp_directory}/{input_filename_without_location}.abridge"
 
 def cleanUp( options ):
     # Remove the reference files
     reference_filename_without_location = options.reference.split( "/" )[-1]
-    options.reference = f"{options.output_directory}/{reference_filename_without_location}"
+    options.reference = f"{options.temp_directory}/{reference_filename_without_location}"
     os.system( f"rm -rf {options.reference}*" )
 
     return
@@ -344,31 +313,31 @@ def constructFileNames( input_filename, options ):
     name_of_input_file_without_location = input_filename.split( "/" )[-1][:-4]
 
     # Input filenames for each program
-    summary_information_outputfilename = f"{options.output_directory}/inputalignedfilename_summary_information"
-    frequency_of_flags_filename = f"{options.output_directory}/inputalignedfilename_frequency_of_flags"
+    summary_information_outputfilename = f"{options.temp_directory}/inputalignedfilename_summary_information"
+    frequency_of_flags_filename = f"{options.temp_directory}/inputalignedfilename_frequency_of_flags"
 
-    outputfilename = f"{options.output_directory}/inputalignedfilename_compressed"
-    index_outputfilename = f"{options.output_directory}/inputalignedfilename_index"
-    unmapped_outputfilename = f"{options.output_directory}/inputalignedfilename_unmapped"
-    name_of_file_with_quality_scores = f"{options.output_directory}/inputalignedfilename_qual"
-    name_of_file_with_quality_scores_rle = f"{options.output_directory}/{name_of_input_file_without_location}_qual_rle"
-    name_of_file_dictionary = f"{options.output_directory}/inputalignedfilename_dictionary"
-    fclqc_output_filename = f"{options.output_directory}/inputalignedfilename_qual_compressed_fclqc"
+    outputfilename = f"{options.temp_directory}/inputalignedfilename_compressed"
+    index_outputfilename = f"{options.temp_directory}/inputalignedfilename_index"
+    unmapped_outputfilename = f"{options.temp_directory}/inputalignedfilename_unmapped"
+    name_of_file_with_quality_scores = f"{options.temp_directory}/inputalignedfilename_qual"
+    name_of_file_with_quality_scores_rle = f"{options.temp_directory}/{name_of_input_file_without_location}_qual_rle"
+    name_of_file_dictionary = f"{options.temp_directory}/inputalignedfilename_dictionary"
+    fclqc_output_filename = f"{options.temp_directory}/inputalignedfilename_qual_compressed_fclqc"
 
-    error_file_compute_information_for_better_memory_management = f"{options.error_directory}/compute_information_for_better_memory_management.error"
+    error_file_compute_information_for_better_memory_management = f"{options.outputs_and_errors_directory}/compute_information_for_better_memory_management.error"
     error_file_compress_ = f"{outputfilename}.error"
     error_file_prep_abridge_index = f"{index_outputfilename}.error"
     error_file_qual_rle = f"{name_of_file_with_quality_scores_rle}.error"
     error_fclqc = f"{fclqc_output_filename}.error"
 
-    error_file_7z_compression = f"{options.error_directory}/7z_compression.error"
-    error_file_zpaq_compression = f"{options.error_directory}/zpaq_compression.error"
-    error_file_brotli_compression = f"{options.error_directory}/brotli_compression.error"
+    error_file_7z_compression = f"{options.outputs_and_errors_directory}/7z_compression.error"
+    error_file_zpaq_compression = f"{options.outputs_and_errors_directory}/zpaq_compression.error"
+    error_file_brotli_compression = f"{options.outputs_and_errors_directory}/brotli_compression.error"
 
     # Decompression
-    error_file_7z_decompression = f"{options.error_directory}/7z_decompression.error"
-    error_file_zpaq_decompression = f"{options.error_directory}/zpaq_decompression.error"
-    error_file_brotli_decompression = f"{options.error_directory}/brotli_decompression.error"
+    error_file_7z_decompression = f"{options.outputs_and_errors_directory}/7z_decompression.error"
+    error_file_zpaq_decompression = f"{options.outputs_and_errors_directory}/zpaq_decompression.error"
+    error_file_brotli_decompression = f"{options.outputs_and_errors_directory}/brotli_decompression.error"
 
     delete_these_files = [summary_information_outputfilename]
     other_files = [summary_information_outputfilename, outputfilename, index_outputfilename, unmapped_outputfilename, name_of_file_with_quality_scores, name_of_file_with_quality_scores_rle, name_of_file_dictionary, fclqc_output_filename]
@@ -444,7 +413,7 @@ def compressSamFile( options , tags_present, list_of_softwares_with_versions, vo
         cmd += f" --unmapped_filename {unmapped_outputfilename} "
         cmd += f" --max_read_length {max_read_length}"
         cmd += f" --name_of_file_with_quality_scores {name_of_file_with_quality_scores} "
-        cmd += f" --name_of_file_with_read_names_to_short_read_names_and_NH {options.output_directory}/sorted_read_names_with_NH_and_short_read_names_sorted_by_pos "
+        cmd += f" --name_of_file_with_read_names_to_short_read_names_and_NH {options.temp_directory}/sorted_read_names_with_NH_and_short_read_names_sorted_by_pos "
         if options.single_ended==True:
             cmd += f" --ended SE "
         else:
@@ -467,7 +436,6 @@ def compressSamFile( options , tags_present, list_of_softwares_with_versions, vo
             cmd += f" --flag_ignore_alignment_scores "
         if options.skip_shortening_read_names == True:
             cmd += f" --skip_shortening_read_names"
-        
         cmd += f" --max_reads_in_a_single_nucl_loc {max_input_reads_in_a_single_nucl_loc}"
         
         cmd += f") "
@@ -550,7 +518,7 @@ def compressSamFile( options , tags_present, list_of_softwares_with_versions, vo
         cmd += f" --max_input_reads_in_a_single_nucl_loc {max_input_reads_in_a_single_nucl_loc} "
         cmd += f" --name_of_file_with_max_commas {name_of_file_with_max_commas} "
         cmd += f" --name_of_file_with_quality_scores {name_of_file_with_quality_scores} "
-        cmd += f" --name_of_file_with_read_names_to_short_read_names_and_NH {options.output_directory}/sorted_read_names_with_NH_and_short_read_names_sorted_by_pos "
+        cmd += f" --name_of_file_with_read_names_to_short_read_names_and_NH {options.temp_directory}/sorted_read_names_with_NH_and_short_read_names_sorted_by_pos "
         
         if options.ignore_soft_clippings == True:
             cmd += f" --flag_ignore_soft_clippings"
@@ -588,7 +556,7 @@ def compressSamFile( options , tags_present, list_of_softwares_with_versions, vo
     number_of_quality_scores = int( open( f"{name_of_total_number_of_alignments_file}" , "r" ).read().strip() )
 
     # Create the parameter file for fclqc
-    fhw = open( f"{options.output_directory}/parameter.json", "w" )
+    fhw = open( f"{options.temp_directory}/parameter.json", "w" )
     fhw.write( "{\n" )
     fhw.write( f"\t\"precision\": 52,\n" )
     fhw.write( f"\t\"file_size\": {number_of_quality_scores},\n" )
@@ -602,7 +570,7 @@ def compressSamFile( options , tags_present, list_of_softwares_with_versions, vo
     cmd += f" main "
     cmd += f" -c {name_of_file_with_quality_scores} "
     cmd += f" {fclqc_output_filename}"
-    cmd += f" {options.output_directory}/parameter.json"
+    cmd += f" {options.temp_directory}/parameter.json"
     cmd += f") "
     cmd += f" 1> /dev/null "
     cmd += f" 2> {error_fclqc}"
@@ -612,7 +580,7 @@ def compressSamFile( options , tags_present, list_of_softwares_with_versions, vo
     ######################################################################################
     # Generate SHA512 for reference file
     ######################################################################################
-    reference_sha512_filename = f"{options.output_directory}/reference_sha512"
+    reference_sha512_filename = f"{options.temp_directory}/reference_sha512"
     cmd = f"sha512sum {options.reference} > {reference_sha512_filename}.temp"
     os.system( cmd )
     open( reference_sha512_filename, "w" ).write( open( f"{reference_sha512_filename}.temp", "r" ).read().strip().split()[0] )
@@ -647,7 +615,7 @@ def compressSamFile( options , tags_present, list_of_softwares_with_versions, vo
 
     os.system(cmd)
 
-    all_files = glob.glob( f"{options.output_directory}/*" )
+    all_files = glob.glob( f"{options.temp_directory}/*" )
     keep_these_files = []
     for file in all_files:
         if file[-6:] == ".error" or file[-8:] == ".abridge" or file[-3:] == "log":
@@ -712,19 +680,19 @@ def decompressSamFile( options , list_of_softwares_with_versions, volumes_list )
     name_of_max_input_reads_file, name_of_file_with_max_commas, name_of_file_max_read_length, name_of_total_number_of_alignments_file, frequency_of_flags_filename = delete_these_files
     outputfilename, index_outputfilename, unmapped_outputfilename, name_of_file_with_quality_scores, name_of_file_with_quality_scores_rle, name_of_file_dictionary, fclqc_output_filename = other_files
 
-    outputfilename = f"{options.output_directory}/inputalignedfilename_compressed"
-    unmapped_outputfilename = f"{options.output_directory}/inputalignedfilename_unmapped"
-    name_of_file_with_quality_scores = f"{options.output_directory}/inputalignedfilename_qual"
+    outputfilename = f"{options.temp_directory}/inputalignedfilename_compressed"
+    unmapped_outputfilename = f"{options.temp_directory}/inputalignedfilename_unmapped"
+    name_of_file_with_quality_scores = f"{options.temp_directory}/inputalignedfilename_qual"
 
     cmd = f"samtools faidx {options.reference}"
     
     os.system(cmd)
 
-    cmd = f"zpaq l {options.inputabrfilename} > {options.output_directory}/file_list  2> {options.error_directory}/zpaq_file_list.error"
+    cmd = f"zpaq l {options.inputabrfilename} > {options.temp_directory}/file_list  2> {options.outputs_and_errors_directory}/zpaq_file_list.error"
 
     os.system(cmd)
 
-    fhr = open( f"{options.output_directory}/file_list", "r" )
+    fhr = open( f"{options.temp_directory}/file_list", "r" )
     line_num = 0
     for line in fhr:
         line_num += 1
@@ -734,16 +702,16 @@ def decompressSamFile( options , list_of_softwares_with_versions, volumes_list )
 
     # compression_directory = compression_directory.split("/")[-2]
     fhr.close()
-    cmd = f"zpaq x {options.inputabrfilename} {'/'.join(compression_directory.split('/')[:-1])} -to {options.output_directory} -t{options.cpu} 2> {options.error_directory}/zpaq_decompress.error"
+    cmd = f"zpaq x {options.inputabrfilename} {'/'.join(compression_directory.split('/')[:-1])} -to {options.temp_directory} -t{options.cpu} 2> {options.outputs_and_errors_directory}/zpaq_decompress.error"
 
     os.system(cmd)
 
     # Move files
-    cmd = f"mv {options.output_directory}/{compression_directory.split('/')[-1]}/* {options.output_directory}"
+    cmd = f"mv {options.temp_directory}/{compression_directory.split('/')[-1]}/* {options.temp_directory}"
     os.system(cmd)
 
     # Create the parameter file for fclqc
-    fhw = open( f"{options.output_directory}/parameter.json", "w" )
+    fhw = open( f"{options.temp_directory}/parameter.json", "w" )
     fhw.write( "{\n" )
     fhw.write( f"\t\"precision\": 52,\n" )
     fhw.write( f"\t\"file_size\": 1,\n" )
@@ -753,28 +721,28 @@ def decompressSamFile( options , list_of_softwares_with_versions, volumes_list )
     fhw.write( "}\n" )
     fhw.close()
 
-    if len( glob.glob( f"{options.output_directory}/*fclqc001.enc" ) ) > 0:
-        enc_file_to_be_decompressed = glob.glob( f"{options.output_directory}/*fclqc001.enc" )[0]
+    if len( glob.glob( f"{options.temp_directory}/*fclqc001.enc" ) ) > 0:
+        enc_file_to_be_decompressed = glob.glob( f"{options.temp_directory}/*fclqc001.enc" )[0]
     else:
-        # enc_file_to_be_decompressed =  f"{options.output_directory}/*fclqc001.enc"
+        # enc_file_to_be_decompressed =  f"{options.temp_directory}/*fclqc001.enc"
         os.system( f"touch {name_of_file_with_quality_scores}" )
 
-    if os.path.exists( f"{name_of_file_with_quality_scores}" ) == False and len( glob.glob( f"{options.output_directory}/*fclqc001.enc" ) ) > 0:
+    if os.path.exists( f"{name_of_file_with_quality_scores}" ) == False and len( glob.glob( f"{options.temp_directory}/*fclqc001.enc" ) ) > 0:
         cmd = f"(/usr/bin/time --verbose "
         cmd += f" main "
         cmd += f" -d "
         cmd += f" {enc_file_to_be_decompressed.split('001')[0]} "
         cmd += f" {fclqc_output_filename}_decompressed "
-        cmd += f" {options.output_directory}/parameter.json "
+        cmd += f" {options.temp_directory}/parameter.json "
         cmd += f")"
         cmd += f"1> /dev/null "
-        cmd += f"2> {options.error_directory}/fclqc_decompress.error"
+        cmd += f"2> {options.outputs_and_errors_directory}/fclqc_decompress.error"
 
         os.system(cmd)
 
     cmd = f"mv {fclqc_output_filename}_decompressed001.dec {name_of_file_with_quality_scores}"
 
-    if os.path.exists( f"{name_of_file_with_quality_scores}" ) == False and len( glob.glob( f"{options.output_directory}/*fclqc001.enc" ) ) > 0:
+    if os.path.exists( f"{name_of_file_with_quality_scores}" ) == False and len( glob.glob( f"{options.temp_directory}/*fclqc001.enc" ) ) > 0:
         os.system(cmd)
 
     # flag_ignore_mismatches, flag_ignore_soft_clippings, flag_ignore_unmapped_sequences, flag_ignore_quality_score, ignore_quality_scores_for_matched_bases, save_exact_quality_scores, ignore_alignment_scores = list( map( int, open( outputfilename, "rb" ).readline().split() ) )
@@ -787,8 +755,8 @@ def decompressSamFile( options , list_of_softwares_with_versions, volumes_list )
     flag_ignore_mismatches, flag_ignore_soft_clippings, flag_ignore_unmapped_sequences, flag_ignore_all_quality_scores, flag_ignore_quality_scores_for_matched_bases, flag_ignore_alignment_scores, skip_shortening_read_names = all_flags_numeric
 
     name_of_input_file_without_location = options.inputabrfilename.split( "/" )[-1].split( ".abridge" )[0]
-    max_reads_in_each_line_filename = f"{options.output_directory}/max_reads_in_each_line_filename"
-    output_sam_filename = f"{options.output_directory}/{name_of_input_file_without_location}_decompressed.sam"
+    max_reads_in_each_line_filename = f"{options.temp_directory}/max_reads_in_each_line_filename"
+    output_sam_filename = f"{options.temp_directory}/{name_of_input_file_without_location}_decompressed.sam"
 
     cmd = f" maxReadsInEachLine "
     cmd += f" {outputfilename} "
@@ -818,7 +786,7 @@ def decompressSamFile( options , list_of_softwares_with_versions, volumes_list )
     cmd += f") "
     #cmd += f"1> /dev/null "
     if options.keep_intermediate_error_files == True:
-        cmd += f"2> {options.error_directory}/{name_of_input_file_without_location}_decompress.error"
+        cmd += f"2> {options.outputs_and_errors_directory}/{name_of_input_file_without_location}_decompress.error"
     else:
         cmd += f"2> /dev/null"
 
@@ -869,13 +837,13 @@ def generateCoverage( _outputfilename, _index_outputfilename, options ):
         options.generate_non_overlapping_coverage = 0
 
     name_of_input_file_without_location = options.inputabrfilename.split( "/" )[-1].split( ".abridge" )[0]
-    dictionary_name = f"{options.output_directory}/{name_of_input_file_without_location}.sam.dictionary"
+    dictionary_name = f"{options.temp_directory}/{name_of_input_file_without_location}.sam.dictionary"
     if os.path.exists( dictionary_name ) == True:
         single = 0
     else:
         single = 1
 
-    max_reads_in_each_line_filename = f"{options.output_directory}/{name_of_input_file_without_location}.max_read_in_each_line"
+    max_reads_in_each_line_filename = f"{options.temp_directory}/{name_of_input_file_without_location}.max_read_in_each_line"
 
     cmd = f"(/usr/bin/time --verbose "
     cmd += f" {generateCoverage} "
@@ -901,8 +869,8 @@ def generateCoverage( _outputfilename, _index_outputfilename, options ):
         cmd += f" {max_reads_in_each_line} "  # argv[11]
     cmd += f") "
     if options.keep_intermediate_error_files == True:
-        # cmd += f" 1> {options.error_directory}/{name_of_input_file_without_location}_coverage_generation_{options.d}_{options.bg}_{options.bga}_{options.split}_{options.generate_overlapping_coverage}_{options.generate_non_overlapping_coverage}.output "
-        cmd += f" 2> {options.error_directory}/{name_of_input_file_without_location}_coverage_generation_{options.d}_{options.bg}_{options.bga}_{options.split}_{options.generate_overlapping_coverage}_{options.generate_non_overlapping_coverage}.error"
+        # cmd += f" 1> {options.outputs_and_errors_directory}/{name_of_input_file_without_location}_coverage_generation_{options.d}_{options.bg}_{options.bga}_{options.split}_{options.generate_overlapping_coverage}_{options.generate_non_overlapping_coverage}.output "
+        cmd += f" 2> {options.outputs_and_errors_directory}/{name_of_input_file_without_location}_coverage_generation_{options.d}_{options.bg}_{options.bga}_{options.split}_{options.generate_overlapping_coverage}_{options.generate_non_overlapping_coverage}.error"
     else:
         # cmd += f" 1> /dev/null "
         cmd += f"2> /dev/null"
@@ -934,13 +902,13 @@ def retrieveAlignmentsRandomly( chromosome, start, end, options ):
 
     input_filename = options.inputabrfilename
     name_of_input_file_without_location = input_filename.split( "/" )[-1][:-8]
-    _outputfilename = options.output_directory + "/" + name_of_input_file_without_location + ".sam_concise"
-    _index_outputfilename = options.output_directory + "/" + name_of_input_file_without_location + ".sam_concise_index"
-    unmapped_outputfilename = options.output_directory + "/" + name_of_input_file_without_location + ".sam_conciseunmapped"
-    name_of_file_with_quality_scores = f"{options.output_directory}/{name_of_input_file_without_location}.sam_concisequal"
+    _outputfilename = options.temp_directory + "/" + name_of_input_file_without_location + ".sam_concise"
+    _index_outputfilename = options.temp_directory + "/" + name_of_input_file_without_location + ".sam_concise_index"
+    unmapped_outputfilename = options.temp_directory + "/" + name_of_input_file_without_location + ".sam_conciseunmapped"
+    name_of_file_with_quality_scores = f"{options.temp_directory}/{name_of_input_file_without_location}.sam_concisequal"
     compressed_abridged_filename = input_filename
-    output_sam_filename = options.output_directory + "/" + name_of_input_file_without_location + ".decompressed.sam"
-    outputfilename = options.output_directory + "/" + name_of_input_file_without_location + "_" + options.positions.replace( ":", "_" ) + ".sam"
+    output_sam_filename = options.temp_directory + "/" + name_of_input_file_without_location + ".decompressed.sam"
+    outputfilename = options.temp_directory + "/" + name_of_input_file_without_location + "_" + options.positions.replace( ":", "_" ) + ".sam"
     files_to_be_removed = []
 
     cmd = f"(/usr/bin/time --verbose "
@@ -950,13 +918,13 @@ def retrieveAlignmentsRandomly( chromosome, start, end, options ):
     cmd += f") "
     cmd += f"1> /dev/null "
     if options.keep_intermediate_error_files == True:
-        cmd += f"2> {options.error_directory}/{name_of_input_file_without_location}_RLE_decompress.error"
+        cmd += f"2> {options.outputs_and_errors_directory}/{name_of_input_file_without_location}_RLE_decompress.error"
     else:
         cmd += f"2> /dev/null"
     os.system( cmd )
     files_to_be_removed.append( f"{name_of_file_with_quality_scores}" )
 
-    dictionary_name = f"{options.output_directory}/{name_of_input_file_without_location}.sam.dictionary"
+    dictionary_name = f"{options.temp_directory}/{name_of_input_file_without_location}.sam.dictionary"
     # print(dictionary_name)
     if os.path.exists( dictionary_name ) == False:
         cmd = f" {randomRetrievalSingleEnded} "  # argv[0]
@@ -992,44 +960,44 @@ def createPositionSortedSAMInputFileForCompressing( options, list_of_softwares_w
     inputalignedfilename_fullpath, inputalignedfilename_onlypath, inputalignedfilename_onlyfilename, inputalignedfilename_onlybasename, inputalignedfilename_onlyextension = seggregateInformationFromFilename(options.inputalignedfilename)
     
     if inputalignedfilename_onlyextension == "bam":
-        cmd = f"samtools view -h -@ {options.cpu} {options.inputalignedfilename}|head > {options.output_directory}/header"
-        remove_these_files.append( f"{options.output_directory}/header" )
+        cmd = f"samtools view -h -@ {options.cpu} {options.inputalignedfilename}|head > {options.temp_directory}/header"
+        remove_these_files.append( f"{options.temp_directory}/header" )
         
         os.system(cmd)
 
-        first_line = open( f"{options.output_directory}/header" , "r" ).readline().strip()
+        first_line = open( f"{options.temp_directory}/header" , "r" ).readline().strip()
         if "SO:coordinate" in first_line:
             # Convert to Sam file
-            cmd = f"samtools view -h -@ {options.cpu} {options.inputalignedfilename} > {options.output_directory}/inputalignedfilename.sam "
-            options.inputalignedfilename = f"{options.output_directory}/inputalignedfilename.sam"
+            cmd = f"samtools view -h -@ {options.cpu} {options.inputalignedfilename} > {options.temp_directory}/inputalignedfilename.sam "
+            options.inputalignedfilename = f"{options.temp_directory}/inputalignedfilename.sam"
             remove_these_files.append( options.inputalignedfilename )
 
-            if os.path.exists( f"{options.output_directory}/inputalignedfilename.sam" ) == True:return
+            if os.path.exists( f"{options.temp_directory}/inputalignedfilename.sam" ) == True:return
             os.system(cmd)
         else:
             # Need to sort by coordinate
-            cmd = f"samtools sort -@ {options.cpu} {options.inputalignedfilename}|samtools view -h -@ {options.cpu} > {options.output_directory}/inputalignedfilename.sam "
-            options.inputalignedfilename = f"{options.output_directory}/inputalignedfilename.sam"
+            cmd = f"samtools sort -@ {options.cpu} {options.inputalignedfilename}|samtools view -h -@ {options.cpu} > {options.temp_directory}/inputalignedfilename.sam "
+            options.inputalignedfilename = f"{options.temp_directory}/inputalignedfilename.sam"
             remove_these_files.append( options.inputalignedfilename )
 
-            if os.path.exists( f"{options.output_directory}/inputalignedfilename.sam" ) == True:return
+            if os.path.exists( f"{options.temp_directory}/inputalignedfilename.sam" ) == True:return
             os.system(cmd)
 
     elif inputalignedfilename_onlyextension == "sam":
         first_line = open( options.inputalignedfilename, "r" ).readline().strip()
         if "SO:coordinate" in first_line:
             # Link the input sam file to the output directory
-            cmd = f"cp {options.inputalignedfilename} {options.output_directory}/inputalignedfilename.sam "
-            options.inputalignedfilename = f"{options.output_directory}/inputalignedfilename.sam"
+            cmd = f"cp {options.inputalignedfilename} {options.temp_directory}/inputalignedfilename.sam "
+            options.inputalignedfilename = f"{options.temp_directory}/inputalignedfilename.sam"
             remove_these_files.append( options.inputalignedfilename )
             os.system( cmd )
         else:
             # Sort Samfile by coordinate
-            cmd = f"samtools view -bS -@ {options.cpu} {options.inputalignedfilename}|samtools sort -@ {options.cpu}|samtools view -h -@ {options.cpu} > {options.output_directory}/inputalignedfilename.sam "
-            options.inputalignedfilename = f"{options.output_directory}/inputalignedfilename.sam"
+            cmd = f"samtools view -bS -@ {options.cpu} {options.inputalignedfilename}|samtools sort -@ {options.cpu}|samtools view -h -@ {options.cpu} > {options.temp_directory}/inputalignedfilename.sam "
+            options.inputalignedfilename = f"{options.temp_directory}/inputalignedfilename.sam"
             remove_these_files.append( options.inputalignedfilename )
 
-            if os.path.exists( f"{options.output_directory}/inputalignedfilename.sam" ) == True:return
+            if os.path.exists( f"{options.temp_directory}/inputalignedfilename.sam" ) == True:return
             os.system(cmd)
 
 def returnTagList(options, samfilename, tagfilename, list_of_softwares_with_versions, volumes_list):
@@ -1065,11 +1033,11 @@ def alterReadNamesAndAddNHTag( options, list_of_softwares_with_versions, remove_
     Add more tags as required
     """
     # Check which tags are already present in the aligned file
-    tags_present = returnTagList(options, options.inputalignedfilename, f"{options.output_directory}/temp_file_tags", list_of_softwares_with_versions, volumes_list)
+    tags_present = returnTagList(options, options.inputalignedfilename, f"{options.temp_directory}/temp_file_tags", list_of_softwares_with_versions, volumes_list)
     
     if tags_present["NH"] == 1 and options.skip_shortening_read_names == True: 
         # Creating a dummy file
-        open(f"{options.output_directory}/sorted_read_names_with_NH_and_short_read_names_sorted_by_pos","w").close()
+        open(f"{options.temp_directory}/sorted_read_names_with_NH_and_short_read_names_sorted_by_pos","w").close()
         logging.info("Skipping the generation of short read names")
         return tags_present
     
@@ -1078,8 +1046,8 @@ def alterReadNamesAndAddNHTag( options, list_of_softwares_with_versions, remove_
     # $1 - Long read name
     # $2 - Line number where the read appears
     cmd = f"printReadNamesAndLineNumbers -i {options.inputalignedfilename}|sort "
-    cmd += f"> {options.output_directory}/sorted_read_names"
-    if os.path.exists( f"{options.output_directory}/sorted_read_names" ) == False:
+    cmd += f"> {options.temp_directory}/sorted_read_names"
+    if os.path.exists( f"{options.temp_directory}/sorted_read_names" ) == False:
         os.system(cmd)
 
     logging.info( "Read names sorted" )
@@ -1088,12 +1056,12 @@ def alterReadNamesAndAddNHTag( options, list_of_softwares_with_versions, remove_
     # Output file contains 2 columns - 
     # $1 - Long read name
     # $2 - Number of times the read name appears 
-    cmd = f"cat {options.output_directory}/sorted_read_names" + "|cut -f1|uniq -c|awk -vOFS=\"\\t\" '{print $2,$1}'"
-    cmd += f"> {options.output_directory}/NH_vals"
-    if os.path.exists( f"{options.output_directory}/NH_vals" ) == False:
+    cmd = f"cat {options.temp_directory}/sorted_read_names" + "|cut -f1|uniq -c|awk -vOFS=\"\\t\" '{print $2,$1}'"
+    cmd += f"> {options.temp_directory}/NH_vals"
+    if os.path.exists( f"{options.temp_directory}/NH_vals" ) == False:
         os.system(cmd)
         logging.info(f"Running cmd - {cmd}")
-        remove_these_files.append( f"{options.output_directory}/NH_vals" )
+        remove_these_files.append( f"{options.temp_directory}/NH_vals" )
 
     logging.info( "NH value has been calculated" )
 
@@ -1102,12 +1070,12 @@ def alterReadNamesAndAddNHTag( options, list_of_softwares_with_versions, remove_
     # $1 - Long read name
     # $2 - Line number where the long read appears
     # $3 - Number of times the read name appears
-    cmd = f"join {options.output_directory}/sorted_read_names {options.output_directory}/NH_vals" + " |awk -vOFS=\"\\t\" '{print $1,$2,$3}' "
-    cmd += f" > {options.output_directory}/sorted_read_names_with_NH"
-    if os.path.exists( f"{options.output_directory}/sorted_read_names_with_NH" ) == False:
+    cmd = f"join {options.temp_directory}/sorted_read_names {options.temp_directory}/NH_vals" + " |awk -vOFS=\"\\t\" '{print $1,$2,$3}' "
+    cmd += f" > {options.temp_directory}/sorted_read_names_with_NH"
+    if os.path.exists( f"{options.temp_directory}/sorted_read_names_with_NH" ) == False:
         os.system(cmd)
         logging.info(f"Running cmd - {cmd}")
-        remove_these_files.append( f"{options.output_directory}/sorted_read_names_with_NH" )
+        remove_these_files.append( f"{options.temp_directory}/sorted_read_names_with_NH" )
 
     logging.info( "Read names have been associated with their corresponding NH values" )
 
@@ -1118,13 +1086,13 @@ def alterReadNamesAndAddNHTag( options, list_of_softwares_with_versions, remove_
     # $3 - Number of times the read name appears
     # $4 - Short read name
     cmd  = f"associateShortNamesToReads "
-    cmd += f" --inputfilename {options.output_directory}/sorted_read_names_with_NH "
-    cmd += f" --outputfilename {options.output_directory}/sorted_read_names_with_NH_and_short_read_names "
+    cmd += f" --inputfilename {options.temp_directory}/sorted_read_names_with_NH "
+    cmd += f" --outputfilename {options.temp_directory}/sorted_read_names_with_NH_and_short_read_names "
     if options.skip_shortening_read_names == True:
         cmd += f" --skipshorteningreadname "
-    if os.path.exists( f"{options.output_directory}/sorted_read_names_with_NH_and_short_read_names" ) == False:
+    if os.path.exists( f"{options.temp_directory}/sorted_read_names_with_NH_and_short_read_names" ) == False:
         os.system(cmd)
-        remove_these_files.append( f"{options.output_directory}/sorted_read_names_with_NH_and_short_read_names" )
+        remove_these_files.append( f"{options.temp_directory}/sorted_read_names_with_NH_and_short_read_names" )
 
     logging.info( "Short read names have been generated" )
 
@@ -1137,11 +1105,11 @@ def alterReadNamesAndAddNHTag( options, list_of_softwares_with_versions, remove_
     # $2 - Line number where the long read appears
     # $3 - Number of times the read name appears
     # $4 - Short read name
-    cmd = f"sort -nk2,2 {options.output_directory}/sorted_read_names_with_NH_and_short_read_names "
-    cmd += f" > {options.output_directory}/sorted_read_names_with_NH_and_short_read_names_sorted_by_pos"
-    if os.path.exists( f"{options.output_directory}/sorted_read_names_with_NH_and_short_read_names_sorted_by_pos" ) == False:
+    cmd = f"sort -nk2,2 {options.temp_directory}/sorted_read_names_with_NH_and_short_read_names "
+    cmd += f" > {options.temp_directory}/sorted_read_names_with_NH_and_short_read_names_sorted_by_pos"
+    if os.path.exists( f"{options.temp_directory}/sorted_read_names_with_NH_and_short_read_names_sorted_by_pos" ) == False:
         os.system(cmd)
-        remove_these_files.append( f"{options.output_directory}/sorted_read_names_with_NH_and_short_read_names_sorted_by_pos" )
+        remove_these_files.append( f"{options.temp_directory}/sorted_read_names_with_NH_and_short_read_names_sorted_by_pos" )
 
     logging.info( "Reads sorted according to their actual position" )
     
@@ -1168,12 +1136,12 @@ def main():
         print( "Please use the --help option to get usage information" )
     options = parseCommandLineArguments()
     validateCommandLineArguments( options )
-    if options.force == True:
-        os.system( f"rm -rf {options.output_directory}" )
-    os.system( f"mkdir -p {options.output_directory}" )
+    #if options.force == True:
+    #   os.system( f"rm -rf {options.temp_directory}" )
+    os.system( f"mkdir -p {options.temp_directory}" )
     
     if options.logfilename is None:
-        options.logfilename = f"{options.output_directory}/progress.log"
+        options.logfilename = f"{options.temp_directory}/progress.log"
 
     if options.quiet == False:
         configureLogger( options )
@@ -1190,45 +1158,23 @@ def main():
     elif options.decompress == True:
         inputabrfilename_fullpath, inputabrfilename_onlypath, inputabrfilename_onlyfilename, inputabrfilename_onlybasename, inputabrfilename_onlyextension = seggregateInformationFromFilename(options.inputabrfilename)
     
-    if options.error_directory is None:
-        options.error_directory = options.output_directory
-    
-    if options.compress == True:
-        volumes_list = [f"{reference_onlypath}:{reference_onlypath}",
-                    f"{options.output_directory}:{options.output_directory}",
-                    f"{options.error_directory}:{options.error_directory}",
-                    f"{inputalignedfilename_onlypath}:{inputalignedfilename_onlypath}",
-                    ]
-    elif options.decompress == True:
-        volumes_list = [f"{reference_onlypath}:{reference_onlypath}",
-                    f"{options.output_directory}:{options.output_directory}",
-                    f"{options.error_directory}:{options.error_directory}",
-                    f"{inputabrfilename_onlypath}:{inputabrfilename_onlypath}",
-                    ]
     ################################################################################################################################################################################################################################################
 
 
     ################################################################################################################################################################################################################################################
     # Convert to single line fasta file
     ################################################################################################################################################################################################################################################
-    if os.path.exists( f"{options.output_directory}/{reference_onlyfilename}" ) == False:
-        cmd = f"perl -pe \'/^>/ ? print \"\\n\" : chomp\' {options.reference} | tail -n +2 > {options.output_directory}/{reference_onlyfilename}"
+    #if os.path.exists( f"{options.temp_directory}/{reference_onlyfilename}" ) == False:
+    #    cmd = f"perl -pe \'/^>/ ? print \"\\n\" : chomp\' {options.reference} | tail -n +2 > {options.temp_directory}/{reference_onlyfilename}"
+    #    os.system(cmd)
         
-        #software = "abridge"
-        #version = list_of_softwares_with_versions[software]
-        #executeCommand(options, software, version, volumes_list, cmd)
-        os.system(cmd)
-    options.reference = f"{options.output_directory}/{reference_onlyfilename}"
-    remove_these_files.append(options.reference)
-    remove_these_files.append(f"{options.reference}.fai")
+    #options.reference = f"{options.temp_directory}/{reference_onlyfilename}"
     ################################################################################################################################################################################################################################################
-    
     
     ################################################################################################################################################################################################################################################
     # Generate index for reference
     ################################################################################################################################################################################################################################################
     cmd = f"samtools faidx {options.reference}"
-
     os.system(cmd)
     ################################################################################################################################################################################################################################################
 
@@ -1237,7 +1183,7 @@ def main():
         if options.quiet == False:
             logging.info( f"Position sorted SAM input file has been generated" )
         
-        tags_present = returnTagList(options, options.inputalignedfilename, f"{options.output_directory}/temp_file_tags", list_of_softwares_with_versions, volumes_list)
+        tags_present = returnTagList(options, options.inputalignedfilename, f"{options.temp_directory}/temp_file_tags", list_of_softwares_with_versions, volumes_list)
         if tags_present["MD"] == 0:
             ################################################################################################################################################################################################################################################
             # Use samtools to add MD tag
@@ -1297,11 +1243,11 @@ def main():
     if options.generate_overlapping_coverage == True or options.generate_non_overlapping_coverage == True:
         input_filename = options.inputabrfilename
         name_of_input_file_without_location = input_filename.split( "/" )[-1][:-8]
-        _outputfilename = options.output_directory + "/" + name_of_input_file_without_location + ".sam_concise"
-        _index_outputfilename = options.output_directory + "/" + name_of_input_file_without_location + ".sam_concise_index"
+        _outputfilename = options.temp_directory + "/" + name_of_input_file_without_location + ".sam_concise"
+        _index_outputfilename = options.temp_directory + "/" + name_of_input_file_without_location + ".sam_concise_index"
 
         cmd = f"7za e {input_filename} -y "
-        cmd += f" -o{options.output_directory}"
+        cmd += f" -o{options.temp_directory}"
         cmd += f" 1> /dev/null 2>/dev/null"
         if options.quiet == False:
             logging.info( f"Running command - {cmd}" )
@@ -1312,7 +1258,7 @@ def main():
             os.system( cmd )
 
         generateCoverage( _outputfilename, _index_outputfilename, options )
-        os.system( f"rm -rf {options.output_directory}" )
+        os.system( f"rm -rf {options.temp_directory}" )
 
     cleanUp( options )
     if options.quiet == False:
