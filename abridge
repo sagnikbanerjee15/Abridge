@@ -195,7 +195,6 @@ def validateCommandLineArguments( options ):
     # Set up symlink to reference
     abs_path = os.path.abspath(f"{options.temp_directory}/reference.fasta")
     cmd = f"ln -s {os.path.abspath(options.reference)} {abs_path}"
-    print(cmd)
     os.system(cmd)
     
     options.reference = f"{options.temp_directory}/reference.fasta"
@@ -349,7 +348,7 @@ def constructFileNames( input_filename, options ):
     # compressed_files = [compressed_abridged_filename_br,compressed_abridged_filename_zpaq]
     return  delete_these_files, other_files, error_files
 
-def compressSamFile( options , tags_present, list_of_softwares_with_versions, volumes_list ):
+def compressSamFile( options , tags_present,  volumes_list ):
     """
     """
     pool = multiprocessing.Pool( processes = int( options.cpu ) )
@@ -674,7 +673,7 @@ def findChromosomes( filename ):
     fhr.close()
     return list( set( chromosomes ) )
 
-def decompressSamFile( options , list_of_softwares_with_versions, volumes_list ):
+def decompressSamFile( options ,  volumes_list ):
     """
     """
     pool = multiprocessing.Pool( processes = int( options.cpu ) )
@@ -955,7 +954,7 @@ def retrieveAlignmentsRandomly( chromosome, start, end, options ):
     # sys.stdout.flush()
     os.system( cmd )
 
-def createPositionSortedSAMInputFileForCompressing( options, list_of_softwares_with_versions, remove_these_files, volumes_list, logging ):
+def createPositionSortedSAMInputFileForCompressing( options,  remove_these_files, volumes_list, logging ):
     """
     Performs the following operations:
     - Checks if the input file is a bamfile or samfile
@@ -1004,7 +1003,7 @@ def createPositionSortedSAMInputFileForCompressing( options, list_of_softwares_w
             if os.path.exists( f"{options.temp_directory}/inputalignedfilename.sam" ) == True:return
             os.system(cmd)
 
-def returnTagList(options, samfilename, tagfilename, list_of_softwares_with_versions, volumes_list):
+def returnTagList(options, samfilename, tagfilename,  volumes_list):
     """
     Returns a dictionary of tags.
     For example:
@@ -1031,13 +1030,13 @@ def returnTagList(options, samfilename, tagfilename, list_of_softwares_with_vers
         
     return tag_presence
 
-def alterReadNamesAndAddNHTag( options, list_of_softwares_with_versions, remove_these_files, volumes_list, logging ):
+def alterReadNamesAndAddNHTag( options,  remove_these_files, volumes_list, logging ):
     """
     Reduce the length of the read names
     Add more tags as required
     """
     # Check which tags are already present in the aligned file
-    tags_present = returnTagList(options, options.inputalignedfilename, f"{options.temp_directory}/temp_file_tags", list_of_softwares_with_versions, volumes_list)
+    tags_present = returnTagList(options, options.inputalignedfilename, f"{options.temp_directory}/temp_file_tags",  volumes_list)
     
     if tags_present["NH"] == 1 and options.skip_shortening_read_names == True: 
         # Creating a dummy file
@@ -1183,11 +1182,11 @@ def main():
     ################################################################################################################################################################################################################################################
 
     if options.compress == True:
-        createPositionSortedSAMInputFileForCompressing( options, list_of_softwares_with_versions, remove_these_files, volumes_list, logging )
+        createPositionSortedSAMInputFileForCompressing( options,  remove_these_files, volumes_list, logging )
         if options.quiet == False:
             logging.info( f"Position sorted SAM input file has been generated" )
         
-        tags_present = returnTagList(options, options.inputalignedfilename, f"{options.temp_directory}/temp_file_tags", list_of_softwares_with_versions, volumes_list)
+        tags_present = returnTagList(options, options.inputalignedfilename, f"{options.temp_directory}/temp_file_tags",  volumes_list)
         if tags_present["MD"] == 0:
             ################################################################################################################################################################################################################################################
             # Use samtools to add MD tag
@@ -1218,7 +1217,7 @@ def main():
             cmd = f"rm {options.inputalignedfilename[:-4]}.temp.bam {options.inputalignedfilename[:-4]}.MD_added.bam "
             os.system(cmd)
             
-        tags_present = alterReadNamesAndAddNHTag( options, list_of_softwares_with_versions, remove_these_files, volumes_list, logging )
+        tags_present = alterReadNamesAndAddNHTag( options,  remove_these_files, volumes_list, logging )
         if options.quiet == False:
             logging.info( f"Read names have been altered and NH tags have been added" )
             
@@ -1226,12 +1225,12 @@ def main():
         if options.quiet == False:
             logging.info( f"findEndedness() execution is complete" )
         
-        compressSamFile( options, tags_present, list_of_softwares_with_versions, volumes_list )
+        compressSamFile( options, tags_present,  volumes_list )
         if options.quiet == False:
             logging.info( f"compressSamFile() execution is complete" )
 
     if options.decompress == True:
-        decompressSamFile( options, list_of_softwares_with_versions, volumes_list )
+        decompressSamFile( options,  volumes_list )
         if options.quiet == False:
             logging.info( f"decompressSamFile() execution is complete" )
 
