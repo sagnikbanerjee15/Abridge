@@ -92,7 +92,6 @@ def parseCommandLineArguments():
     parser.add_argument( "--softwares", help = argparse.SUPPRESS )  # Software paths
     parser.add_argument( "--single_ended", help = argparse.SUPPRESS )
     parser.add_argument( "--reference_to_length", help = argparse.SUPPRESS )
-    parser.add_argument( "--outputfilename", help = argparse.SUPPRESS )
     parser.add_argument( "--compile_programs", action = "store_true", help = argparse.SUPPRESS )  # Force abridge to compile the C programs
     parser.add_argument( "--outputs_and_errors_directory", action = "store_true", help = argparse.SUPPRESS)
     parser.add_argument( "--remove_temp_directory", action = "store_true", help = argparse.SUPPRESS)
