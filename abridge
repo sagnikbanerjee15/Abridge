@@ -194,7 +194,7 @@ def validateCommandLineArguments( options ):
         
     # Set up symlink to reference
     abs_path = os.path.abspath(f"{options.temp_directory}/reference.fasta")
-    cmd = f"ln -s {os.path.abspath((options.reference)} {abs_path}"
+    cmd = f"ln -s {os.path.abspath(options.reference)} {abs_path}"
     print(cmd)
     os.system(cmd)
     
