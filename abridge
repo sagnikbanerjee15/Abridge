@@ -348,7 +348,7 @@ def constructFileNames( input_filename, options ):
     # compressed_files = [compressed_abridged_filename_br,compressed_abridged_filename_zpaq]
     return  delete_these_files, other_files, error_files
 
-def compressSamFile( options , tags_present,  volumes_list ):
+def compressSamFile( options , tags_present ):
     """
     """
     pool = multiprocessing.Pool( processes = int( options.cpu ) )
@@ -673,7 +673,7 @@ def findChromosomes( filename ):
     fhr.close()
     return list( set( chromosomes ) )
 
-def decompressSamFile( options ,  volumes_list ):
+def decompressSamFile( options  ):
     """
     """
     pool = multiprocessing.Pool( processes = int( options.cpu ) )
@@ -1003,7 +1003,7 @@ def createPositionSortedSAMInputFileForCompressing( options,  remove_these_files
             if os.path.exists( f"{options.temp_directory}/inputalignedfilename.sam" ) == True:return
             os.system(cmd)
 
-def returnTagList(options, samfilename, tagfilename,  volumes_list):
+def returnTagList(options, samfilename, tagfilename):
     """
     Returns a dictionary of tags.
     For example:
@@ -1036,7 +1036,7 @@ def alterReadNamesAndAddNHTag( options,  remove_these_files,  logging ):
     Add more tags as required
     """
     # Check which tags are already present in the aligned file
-    tags_present = returnTagList(options, options.inputalignedfilename, f"{options.temp_directory}/temp_file_tags",  volumes_list)
+    tags_present = returnTagList(options, options.inputalignedfilename, f"{options.temp_directory}/temp_file_tags")
     
     if tags_present["NH"] == 1 and options.skip_shortening_read_names == True: 
         # Creating a dummy file
@@ -1186,7 +1186,7 @@ def main():
         if options.quiet == False:
             logging.info( f"Position sorted SAM input file has been generated" )
         
-        tags_present = returnTagList(options, options.inputalignedfilename, f"{options.temp_directory}/temp_file_tags",  volumes_list)
+        tags_present = returnTagList(options, options.inputalignedfilename, f"{options.temp_directory}/temp_file_tags")
         if tags_present["MD"] == 0:
             ################################################################################################################################################################################################################################################
             # Use samtools to add MD tag
@@ -1225,12 +1225,12 @@ def main():
         if options.quiet == False:
             logging.info( f"findEndedness() execution is complete" )
         
-        compressSamFile( options, tags_present,  volumes_list )
+        compressSamFile( options, tags_present )
         if options.quiet == False:
             logging.info( f"compressSamFile() execution is complete" )
 
     if options.decompress == True:
-        decompressSamFile( options,  volumes_list )
+        decompressSamFile( options )
         if options.quiet == False:
             logging.info( f"decompressSamFile() execution is complete" )
 
