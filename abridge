@@ -1003,6 +1003,10 @@ def createPositionSortedSAMInputFileForCompressing( options,  remove_these_files
             pass
         else:
             # Sort Samfile by coordinate
+            cmd = f"unlink {options.inputalignedfilename}"
+            logging.info(f"Running command - {cmd}")
+            os.system(cmd)
+            
             cmd = f"samtools view -bS -@ {options.cpu} {options.inputalignedfilename}|samtools sort -@ {options.cpu}|samtools view -h -@ {options.cpu} > {options.temp_directory}/inputaligned.sam "
             options.inputalignedfilename = f"{options.temp_directory}/inputaligned.sam"
             logging.info(f"Running command - {cmd}")
@@ -1017,7 +1021,6 @@ def returnTagList(options, samfilename, tagfilename):
     }
     Assume that the same tag is present for all the alignments if it is present for one
     """
-    print(samfilename)
     fhr = open(samfilename, "r")
     for line in fhr:
         if line[0]=='@': continue
