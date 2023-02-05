@@ -981,42 +981,31 @@ def createPositionSortedSAMInputFileForCompressing( options,  remove_these_files
     if inputalignedfilename_onlyextension == "bam":
         cmd = f"samtools view -h -@ {options.cpu} {options.inputalignedfilename}|head > {options.temp_directory}/header"
         remove_these_files.append( f"{options.temp_directory}/header" )
-        
+        logging.info(f"Running command - {cmd}")
         os.system(cmd)
 
         first_line = open( f"{options.temp_directory}/header" , "r" ).readline().strip()
         if "SO:coordinate" in first_line:
-            # Convert to Sam file
-            cmd = f"samtools view -h -@ {options.cpu} {options.inputalignedfilename} > {options.temp_directory}/inputalignedfilename.sam "
-            options.inputalignedfilename = f"{options.temp_directory}/inputalignedfilename.sam"
-            remove_these_files.append( options.inputalignedfilename )
-
-            if os.path.exists( f"{options.temp_directory}/inputalignedfilename.sam" ) == True:return
-            os.system(cmd)
+            pass
         else:
             # Need to sort by coordinate
-            cmd = f"samtools sort -@ {options.cpu} {options.inputalignedfilename}|samtools view -h -@ {options.cpu} > {options.temp_directory}/inputalignedfilename.sam "
-            options.inputalignedfilename = f"{options.temp_directory}/inputalignedfilename.sam"
-            remove_these_files.append( options.inputalignedfilename )
-
-            if os.path.exists( f"{options.temp_directory}/inputalignedfilename.sam" ) == True:return
+            cmd = f"samtools sort -@ {options.cpu} -o {options.inputalignedfilename}.sorted {options.inputalignedfilename}  "
+            logging.info(f"Running command - {cmd}")
+            os.system(cmd)
+            
+            cmd = f"mv {options.inputalignedfilename}.sorted {options.inputalignedfilename}"
+            logging.info(f"Running command - {cmd}")
             os.system(cmd)
 
     elif inputalignedfilename_onlyextension == "sam":
         first_line = open( options.inputalignedfilename, "r" ).readline().strip()
         if "SO:coordinate" in first_line:
-            # Link the input sam file to the output directory
-            cmd = f"cp {options.inputalignedfilename} {options.temp_directory}/inputalignedfilename.sam "
-            options.inputalignedfilename = f"{options.temp_directory}/inputalignedfilename.sam"
-            remove_these_files.append( options.inputalignedfilename )
-            os.system( cmd )
+            pass
         else:
             # Sort Samfile by coordinate
             cmd = f"samtools view -bS -@ {options.cpu} {options.inputalignedfilename}|samtools sort -@ {options.cpu}|samtools view -h -@ {options.cpu} > {options.temp_directory}/inputalignedfilename.sam "
             options.inputalignedfilename = f"{options.temp_directory}/inputalignedfilename.sam"
-            remove_these_files.append( options.inputalignedfilename )
-
-            if os.path.exists( f"{options.temp_directory}/inputalignedfilename.sam" ) == True:return
+            logging.info(f"Running command - {cmd}")
             os.system(cmd)
 
 def returnTagList(options, samfilename, tagfilename):
@@ -1242,6 +1231,7 @@ def main():
         if options.quiet == False:
             logging.info( f"findEndedness() execution is complete" )
         
+        return
         compressSamFile( options, tags_present )
         if options.quiet == False:
             logging.info( f"compressSamFile() execution is complete" )
