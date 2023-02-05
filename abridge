@@ -1017,7 +1017,7 @@ def returnTagList(options, samfilename, tagfilename):
     }
     Assume that the same tag is present for all the alignments if it is present for one
     """
-    
+    print(samfilename)
     fhr = open(samfilename, "r")
     for line in fhr:
         if line[0]=='@': continue
