@@ -1003,8 +1003,8 @@ def createPositionSortedSAMInputFileForCompressing( options,  remove_these_files
             pass
         else:
             # Sort Samfile by coordinate
-            cmd = f"samtools view -bS -@ {options.cpu} {options.inputalignedfilename}|samtools sort -@ {options.cpu}|samtools view -h -@ {options.cpu} > {options.temp_directory}/inputalignedfilename.sam "
-            options.inputalignedfilename = f"{options.temp_directory}/inputalignedfilename.sam"
+            cmd = f"samtools view -bS -@ {options.cpu} {options.inputalignedfilename}|samtools sort -@ {options.cpu}|samtools view -h -@ {options.cpu} > {options.temp_directory}/inputaligned.sam "
+            options.inputalignedfilename = f"{options.temp_directory}/inputaligned.sam"
             logging.info(f"Running command - {cmd}")
             os.system(cmd)
 
