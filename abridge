@@ -1047,7 +1047,7 @@ def returnTagList(options, samfilename, tagfilename):
         
     return tag_presence
 
-def alterReadNamesAndAddNHTag( options,  remove_these_files,  logging ):
+def alterReadNamesAndAddNHTag( options,  logging ):
     """
     Reduce the length of the read names
     Add more tags as required
@@ -1068,6 +1068,7 @@ def alterReadNamesAndAddNHTag( options,  remove_these_files,  logging ):
     cmd = f"printReadNamesAndLineNumbers -i {options.inputalignedfilename}|sort "
     cmd += f"> {options.temp_directory}/sorted_read_names"
     if os.path.exists( f"{options.temp_directory}/sorted_read_names" ) == False:
+        logging.info(f"Running command - {cmd}")
         os.system(cmd)
 
     logging.info( "Read names sorted" )
@@ -1079,9 +1080,8 @@ def alterReadNamesAndAddNHTag( options,  remove_these_files,  logging ):
     cmd = f"cat {options.temp_directory}/sorted_read_names" + "|cut -f1|uniq -c|awk -vOFS=\"\\t\" '{print $2,$1}'"
     cmd += f"> {options.temp_directory}/NH_vals"
     if os.path.exists( f"{options.temp_directory}/NH_vals" ) == False:
+        logging.info(f"Running command - {cmd}")
         os.system(cmd)
-        logging.info(f"Running cmd - {cmd}")
-        remove_these_files.append( f"{options.temp_directory}/NH_vals" )
 
     logging.info( "NH value has been calculated" )
 
@@ -1095,7 +1095,6 @@ def alterReadNamesAndAddNHTag( options,  remove_these_files,  logging ):
     if os.path.exists( f"{options.temp_directory}/sorted_read_names_with_NH" ) == False:
         os.system(cmd)
         logging.info(f"Running cmd - {cmd}")
-        remove_these_files.append( f"{options.temp_directory}/sorted_read_names_with_NH" )
 
     logging.info( "Read names have been associated with their corresponding NH values" )
 
@@ -1111,8 +1110,9 @@ def alterReadNamesAndAddNHTag( options,  remove_these_files,  logging ):
     if options.skip_shortening_read_names == True:
         cmd += f" --skipshorteningreadname "
     if os.path.exists( f"{options.temp_directory}/sorted_read_names_with_NH_and_short_read_names" ) == False:
+        logging.info(f"Running command - {cmd}")
         os.system(cmd)
-        remove_these_files.append( f"{options.temp_directory}/sorted_read_names_with_NH_and_short_read_names" )
+        
 
     logging.info( "Short read names have been generated" )
 
@@ -1128,8 +1128,9 @@ def alterReadNamesAndAddNHTag( options,  remove_these_files,  logging ):
     cmd = f"sort -nk2,2 {options.temp_directory}/sorted_read_names_with_NH_and_short_read_names "
     cmd += f" > {options.temp_directory}/sorted_read_names_with_NH_and_short_read_names_sorted_by_pos"
     if os.path.exists( f"{options.temp_directory}/sorted_read_names_with_NH_and_short_read_names_sorted_by_pos" ) == False:
+        logging.info(f"Running command - {cmd}")
         os.system(cmd)
-        remove_these_files.append( f"{options.temp_directory}/sorted_read_names_with_NH_and_short_read_names_sorted_by_pos" )
+        
 
     logging.info( "Reads sorted according to their actual position" )
     
@@ -1209,12 +1210,18 @@ def main():
             ################################################################################################################################################################################################################################################
             # Use samtools to add MD tag
             ################################################################################################################################################################################################################################################
-            cmd  = f" samtools "
-            cmd += f" view "
-            cmd += f" -@ {options.cpu} "
-            cmd += f" -o {options.inputalignedfilename[:-4]}.temp.bam "
-            cmd += f" {options.inputalignedfilename} "
-            os.system(cmd)
+            if options.inputalignedfilename[:-3] == "sam":
+                cmd  = f" samtools "
+                cmd += f" view "
+                cmd += f" -@ {options.cpu} "
+                cmd += f" -o {options.inputalignedfilename[:-4]}.temp.bam "
+                cmd += f" {options.inputalignedfilename} "
+                logging.info(f"Running command - {cmd}")
+                os.system(cmd)
+            else:
+                cmd = f"mv {options.inputalignedfilename} {options.inputalignedfilename[:-4]}.temp.bam"
+                logging.info(f"Running command - {cmd}")
+                os.system(cmd)
             
             cmd  = f" samtools "
             cmd += f" calmd -bAr "
@@ -1222,6 +1229,7 @@ def main():
             cmd += f" {options.inputalignedfilename[:-4]}.temp.bam "
             cmd += f" {options.reference} "
             cmd += f" > {options.inputalignedfilename[:-4]}.MD_added.bam"
+            logging.info(f"Running command - {cmd}")
             os.system(cmd)
             
             cmd  = f"samtools "
@@ -1230,12 +1238,14 @@ def main():
             cmd += f" -@ {options.cpu} "
             cmd += f" {options.inputalignedfilename[:-4]}.MD_added.bam "
             cmd += f" > {options.inputalignedfilename}"
+            logging.info(f"Running command - {cmd}")
             os.system(cmd)
             
             cmd = f"rm {options.inputalignedfilename[:-4]}.temp.bam {options.inputalignedfilename[:-4]}.MD_added.bam "
+            logging.info(f"Running command - {cmd}")
             os.system(cmd)
             
-        tags_present = alterReadNamesAndAddNHTag( options,  remove_these_files,  logging )
+        tags_present = alterReadNamesAndAddNHTag( options,  logging )
         if options.quiet == False:
             logging.info( f"Read names have been altered and NH tags have been added" )
             
