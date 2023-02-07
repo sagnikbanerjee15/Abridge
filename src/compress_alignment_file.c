@@ -504,8 +504,8 @@ int main (int argc, char *argv[])
 	 ****************************************************************************************************************************************/
 	struct arguments arguments;
 
-// Parse our arguments; every option seen by parse_opt will be reflected in arguments.
-// Default values.
+	// Parse our arguments; every option seen by parse_opt will be reflected in arguments.
+	// Default values.
 	arguments.input_alignment_filename = ""; // Empty string - only contains null character
 	arguments.input_alignment_file_format = "";
 	arguments.output_abridge_filename = "";
