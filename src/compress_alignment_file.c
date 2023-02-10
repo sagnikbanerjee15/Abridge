@@ -243,6 +243,8 @@ void compressAlignmentFile (
 	long long int num_pools_written = 0;
 	long long int max_commas = 0;
 	long long int curr_commas = 0;
+	unsigned long long int sam_alignment_instance_pool_size = 0;
+	unsigned long long int sam_alignment_instance_pool_index = 0;
 
 	/* Variables if BAM file is provided*/
 	samFile *fp_in;            // File pointer if BAM file provided
@@ -254,7 +256,7 @@ void compressAlignmentFile (
 	struct Sam_Alignment *sam_alignment_instance_diagnostics;
 	struct Sam_Alignment *temp_alignment;
 	struct Sam_Alignment **alignment_pool_same_position;
-	struct Compressed_DS **sam_alignment_instance_pool;
+	struct Sam_Alignment **sam_alignment_instance_pool;
 	struct Reference_Sequence_Info **reference_info;
 	struct Whole_Genome_Sequence *whole_genome;
 	struct Cigar_Items **cigar_items_instance;
@@ -344,7 +346,8 @@ void compressAlignmentFile (
 
 	sam_alignment_instance_pool = ( struct Sam_Alignment* ) malloc (sizeof(struct Sam_Alignment*) * max_reads_in_a_single_nucl_loc);
 	for ( i = 0 ; i < max_reads_in_a_single_nucl_loc ; i++ )
-		sam_alignment_instance_pool = allocateMemorySam_Alignment (max_read_length);
+		sam_alignment_instance_pool[i] = allocateMemorySam_Alignment (max_read_length);
+	sam_alignment_instance_pool_size = max_reads_in_a_single_nucl_loc;
 	/****************************************************************************************************************************************/
 
 	/*
@@ -439,6 +442,7 @@ void compressAlignmentFile (
 
 		/****************************************************************************************/
 
+		/****************Collect Unmapped reads*************/
 		if ( current_alignment->samflag == 4 )
 		{
 			if ( flag_ignore_unmapped_sequences == 0 )
@@ -446,13 +450,12 @@ void compressAlignmentFile (
 				//Write the unmapped reads into file
 				fprintf (fhw_unmapped , "%s" , current_alignment->sequence);
 				fprintf (fhw_unmapped , "%s" , "\n");
-				for ( i = 0 ; current_alignment->quality_scores[i] != '\0' ;
-						i++ )
-					current_alignment->quality_scores[i] -= QUAL_SCORE_ADJUSTMENT;
-				fprintf (fhw_unmapped ,
+				//for ( i = 0 ; current_alignment->quality_scores[i] != '\0' ; i++ )
+				// current_alignment->quality_scores[i] -= QUAL_SCORE_ADJUSTMENT;
+				fprintf (fhw_qual ,
 						"%s" ,
 						current_alignment->quality_scores);
-				fprintf (fhw_unmapped , "%s" , "\n");
+				fprintf (fhw_qual , "%s" , "\n");
 			}
 			continue;
 		}
@@ -461,7 +464,8 @@ void compressAlignmentFile (
 		{
 			line_len = getline ( &line , &len , fhr);
 			//printf ("\nLine length %d" , line_len);
-			prepareSingleRecordFromAlignmentFile (line , fp_in , // File pointer if BAM file provided
+			prepareSingleRecordFromAlignmentFile (line ,
+					fp_in , // File pointer if BAM file provided
 					bamHdr ,		// read header
 					aln ,
 					fhr ,
@@ -481,7 +485,7 @@ void compressAlignmentFile (
 					cigar_items_instance);
 		}
 
-		if ( strcmp (input_alignment_file_format , "BAM") == 0 )
+		else if ( strcmp (input_alignment_file_format , "BAM") == 0 )
 		{
 			line_len = sam_read1 (fp_in , bamHdr , aln);
 			/*if ( total_number_of_alignments % 10000 == 0 )
@@ -586,7 +590,6 @@ int main (int argc, char *argv[])
 			unmapped_filename ,
 			name_of_file_with_quality_scores ,
 			name_of_file_with_read_names_to_short_read_names_and_NH ,
-
 			flag_ignore_alignment_scores ,
 			flag_ignore_soft_clippings ,
 			flag_ignore_mismatches ,

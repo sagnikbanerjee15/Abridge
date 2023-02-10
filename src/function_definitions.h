@@ -643,7 +643,7 @@ void generateiCIGARString (
 	expanded_md_string_length = expanded_md_string_index;
 
 	/*************************************************************************************************************************
-	 * Adjust the expanded MD string to accomodate insert characters, N and D
+	 * Adjust the expanded MD string to accommodate insert characters, N and D
 	 *************************************************************************************************************************/
 	j = 0;
 	for ( i = 0 ; i < expanded_cigar_string_length ; i++ )
@@ -982,8 +982,8 @@ void populateSamAlignmentInstance (
 	strcpy(dest->sequence_with_deletions_and_splice_indicators ,
 			dest->sequence);
 	strcpy(dest->quality_scores , src[10]);
-	for ( i = 0 ; dest->quality_scores[i] != '\0' ; i++ )
-		dest->quality_scores[i] += QUAL_SCORE_ADJUSTMENT;
+	//for ( i = 0 ; dest->quality_scores[i] != '\0' ; i++ )
+	//	dest->quality_scores[i] += QUAL_SCORE_ADJUSTMENT;
 
 	for ( i = 11 ; i < number_of_fields ; i++ )
 	{
