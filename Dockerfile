@@ -103,12 +103,13 @@ RUN ln -s $HTSLIB_INSTALL_DIR/bin/tabix /usr/bin/tabix
 RUN pip install ruffus
 
 ARG ABRIDGE_VERSION=1.2.0
+COPY marker /dev/null
 RUN mkdir -p /software/abridge && cd /software/abridge && \
 	git clone --recurse-submodules https://github.com/sagnikbanerjee15/Abridge.git && \
 	cd Abridge && \
 	make htslib
 	
-COPY marker /dev/null
+
 RUN cd /software/abridge/Abridge && \
 	git pull && \
 	make install

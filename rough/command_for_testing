@@ -56,7 +56,7 @@ abridge \
 --reference /home/baners23/work/ABRIDGE/testing/reference/Homo_sapiens.GRCh38.dna_sm.primary_assembly.fa \
 --outputfilename /home/baners23/work/ABRIDGE/testing/abrigde/SRR23242149_SE_all_tags_sorted_1_dev.abridge \
 --inputalignedfilename /home/baners23/work/ABRIDGE/testing/alignments/rna_seq_chromosome_1/SRR23242149_SE_all_tags_sorted_1.sam \
---temp_directory $/home/baners23/work/ABRIDGE/testing/abrigde/SRR23242149_SE_all_tags_sorted_1_dev_temp \
+--temp_directory /home/baners23/work/ABRIDGE/testing/abrigde/SRR23242149_SE_all_tags_sorted_1_dev_temp \
 1> /home/baners23/work/ABRIDGE/testing/abrigde/SRR23242149_SE_all_tags_sorted_1_dev.output \
 2> /home/baners23/work/ABRIDGE/testing/abrigde/SRR23242149_SE_all_tags_sorted_1_dev.error
 

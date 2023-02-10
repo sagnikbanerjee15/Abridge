@@ -1253,7 +1253,6 @@ def main():
         if options.quiet == False:
             logging.info( f"findEndedness() execution is complete" )
         
-        return
         compressSamFile( options, tags_present )
         if options.quiet == False:
             logging.info( f"compressSamFile() execution is complete" )
