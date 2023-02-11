@@ -328,54 +328,45 @@ def runCommand( eachpinput ):
     cmd, dummy = eachpinput
     os.system( cmd )
 
-def constructFileNames( input_filename, options ):
-    name_of_input_file_without_location = input_filename.split( "/" )[-1][:-4]
+def constructFileNames( options ):
+    #name_of_input_file_without_location = input_filename.split( "/" )[-1][:-4]
+    
+    programs_to_files = {}
+    # Compression
+    if options.compress == True:
+        filenames = {}
+        output_filenames = {}
+        error_filenames = {}
+        
+        # compute_information_for_better_memory_management
+        filenames['compute_information_for_better_memory_management'] = f"{options.temp_directory}/compute_information_for_better_memory_management"
+        programs_to_files['compute_information_for_better_memory_management'] = {}
+        programs_to_files['compute_information_for_better_memory_management']['summary_information_outputfilename'] = f"{options.temp_directory}/summary_information_about_aligned_reads"
+        programs_to_files['compute_information_for_better_memory_management']['input_alignment_filename'] = options.inputalignedfilename
+        programs_to_files['compute_information_for_better_memory_management']['output'] = f"{options.temp_directory}/compute_information_for_better_memory_management.output"
+        programs_to_files['compute_information_for_better_memory_management']['error'] = f"{options.temp_directory}compute_information_for_better_memory_management.error"
+        
+        # compress_alignment_file
+        programs_to_files['compress_alignment_file'] = {}
+        programs_to_files['compress_alignment_file']['input_alignment_filename'] = options.inputalignedfilename
+        inputalignedfileanme_with_path, inputalignedfilename_location, inputalignedfilename_full, inputalignedfilename_base, inputalignedfileanme_extension = seggregateInformationFromFilename(programs_to_files['compress_alignment_file']['input_alignment_filename'] )
+        programs_to_files['compress_alignment_file']['output_abridge_filename'] = f"{options.temp_directory}/{inputalignedfilename_base}_icigars"
+        programs_to_files['compress_alignment_file']['reference_filename'] = options.reference
+        programs_to_files['compress_alignment_file']['unmapped_filename'] = f"{options.temp_directory}/{inputalignedfilename_base}_unmapped"
+        programs_to_files['compress_alignment_file']['name_of_file_with_quality_scores'] = f"{options.temp_directory}/{inputalignedfilename_base}_quality_scores"
+        programs_to_files['compress_alignment_file']['name_of_file_with_read_names_to_short_read_names_and_NH'] = f"{options.temp_directory}/sorted_read_names_with_NH_and_short_read_names_sorted_by_pos"
+        programs_to_files['compress_alignment_file']['output'] = f"{options.temp_directory}/compress_alignment_file.output"
+        programs_to_files['compress_alignment_file']['error'] = f"{options.temp_directory}/compress_alignment_file.error"
+    # Decompress
+    
 
-    # Input filenames for each program
-    summary_information_outputfilename = f"{options.temp_directory}/inputalignedfilename_summary_information"
-    frequency_of_flags_filename = f"{options.temp_directory}/inputalignedfilename_frequency_of_flags"
-
-    outputfilename = f"{options.temp_directory}/inputalignedfilename_compressed"
-    index_outputfilename = f"{options.temp_directory}/inputalignedfilename_index"
-    unmapped_outputfilename = f"{options.temp_directory}/inputalignedfilename_unmapped"
-    name_of_file_with_quality_scores = f"{options.temp_directory}/inputalignedfilename_qual"
-    name_of_file_with_quality_scores_rle = f"{options.temp_directory}/{name_of_input_file_without_location}_qual_rle"
-    name_of_file_dictionary = f"{options.temp_directory}/inputalignedfilename_dictionary"
-    fclqc_output_filename = f"{options.temp_directory}/inputalignedfilename_qual_compressed_fclqc"
-
-    error_file_compute_information_for_better_memory_management = f"{options.outputs_and_errors_directory}/compute_information_for_better_memory_management.error"
-    error_file_compress_ = f"{outputfilename}.error"
-    error_file_prep_abridge_index = f"{index_outputfilename}.error"
-    error_file_qual_rle = f"{name_of_file_with_quality_scores_rle}.error"
-    error_fclqc = f"{fclqc_output_filename}.error"
-
-    error_file_7z_compression = f"{options.outputs_and_errors_directory}/7z_compression.error"
-    error_file_zpaq_compression = f"{options.outputs_and_errors_directory}/zpaq_compression.error"
-    error_file_brotli_compression = f"{options.outputs_and_errors_directory}/brotli_compression.error"
-
-    # Decompression
-    error_file_7z_decompression = f"{options.outputs_and_errors_directory}/7z_decompression.error"
-    error_file_zpaq_decompression = f"{options.outputs_and_errors_directory}/zpaq_decompression.error"
-    error_file_brotli_decompression = f"{options.outputs_and_errors_directory}/brotli_decompression.error"
-
-    delete_these_files = [summary_information_outputfilename]
-    other_files = [summary_information_outputfilename, outputfilename, index_outputfilename, unmapped_outputfilename, name_of_file_with_quality_scores, name_of_file_with_quality_scores_rle, name_of_file_dictionary, fclqc_output_filename]
-    error_files = [error_file_compute_information_for_better_memory_management, error_file_compress_, error_file_qual_rle, error_file_prep_abridge_index, error_file_7z_compression, error_file_zpaq_compression, error_file_brotli_compression, error_file_7z_decompression, error_file_zpaq_decompression, error_file_brotli_decompression, error_fclqc]
-    # compressed_files = [compressed_abridged_filename_br,compressed_abridged_filename_zpaq]
-    return  delete_these_files, other_files, error_files
+    return  programs_to_files
 
 def compressSamFile( options , tags_present ):
     """
     """
     pool = multiprocessing.Pool( processes = int( options.cpu ) )
-    files_to_be_removed = []
-    input_filename = options.inputalignedfilename
-    name_of_input_file_without_location = input_filename.split( "/" )[-1]
-    delete_these_files, other_files, error_files = constructFileNames( input_filename, options )
-    #summary_information_outputfilename = delete_these_files
-    summary_information_outputfilename, outputfilename, index_outputfilename, unmapped_outputfilename, name_of_file_with_quality_scores, name_of_file_with_quality_scores_rle, name_of_file_dictionary, fclqc_output_filename = other_files
-    error_file_compute_information_for_better_memory_management, error_file_compress_, error_file_qual_rle, error_file_prep_abridge_index, error_file_7z_compression, error_file_zpaq_compression, error_file_brotli_compression, error_file_7z_decompression, error_file_zpaq_decompression, error_file_brotli_decompression, error_fclqc = error_files
-    # compressed_abridged_filename_7z, compressed_abridged_filename_br,compressed_abridged_filename_zpaq = compressed_files
+    programs_to_files = constructFileNames(options)
 
     if options.single_ended == True:
         ######################################################################################
@@ -390,18 +381,15 @@ def compressSamFile( options , tags_present ):
         if options.quiet == False:
             logging.info( f"Starting compression for {input_filename}" )
 
-        input_alignment_file_format = "BAM" if "bam" in input_filename else "sam"
+        input_alignment_file_format = "BAM" if "bam" in options.inputalignedfilename else "sam"
         cmd = f"(/usr/bin/time --verbose "
         cmd += f" compute_information_for_better_memory_management  "
-        cmd += f" --input_alignment_filename {input_filename} "
+        cmd += f" --input_alignment_filename {programs_to_files['compute_information_for_better_memory_management']['input_alignment_filename']} "
         cmd += f" --input_alignment_file_format {input_alignment_file_format}"
-        cmd += f" --summary_information_outputfilename {summary_information_outputfilename}"
+        cmd += f" --summary_information_outputfilename {programs_to_files['compute_information_for_better_memory_management']['summary_information_outputfilename']}"
         cmd += f")"
-        cmd += f"1> /dev/null "
-        if options.keep_intermediate_error_files == True:
-            cmd += f"2> {error_file_compute_information_for_better_memory_management}"
-        else:
-            cmd += f"2> /dev/null"
+        cmd += f"1> {programs_to_files['compute_information_for_better_memory_management']['output']}  "
+        cmd += f"2> {programs_to_files['compute_information_for_better_memory_management']['error'] }"
         if options.quiet == False:
             logging.info( f"Running command - {cmd}" )
         
@@ -414,25 +402,24 @@ def compressSamFile( options , tags_present ):
         # for input_filename in options.inputalignedfilename:
         input_filename = options.inputalignedfilename
         if options.quiet == False:
-            logging.info( f"Starting for {input_filename}" )
-        print([row.split(":")[-1].strip() for row in open( summary_information_outputfilename, "r" ).read().split("\n")])
-        max_input_reads_in_a_single_nucl_loc, total_number_of_alignments, max_read_length = [int(row.split(":")[-1].strip()) for row in open( summary_information_outputfilename, "r" ).read().split("\n")[:-1]]
-        if options.quiet == False:
-            logging.info( f"{name_of_input_file_without_location} max_input_reads_in_a_single_nucl_loc = {max_input_reads_in_a_single_nucl_loc}" )
+            logging.info( f"Starting compression for {input_filename}" )
+        #print([row.split(":")[-1].strip() for row in open( programs_to_files['compute_information_for_better_memory_management']['summary_information_outputfilename'], "r" ).read().split("\n")])
+        max_input_reads_in_a_single_nucl_loc, total_number_of_alignments, max_read_length = [int(row.split(":")[-1].strip()) for row in open( programs_to_files['compute_information_for_better_memory_management']['summary_information_outputfilename'], "r" ).read().split("\n")[:-1]]
+        
 
         cmd = f"(/usr/bin/time --verbose "
         cmd += f" compress_alignment_file "
-        cmd += f" --input_alignment_filename {input_filename}"
+        cmd += f" --input_alignment_filename {programs_to_files['compress_alignment_file']['input_alignment_filename'] }"
         if input_filename[-4:] == ".sam":
             cmd += f" --input_alignment_file_format SAM"
         elif input_filename[-4:] == ".bam":
             cmd += f" --input_alignment_file_format BAM"
-        cmd += f" --output_abridge_filename {outputfilename} "
-        cmd += f" --reference_filename {options.reference}"   
-        cmd += f" --unmapped_filename {unmapped_outputfilename} "
+        cmd += f" --output_abridge_filename {programs_to_files['compress_alignment_file']['output_abridge_filename'] } "
+        cmd += f" --reference_filename {programs_to_files['compress_alignment_file']['reference_filename'] }"   
+        cmd += f" --unmapped_filename {programs_to_files['compress_alignment_file']['unmapped_filename'] } "
         cmd += f" --max_read_length {max_read_length}"
-        cmd += f" --name_of_file_with_quality_scores {name_of_file_with_quality_scores} "
-        cmd += f" --name_of_file_with_read_names_to_short_read_names_and_NH {options.temp_directory}/sorted_read_names_with_NH_and_short_read_names_sorted_by_pos "
+        cmd += f" --name_of_file_with_quality_scores {programs_to_files['compress_alignment_file']['name_of_file_with_quality_scores'] } "
+        cmd += f" --name_of_file_with_read_names_to_short_read_names_and_NH {programs_to_files['compress_alignment_file']['name_of_file_with_read_names_to_short_read_names_and_NH'] } "
         if options.single_ended==True:
             cmd += f" --ended SE "
         else:
@@ -458,11 +445,10 @@ def compressSamFile( options , tags_present ):
         cmd += f" --max_reads_in_a_single_nucl_loc {max_input_reads_in_a_single_nucl_loc}"
         
         cmd += f") "
-        cmd += f"1> /dev/null "
-        if options.keep_intermediate_error_files == True:
-            cmd += f"2> {error_file_compress_}"
-        else:
-            cmd += f"2> /dev/null"
+        cmd += f" 1> {programs_to_files['compress_alignment_file']['output'] }"
+        cmd += f" 2> {programs_to_files['compress_alignment_file']['error'] }"
+        if options.quiet == False:
+            logging.info( f"Running command - {cmd}" )
         
         os.system(cmd)
         return

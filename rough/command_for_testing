@@ -51,6 +51,9 @@ cwltool \
 2> /home/baners23/work/ABRIDGE/testing/alignments/dna_seq_chromosome_all.error
 ########################################################################################################################
 
+rm -rf \
+/home/baners23/work/ABRIDGE/testing/abrigde/SRR23242149_SE_all_tags_sorted_1_dev_temp  \
+/home/baners23/work/ABRIDGE/testing/abrigde/SRR23242149_SE_all_tags_sorted_1_dev.abridge && \
 abridge \
 --compress \
 --reference /home/baners23/work/ABRIDGE/testing/reference/Homo_sapiens.GRCh38.dna_sm.primary_assembly.fa \
