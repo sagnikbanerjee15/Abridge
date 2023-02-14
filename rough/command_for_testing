@@ -13,7 +13,7 @@ sudo mount /dev/nvme1n1 /data1
 sudo mount /dev/nvme2n1 /data2
 
 chmod -R 777 /data1
-chmod -R 777 /data2s
+chmod -R 777 /data2
 
 EC2_storage1=/data1
 EC2_storage2=/data2
@@ -29,9 +29,10 @@ cwltool \
 --cachedir ${EC2_storage1}/ABRIDGE/testing/alignments/rna_seq_cache \
 /home/baners23/work/ABRIDGE/Abridge_analysis_and_manuscript/cwl_scripts/workflows/rna_seq_download_align_pe_se.cwl \
 --threads 96 \
---SRA_accession SRR23242149 \
---genomeFastaFiles ${EC2_storage1}/ABRIDGE/testing/reference/Homo_sapiens.GRCh38.dna_sm.primary_assembly.fa \
+--SRA_accession SRR1659023 \
+--genomeFastaFiles ${EC2_storage1}/ABRIDGE/testing/reference/Arabidopsis_thaliana.TAIR10.dna_sm.toplevel.fa \
 --chromosome 1 \
+--genomeSAindexNbases 12 \
 1> ${EC2_storage1}/ABRIDGE/testing/alignments/rna_seq_chromosome_1.output \
 2> ${EC2_storage1}/ABRIDGE/testing/alignments/rna_seq_chromosome_1.error
 
@@ -40,8 +41,9 @@ cwltool \
 --cachedir ${EC2_storage1}/ABRIDGE/testing/alignments/rna_seq_cache \
 /home/baners23/work/ABRIDGE/Abridge_analysis_and_manuscript/cwl_scripts/workflows/rna_seq_download_align_pe_se.cwl \
 --threads 96 \
---SRA_accession SRR23242149 \
---genomeFastaFiles ${EC2_storage1}/ABRIDGE/testing/reference/Homo_sapiens.GRCh38.dna_sm.primary_assembly.fa \
+--SRA_accession SRR1659023 \
+--genomeSAindexNbases 12 \
+--genomeFastaFiles ${EC2_storage1}/ABRIDGE/testing/reference/Arabidopsis_thaliana.TAIR10.dna_sm.toplevel.fa \
 1> ${EC2_storage1}/ABRIDGE/testing/alignments/rna_seq_chromosome_all.output \
 2> ${EC2_storage1}/ABRIDGE/testing/alignments/rna_seq_chromosome_all.error
 ########################################################################################################################
@@ -49,24 +51,24 @@ cwltool \
 
 ########################################################################################################################
 # CWL commands for DNA-Seq
-cwltool \
+nohup cwltool \
 --outdir ${EC2_storage1}/ABRIDGE/testing/alignments/dna_seq_chromosome_1 \
 --cachedir ${EC2_storage1}/ABRIDGE/testing/alignments/dna_seq_cache \
 /home/baners23/work/ABRIDGE/Abridge_analysis_and_manuscript/cwl_scripts/workflows/dna_seq_download_align_pe_se.cwl \
 --threads 96 \
---SRA_accession SRR23351483 \
---reference ${EC2_storage1}/ABRIDGE/testing/reference/Homo_sapiens.GRCh38.dna_sm.primary_assembly.fa \
+--SRA_accession SRR21814509 \
+--reference ${EC2_storage1}/ABRIDGE/testing/reference/Arabidopsis_thaliana.TAIR10.dna_sm.toplevel.fa \
 --chromosome 1 \
 1> ${EC2_storage1}/ABRIDGE/testing/alignments/dna_seq_chromosome_1.output \
-2> ${EC2_storage1}/ABRIDGE/testing/alignments/dna_seq_chromosome_1.error
+2> ${EC2_storage1}/ABRIDGE/testing/alignments/dna_seq_chromosome_1.error &
 
 cwltool \
 --outdir ${EC2_storage1}/ABRIDGE/testing/alignments/dna_seq_chromosome_all \
 --cachedir ${EC2_storage1}/ABRIDGE/testing/alignments/dna_seq_cache \
 /home/baners23/work/ABRIDGE/Abridge_analysis_and_manuscript/cwl_scripts/workflows/dna_seq_download_align_pe_se.cwl \
 --threads 96 \
---SRA_accession SRR23351483 \
---reference ${EC2_storage1}/ABRIDGE/testing/reference/Homo_sapiens.GRCh38.dna_sm.primary_assembly.fa \
+--SRA_accession SRR21814509 \
+--reference ${EC2_storage1}/ABRIDGE/testing/reference/Arabidopsis_thaliana.TAIR10.dna_sm.toplevel.fa \
 1> ${EC2_storage1}/ABRIDGE/testing/alignments/dna_seq_chromosome_all.output \
 2> ${EC2_storage1}/ABRIDGE/testing/alignments/dna_seq_chromosome_all.error
 ########################################################################################################################
@@ -76,12 +78,12 @@ ${EC2_storage1}/ABRIDGE/testing/abrigde/SRR23242149_SE_all_tags_sorted_1_dev_tem
 ${EC2_storage1}/ABRIDGE/testing/abrigde/SRR23242149_SE_all_tags_sorted_1_dev.abridge && \
 abridge \
 --compress \
---reference ${EC2_storage1}/ABRIDGE/testing/reference/Homo_sapiens.GRCh38.dna_sm.primary_assembly.fa \
---outputfilename ${EC2_storage1}/ABRIDGE/testing/abrigde/SRR23242149_SE_all_tags_sorted_1_dev.abridge \
---inputalignedfilename ${EC2_storage1}/ABRIDGE/testing/alignments/rna_seq_chromosome_1/SRR23242149_SE_all_tags_sorted_1.sam \
---temp_directory ${EC2_storage1}/ABRIDGE/testing/abrigde/SRR23242149_SE_all_tags_sorted_1_dev_temp \
-1> ${EC2_storage1}/ABRIDGE/testing/abrigde/SRR23242149_SE_all_tags_sorted_1_dev.output \
-2> ${EC2_storage1}/ABRIDGE/testing/abrigde/SRR23242149_SE_all_tags_sorted_1_dev.error
+--reference ${EC2_storage1}/ABRIDGE/testing/reference/Arabidopsis_thaliana.TAIR10.dna_sm.toplevel.fa \
+--outputfilename ${EC2_storage1}/ABRIDGE/testing/abrigde/SRR1659023_SE_all_tags_sorted_1_dev.abridge \
+--inputalignedfilename ${EC2_storage1}/ABRIDGE/testing/alignments/rna_seq_chromosome_1/SRR1659023_SE_all_tags_sorted_1.sam \
+--temp_directory ${EC2_storage1}/ABRIDGE/testing/abrigde/SRR1659023_SE_all_tags_sorted_1_dev_temp \
+1> ${EC2_storage1}/ABRIDGE/testing/abrigde/SRR1659023_SE_all_tags_sorted_1_dev.output \
+2> ${EC2_storage1}/ABRIDGE/testing/abrigde/SRR1659023_SE_all_tags_sorted_1_dev.error
 
 
 
