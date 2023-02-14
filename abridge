@@ -252,30 +252,6 @@ def validateCommandLineArguments( options ):
     
     options.outputs_and_errors_directory = f"{options.temp_directory}/output_and_errors"
     os.system( f"mkdir -p {options.outputs_and_errors_directory}" )
-
-    """
-    options.softwares["determineEndedness"] = "determineEndedness"
-    options.softwares["compressSamFileSingleEnded"] = "compressSamFileSingleEnded"
-    options.softwares["compressSamFileSingleEndedPass2"] = "compressSamFileSingleEndedPass2"
-    options.softwares["compressSamFilePairedEnded"] = "compressSamFilePairedEnded"
-    options.softwares["splitSamFileIntoEachReferenceSequence"] = "splitSamFileIntoEachReferenceSequence"
-    options.softwares["buildABRIDGEIndex"] = "buildAbridgeIndex"
-    options.softwares["decompressSamFileSingleEnded"] = "decompressSamFileSingleEnded"
-    options.softwares["extractSequencesFromReferences"] = "extractSequencesFromReferences.py"
-    options.softwares["randomRetrievalSingleEnded"] = "randomRetrievalSingleEnded"
-    options.softwares["randomRetrievalPairedEnded"] = "randomRetrievalPairedEnded"
-    options.softwares["mergeCompressedFilesSingleEnded"] = "mergeCompressedFilesSingleEnded"
-    options.softwares["addTagToSamFile"] = "addTagToSamFile"
-    options.softwares["maxReadsMappedToSingleNucleotide"] = "maxReadsMappedToSingleNucleotide"
-    options.softwares["compressQualityScoresFile"] = "compressQualityScoresFile"
-    options.softwares["deCompressQualityScoresFile"] = "deCompressQualityScoresFile"
-    options.softwares["compressSamFilePairedEnded"] = "compressSamFilePairedEnded"
-    options.softwares["decompressSamFilePairedEnded"] = "decompressSamFilePairedEnded"
-    options.softwares["generateCoverage"] = "generateCoverage"
-    options.softwares["findMaximumNumberOfReadsInEachLine"] = "findMaximumNumberOfReadsInEachLine"
-    options.softwares["maxReadsInEachLine"] = "maxReadsInEachLine"
-    options.softwares["associateShortNamesToReads"] = "associateShortNamesToReads"
-    """
     
     if options.ignore_all_quality_scores == True:
         options.ignore_quality_scores_for_matched_bases = True
@@ -311,7 +287,7 @@ def validateCommandLineArguments( options ):
         input_filename_without_location = options.inputalignedfilename.split( "/" )[-1][:-4]
     else:
         input_filename_without_location = options.inputabrfilename.split( "/" )[-1][:-8]
-    options.outputfilename = f"{options.temp_directory}/{input_filename_without_location}.abridge"
+    #options.outputfilename = f"{options.temp_directory}/{input_filename_without_location}.abridge"
 
 def cleanUp( options ):
     # Remove the reference files
@@ -343,20 +319,33 @@ def constructFileNames( options ):
         programs_to_files['compute_information_for_better_memory_management'] = {}
         programs_to_files['compute_information_for_better_memory_management']['summary_information_outputfilename'] = f"{options.temp_directory}/summary_information_about_aligned_reads"
         programs_to_files['compute_information_for_better_memory_management']['input_alignment_filename'] = options.inputalignedfilename
-        programs_to_files['compute_information_for_better_memory_management']['output'] = f"{options.temp_directory}/compute_information_for_better_memory_management.output"
-        programs_to_files['compute_information_for_better_memory_management']['error'] = f"{options.temp_directory}compute_information_for_better_memory_management.error"
+        programs_to_files['compute_information_for_better_memory_management']['output'] = f"{options.outputs_and_errors_directory}/compute_information_for_better_memory_management.output"
+        programs_to_files['compute_information_for_better_memory_management']['error'] = f"{options.outputs_and_errors_directory}compute_information_for_better_memory_management.error"
         
         # compress_alignment_file
         programs_to_files['compress_alignment_file'] = {}
         programs_to_files['compress_alignment_file']['input_alignment_filename'] = options.inputalignedfilename
-        inputalignedfileanme_with_path, inputalignedfilename_location, inputalignedfilename_full, inputalignedfilename_base, inputalignedfileanme_extension = seggregateInformationFromFilename(programs_to_files['compress_alignment_file']['input_alignment_filename'] )
+        inputalignedfilename_with_path, inputalignedfilename_location, inputalignedfilename_full, inputalignedfilename_base, inputalignedfilename_extension = seggregateInformationFromFilename(programs_to_files['compress_alignment_file']['input_alignment_filename'] )
         programs_to_files['compress_alignment_file']['output_abridge_filename'] = f"{options.temp_directory}/{inputalignedfilename_base}_icigars"
         programs_to_files['compress_alignment_file']['reference_filename'] = options.reference
         programs_to_files['compress_alignment_file']['unmapped_filename'] = f"{options.temp_directory}/{inputalignedfilename_base}_unmapped"
         programs_to_files['compress_alignment_file']['name_of_file_with_quality_scores'] = f"{options.temp_directory}/{inputalignedfilename_base}_quality_scores"
         programs_to_files['compress_alignment_file']['name_of_file_with_read_names_to_short_read_names_and_NH'] = f"{options.temp_directory}/sorted_read_names_with_NH_and_short_read_names_sorted_by_pos"
-        programs_to_files['compress_alignment_file']['output'] = f"{options.temp_directory}/compress_alignment_file.output"
-        programs_to_files['compress_alignment_file']['error'] = f"{options.temp_directory}/compress_alignment_file.error"
+        programs_to_files['compress_alignment_file']['output'] = f"{options.outputs_and_errors_directory}/compress_alignment_file.output"
+        programs_to_files['compress_alignment_file']['error'] = f"{options.outputs_and_errors_directory}/compress_alignment_file.error"
+        
+        programs_to_files['fclqc_compress'] = {}
+        programs_to_files['fclqc_compress']['parameter_file'] = f"{options.temp_directory}/parameter.json"
+        programs_to_files['fclqc_compress']['outputfilename'] = f"{options.temp_directory}/{inputalignedfilename_base}_quality_scores_fclqc_compressed"
+        programs_to_files['fclqc_compress']['output'] = f"{options.outputs_and_errors_directory}/fclqc_compress.output"
+        programs_to_files['fclqc_compress']['error'] = f"{options.outputs_and_errors_directory}/fclqc_compress.error"
+        
+        programs_to_files['zpaq_compress'] = {}
+        programs_to_files['zpaq_compress']['compressed_file'] = f"{options.outputfilename}"
+        programs_to_files['zpaq_compress']['reference_sha512_filename'] = f"{options.temp_directory}/reference_sha512"
+        programs_to_files['zpaq_compress']['output'] = f"{options.outputs_and_errors_directory}/zpaq_compress.output"
+        programs_to_files['zpaq_compress']['error'] = f"{options.outputs_and_errors_directory}/zpaq_compress.output"
+    
     # Decompress
     
 
@@ -368,197 +357,92 @@ def compressSamFile( options , tags_present ):
     pool = multiprocessing.Pool( processes = int( options.cpu ) )
     programs_to_files = constructFileNames(options)
 
-    if options.single_ended == True:
-        ######################################################################################
-        # Find maximum number of reads mapped to a single location
-        # Find maximum read length
-        # Find total number of alignments
-        ######################################################################################
+    ######################################################################################
+    # Find maximum number of reads mapped to a single location
+    # Find maximum read length
+    # Find total number of alignments
+    ######################################################################################
 
-        all_commands = []
-        # for input_filename in options.inputalignedfilename:
-        input_filename = options.inputalignedfilename
-        if options.quiet == False:
-            logging.info( f"Starting compression for {input_filename}" )
+    # for input_filename in options.inputalignedfilename:
+    input_filename = options.inputalignedfilename
+    if options.quiet == False:
+        logging.info( f"Starting compression for {input_filename}" )
 
-        input_alignment_file_format = "BAM" if "bam" in options.inputalignedfilename else "sam"
-        cmd = f"(/usr/bin/time --verbose "
-        cmd += f" compute_information_for_better_memory_management  "
-        cmd += f" --input_alignment_filename {programs_to_files['compute_information_for_better_memory_management']['input_alignment_filename']} "
-        cmd += f" --input_alignment_file_format {input_alignment_file_format}"
-        cmd += f" --summary_information_outputfilename {programs_to_files['compute_information_for_better_memory_management']['summary_information_outputfilename']}"
-        cmd += f")"
-        cmd += f"1> {programs_to_files['compute_information_for_better_memory_management']['output']}  "
-        cmd += f"2> {programs_to_files['compute_information_for_better_memory_management']['error'] }"
-        if options.quiet == False:
-            logging.info( f"Running command - {cmd}" )
-        
-        os.system(cmd)
-        
-        ######################################################################################
-        #  Execute the compress SAM file command for single ended reads
-        ######################################################################################
-        all_commands = []
-        # for input_filename in options.inputalignedfilename:
-        input_filename = options.inputalignedfilename
-        if options.quiet == False:
-            logging.info( f"Starting compression for {input_filename}" )
-        #print([row.split(":")[-1].strip() for row in open( programs_to_files['compute_information_for_better_memory_management']['summary_information_outputfilename'], "r" ).read().split("\n")])
-        max_input_reads_in_a_single_nucl_loc, total_number_of_alignments, max_read_length = [int(row.split(":")[-1].strip()) for row in open( programs_to_files['compute_information_for_better_memory_management']['summary_information_outputfilename'], "r" ).read().split("\n")[:-1]]
-        
-
-        cmd = f"(/usr/bin/time --verbose "
-        cmd += f" compress_alignment_file "
-        cmd += f" --input_alignment_filename {programs_to_files['compress_alignment_file']['input_alignment_filename'] }"
-        if input_filename[-4:] == ".sam":
-            cmd += f" --input_alignment_file_format SAM"
-        elif input_filename[-4:] == ".bam":
-            cmd += f" --input_alignment_file_format BAM"
-        cmd += f" --output_abridge_filename {programs_to_files['compress_alignment_file']['output_abridge_filename'] } "
-        cmd += f" --reference_filename {programs_to_files['compress_alignment_file']['reference_filename'] }"   
-        cmd += f" --unmapped_filename {programs_to_files['compress_alignment_file']['unmapped_filename'] } "
-        cmd += f" --max_read_length {max_read_length}"
-        cmd += f" --name_of_file_with_quality_scores {programs_to_files['compress_alignment_file']['name_of_file_with_quality_scores'] } "
-        cmd += f" --name_of_file_with_read_names_to_short_read_names_and_NH {programs_to_files['compress_alignment_file']['name_of_file_with_read_names_to_short_read_names_and_NH'] } "
-        if options.single_ended==True:
-            cmd += f" --ended SE "
-        else:
-            cmd += f" --ended PE "
-        cmd += f" --AS_tag_presence {tags_present['AS']}"
-
-        if options.ignore_soft_clippings == True:
-            cmd += f" --flag_ignore_soft_clippings"
-        if options.ignore_mismatches == True:  
-            cmd += f" --flag_ignore_mismatches "
-        if options.ignore_all_quality_scores == True:
-            cmd += f" --flag_ignore_all_quality_scores "
-        if options.ignore_unmapped_reads == True:
-            cmd += f" --flag_ignore_unmapped_sequences "
-        if options.run_diagnostics == True:
-            cmd += f" --run_diagnostics "
-        if options.ignore_quality_scores_for_matched_bases == True:
-            cmd += f" --flag_ignore_quality_scores_for_matched_bases "
-        if options.ignore_alignment_scores == True:
-            cmd += f" --flag_ignore_alignment_scores "
-        if options.skip_shortening_read_names == True:
-            cmd += f" --skip_shortening_read_names"
-        cmd += f" --max_reads_in_a_single_nucl_loc {max_input_reads_in_a_single_nucl_loc}"
-        
-        cmd += f") "
-        cmd += f" 1> {programs_to_files['compress_alignment_file']['output'] }"
-        cmd += f" 2> {programs_to_files['compress_alignment_file']['error'] }"
-        if options.quiet == False:
-            logging.info( f"Running command - {cmd}" )
-        
-        os.system(cmd)
-        return
-    else:
-        # Paired ended
-
-        ######################################################################################
-        # Find maximum number of reads mapped to a single location
-        # Find maximum read length
-        # Find total number of alignments
-        ######################################################################################
-        all_commands = []
-        # for input_filename in options.inputalignedfilename:
-        input_filename = options.inputalignedfilename
-        if options.quiet == False:
-            logging.info( f"Starting  for {input_filename}" )
-
-        cmd = f"(/usr/bin/time --verbose "
-        cmd += f" maxReadsMappedToSingleNucleotide  "
-        cmd += f" --input_sam_filename {input_filename} "
-        cmd += f" --output_filename {name_of_max_input_reads_file}"
-        cmd += f" --name_of_total_number_of_alignments_filename  {name_of_total_number_of_alignments_file} "
-        cmd += f" --name_of_file_max_read_length {name_of_file_max_read_length}"
-        cmd += f")"
-        cmd += f"1> /dev/null "
-        if options.keep_intermediate_error_files == True:
-            cmd += f"2> {error_file_max_input_reads}"
-        else:
-            cmd += f"2> /dev/null"
-        if options.quiet == False:
-            logging.info( f"Running command - {cmd}" )
-        
-        os.system(cmd)
-
-        all_commands = []
-        # for input_filename in options.inputalignedfilename:
-        input_filename = options.inputalignedfilename
-        if options.quiet == False:
-            logging.info( f"Generating for {input_filename}" )
-
-        cmd = f" cat "
-        cmd += f" {input_filename} "
-        cmd += f" |grep -v ^@ "
-        cmd += f" |cut -f2|uniq "
-        cmd += f" |sort|uniq > {frequency_of_flags_filename}"
-        os.system( cmd )
-
-        all_commands = []
-        # for input_filename in options.inputalignedfilename:
-        input_filename = options.inputalignedfilename
-        if options.quiet == False:
-            logging.info( f"Starting  for {input_filename}" )
-
-        max_input_reads_in_a_single_nucl_loc = int( open( name_of_max_input_reads_file, "r" ).read().strip() )
-        if options.quiet == False:
-            logging.info( f"{name_of_input_file_without_location} max_input_reads_in_a_single_nucl_loc = {max_input_reads_in_a_single_nucl_loc}" )
-
-        max_number_of_alignments = int( open( name_of_total_number_of_alignments_file, "r" ).read().strip() )
-        if options.quiet == False:
-            logging.info( f"{name_of_input_file_without_location} max_number_of_alignments = {max_number_of_alignments}" )
-
-        max_read_length = int( open( name_of_file_max_read_length, "r" ).read().strip() )
-        if options.quiet == False:
-            logging.info( f"{name_of_input_file_without_location} max_read_length = {max_read_length}" )
+    input_alignment_file_format = "BAM" if "bam" in options.inputalignedfilename else "sam"
+    cmd = f"(/usr/bin/time --verbose "
+    cmd += f" compute_information_for_better_memory_management  "
+    cmd += f" --input_alignment_filename {programs_to_files['compute_information_for_better_memory_management']['input_alignment_filename']} "
+    cmd += f" --input_alignment_file_format {input_alignment_file_format}"
+    cmd += f" --summary_information_outputfilename {programs_to_files['compute_information_for_better_memory_management']['summary_information_outputfilename']}"
+    cmd += f")"
+    cmd += f"1> {programs_to_files['compute_information_for_better_memory_management']['output']}  "
+    cmd += f"2> {programs_to_files['compute_information_for_better_memory_management']['error'] }"
+    if options.quiet == False:
+        logging.info( f"Running command - {cmd}" )
     
-        cmd = f"(/usr/bin/time --verbose "
-        cmd += f" compressSamFilePairedEnded "
-        cmd += f" --reference_filename {options.reference}"
-        cmd += f" --input_sam_filename {input_filename} "
-        cmd += f" --output_abridge_filename {outputfilename} "
-        cmd += f" --unmapped_filename {unmapped_outputfilename} "
-        cmd += f" --max_input_reads_in_a_single_nucl_loc {max_input_reads_in_a_single_nucl_loc} "
-        cmd += f" --name_of_file_with_max_commas {name_of_file_with_max_commas} "
-        cmd += f" --name_of_file_with_quality_scores {name_of_file_with_quality_scores} "
-        cmd += f" --name_of_file_with_read_names_to_short_read_names_and_NH {options.temp_directory}/sorted_read_names_with_NH_and_short_read_names_sorted_by_pos "
-        
-        if options.ignore_soft_clippings == True:
-            cmd += f" --flag_ignore_soft_clippings"
-        if options.ignore_mismatches == True:  
-            cmd += f" --flag_ignore_mismatches "
-        if options.ignore_all_quality_scores == True:
-            cmd += f" --flag_ignore_all_quality_scores "
-        if options.ignore_unmapped_reads == True:
-            cmd += f" --flag_ignore_unmapped_sequences "
-        if options.run_diagnostics == True:
-            cmd += f" --run_diagnostics "
-        if options.ignore_quality_scores_for_matched_bases == True:
-            cmd += f" --flag_ignore_quality_scores_for_matched_bases "
-        if options.ignore_alignment_scores == True:
-            cmd += f" --flag_ignore_alignment_scores "
-        if options.skip_shortening_read_names == True:
-            cmd += f" --skip_shortening_read_names"
-        
-        cmd += f" --max_number_of_alignments {max_number_of_alignments} "  
-        cmd += f" --max_read_length {max_read_length} "  
-        cmd += f" --frequency_of_flags_filename {frequency_of_flags_filename} "  
-        cmd += f" --name_of_file_dictionary {name_of_file_dictionary} "  
-        cmd += f") "
-        cmd += f"1> /dev/null "
-        if options.keep_intermediate_error_files == True:
-            cmd += f"2> {error_file_compress_}"
-        else:
-            cmd += f"2> /dev/null"
-            
-        os.system(cmd)
+    os.system(cmd)
+    
+    ######################################################################################
+    #  Execute the compress SAM file command for single ended reads
+    ######################################################################################
+    all_commands = []
+    # for input_filename in options.inputalignedfilename:
+    input_filename = options.inputalignedfilename
+    if options.quiet == False:
+        logging.info( f"Starting compression for {input_filename}" )
+    #print([row.split(":")[-1].strip() for row in open( programs_to_files['compute_information_for_better_memory_management']['summary_information_outputfilename'], "r" ).read().split("\n")])
+    max_input_reads_in_a_single_nucl_loc, total_number_of_alignments, max_read_length = [int(row.split(":")[-1].strip()) for row in open( programs_to_files['compute_information_for_better_memory_management']['summary_information_outputfilename'], "r" ).read().split("\n")[:-1]]
+    
 
+    cmd = f"(/usr/bin/time --verbose "
+    cmd += f" compress_alignment_file "
+    cmd += f" --input_alignment_filename {programs_to_files['compress_alignment_file']['input_alignment_filename'] }"
+    if input_filename[-4:] == ".sam":
+        cmd += f" --input_alignment_file_format SAM"
+    elif input_filename[-4:] == ".bam":
+        cmd += f" --input_alignment_file_format BAM"
+    cmd += f" --output_abridge_filename {programs_to_files['compress_alignment_file']['output_abridge_filename'] } "
+    cmd += f" --reference_filename {programs_to_files['compress_alignment_file']['reference_filename'] }"   
+    cmd += f" --unmapped_filename {programs_to_files['compress_alignment_file']['unmapped_filename'] } "
+    cmd += f" --max_read_length {max_read_length}"
+    cmd += f" --name_of_file_with_quality_scores {programs_to_files['compress_alignment_file']['name_of_file_with_quality_scores'] } "
+    cmd += f" --name_of_file_with_read_names_to_short_read_names_and_NH {programs_to_files['compress_alignment_file']['name_of_file_with_read_names_to_short_read_names_and_NH'] } "
+    if options.single_ended==True:
+        cmd += f" --ended SE "
+    else:
+        cmd += f" --ended PE "
+    cmd += f" --AS_tag_presence {tags_present['AS']}"
+
+    if options.ignore_soft_clippings == True:
+        cmd += f" --flag_ignore_soft_clippings"
+    if options.ignore_mismatches == True:  
+        cmd += f" --flag_ignore_mismatches "
+    if options.ignore_all_quality_scores == True:
+        cmd += f" --flag_ignore_all_quality_scores "
+    if options.ignore_unmapped_reads == True:
+        cmd += f" --flag_ignore_unmapped_sequences "
+    if options.run_diagnostics == True:
+        cmd += f" --run_diagnostics "
+    if options.ignore_quality_scores_for_matched_bases == True:
+        cmd += f" --flag_ignore_quality_scores_for_matched_bases "
+    if options.ignore_alignment_scores == True:
+        cmd += f" --flag_ignore_alignment_scores "
+    if options.skip_shortening_read_names == True:
+        cmd += f" --skip_shortening_read_names"
+    cmd += f" --max_reads_in_a_single_nucl_loc {max_input_reads_in_a_single_nucl_loc}"
+    
+    cmd += f") "
+    cmd += f" 1> {programs_to_files['compress_alignment_file']['output'] }"
+    cmd += f" 2> {programs_to_files['compress_alignment_file']['error'] }"
+    if options.quiet == False:
+        logging.info( f"Running command - {cmd}" )
+    
+    os.system(cmd)
+  
     ######################################################################################
     # Compress Quality scores file
     ######################################################################################
-    number_of_quality_scores = int( open( f"{name_of_total_number_of_alignments_file}" , "r" ).read().strip() )
+    number_of_quality_scores = total_number_of_alignments + 100
 
     # Create the parameter file for fclqc
     fhw = open( f"{options.temp_directory}/parameter.json", "w" )
@@ -571,65 +455,51 @@ def compressSamFile( options , tags_present ):
     fhw.write( "}\n" )
     fhw.close()
 
+    if options.quiet == False:
+        logging.info( "Starting compression with fclqc" )
     cmd = f"(/usr/bin/time --verbose "
     cmd += f" main "
-    cmd += f" -c {name_of_file_with_quality_scores} "
-    cmd += f" {fclqc_output_filename}"
+    cmd += f" -c {programs_to_files['compress_alignment_file']['name_of_file_with_quality_scores'] } "
+    cmd += f" {programs_to_files['fclqc_compress']['outputfilename']}"
     cmd += f" {options.temp_directory}/parameter.json"
     cmd += f") "
-    cmd += f" 1> /dev/null "
-    cmd += f" 2> {error_fclqc}"
-
+    cmd += f" 1> {programs_to_files['fclqc_compress']['output']} "
+    cmd += f" 2> {programs_to_files['fclqc_compress']['error']}"
+    if options.quiet == False:
+        logging.info( f"Running command - {cmd}" )
     os.system(cmd)
 
     ######################################################################################
     # Generate SHA512 for reference file
     ######################################################################################
     reference_sha512_filename = f"{options.temp_directory}/reference_sha512"
-    cmd = f"sha512sum {options.reference} > {reference_sha512_filename}.temp"
+    cmd = f"sha512sum {options.reference} > {programs_to_files['zpaq_compress']['reference_sha512_filename']}.temp"
     os.system( cmd )
-    open( reference_sha512_filename, "w" ).write( open( f"{reference_sha512_filename}.temp", "r" ).read().strip().split()[0] )
-    os.system( f"rm {reference_sha512_filename}.temp" )
+    open( reference_sha512_filename, "w" ).write( open( f"{programs_to_files['zpaq_compress']['reference_sha512_filename']}.temp", "r" ).read().strip().split()[0] )
+    os.system( f"rm {programs_to_files['zpaq_compress']['reference_sha512_filename']}.temp" )
 
     ######################################################################################
     # Compress files
     ######################################################################################
-
     if options.quiet == False:
         logging.info( "Starting compression with zpaq" )
 
     cmd = f"(/usr/bin/time --verbose "
     cmd += f" zpaq a "
     cmd += f" {options.outputfilename} "  # Final name of the compressed file ending in .abridge
-    cmd += f" {outputfilename} "  # The non redundant version of the sam file
-    cmd += f" {unmapped_outputfilename} "  # Set of unmapped reads
-    cmd += f" {reference_sha512_filename} "  # The 128 bit hash of the reference
-    cmd += f" {fclqc_output_filename}001* "  # FCLQC compressed quality scores file
-    cmd += f" {fclqc_output_filename}.prob "  # FCLQC compressed quality probability file
-    if options.single_ended == False:
-        cmd += f" {name_of_file_dictionary} "
-    # cmd += f" {name_of_file_with_quality_scores} "
+    cmd += f" {programs_to_files['compress_alignment_file']['output_abridge_filename']} "  # The non redundant version of the sam file
+    cmd += f" {programs_to_files['compress_alignment_file']['unmapped_filename']} "  # Set of unmapped reads
+    cmd += f" {programs_to_files['zpaq_compress']['reference_sha512_filename']} "  # The 128 bit hash of the reference
+    cmd += f" {programs_to_files['fclqc_compress']['outputfilename']}001* "  # FCLQC compressed quality scores file
+    cmd += f" {programs_to_files['fclqc_compress']['outputfilename']}.prob "  # FCLQC compressed quality probability file
     cmd += f" -m3 -t{options.cpu} -f "
     cmd += f" -noattributes "
     cmd += f") "
-    cmd += f"1> /dev/null "
-    if options.keep_intermediate_error_files == True:
-        cmd += f"2> {error_file_zpaq_compression}"
-    else:
-        cmd += f"2> /dev/null"
-
+    cmd += f"1> {programs_to_files['zpaq_compress']['output']}"
+    cmd += f"2> {programs_to_files['zpaq_compress']['error']}"
+    if options.quiet == False:
+        logging.info( f"Running command - {cmd}" )
     os.system(cmd)
-
-    all_files = glob.glob( f"{options.temp_directory}/*" )
-    keep_these_files = []
-    for file in all_files:
-        if file[-6:] == ".error" or file[-8:] == ".abridge" or file[-3:] == "log":
-            keep_these_files.append( file )
-    remove_these_files = list( set( all_files ) - set( keep_these_files ) )
-
-    if options.preserve_all_intermediate_files == False:
-        for file in remove_these_files:
-            os.system( "rm -rf " + file )
 
 def findEndedness( options, logging ):
     """
