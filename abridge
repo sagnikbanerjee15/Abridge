@@ -320,7 +320,7 @@ def constructFileNames( options ):
         programs_to_files['compute_information_for_better_memory_management']['summary_information_outputfilename'] = f"{options.temp_directory}/summary_information_about_aligned_reads"
         programs_to_files['compute_information_for_better_memory_management']['input_alignment_filename'] = options.inputalignedfilename
         programs_to_files['compute_information_for_better_memory_management']['output'] = f"{options.outputs_and_errors_directory}/compute_information_for_better_memory_management.output"
-        programs_to_files['compute_information_for_better_memory_management']['error'] = f"{options.outputs_and_errors_directory}compute_information_for_better_memory_management.error"
+        programs_to_files['compute_information_for_better_memory_management']['error'] = f"{options.outputs_and_errors_directory}/compute_information_for_better_memory_management.error"
         
         # compress_alignment_file
         programs_to_files['compress_alignment_file'] = {}
