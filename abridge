@@ -344,7 +344,7 @@ def constructFileNames( options ):
         programs_to_files['zpaq_compress']['compressed_file'] = f"{options.outputfilename}"
         programs_to_files['zpaq_compress']['reference_sha512_filename'] = f"{options.temp_directory}/reference_sha512"
         programs_to_files['zpaq_compress']['output'] = f"{options.outputs_and_errors_directory}/zpaq_compress.output"
-        programs_to_files['zpaq_compress']['error'] = f"{options.outputs_and_errors_directory}/zpaq_compress.output"
+        programs_to_files['zpaq_compress']['error'] = f"{options.outputs_and_errors_directory}/zpaq_compress.error"
     
     # Decompress
     
@@ -495,8 +495,8 @@ def compressSamFile( options , tags_present ):
     cmd += f" -m3 -t{options.cpu} -f "
     cmd += f" -noattributes "
     cmd += f") "
-    cmd += f"1> {programs_to_files['zpaq_compress']['output']}"
-    cmd += f"2> {programs_to_files['zpaq_compress']['error']}"
+    cmd += f"1> {programs_to_files['zpaq_compress']['output']} "
+    cmd += f"2> {programs_to_files['zpaq_compress']['error']} "
     if options.quiet == False:
         logging.info( f"Running command - {cmd}" )
     os.system(cmd)

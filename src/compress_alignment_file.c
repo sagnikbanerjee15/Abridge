@@ -452,12 +452,13 @@ void compressAlignmentFile (
 				fprintf (fhw_unmapped , "%s" , "\n");
 				//for ( i = 0 ; current_alignment->quality_scores[i] != '\0' ; i++ )
 				// current_alignment->quality_scores[i] -= QUAL_SCORE_ADJUSTMENT;
+				fprintf (fhw_qual , "%s" , "\n");
+				fprintf (fhw_qual , "%s" , "\n");
+				fprintf (fhw_qual , "%s" , "\n");
 				fprintf (fhw_qual ,
 						"%s" ,
 						current_alignment->quality_scores);
-				fprintf (fhw_qual , "%s" , "\n");
-				fprintf (fhw_qual , "%s" , "\n");
-				fprintf (fhw_qual , "%s" , "\n");
+
 			}
 		}
 
