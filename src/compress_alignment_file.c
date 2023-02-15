@@ -458,6 +458,11 @@ void compressAlignmentFile (
 				fprintf (fhw_qual , "%s" , "\n");
 				fprintf (fhw_qual , "%s" , "\n");
 				fprintf (fhw_qual , "%s" , "\n");
+
+				if ( strcmp (input_alignment_file_format , "SAM") == 0 )
+					line_len = getline ( &line , &len , fhr);
+				else if ( strcmp (input_alignment_file_format , "BAM") == 0 )
+					line_len = sam_read1 (fp_in , bamHdr , aln);
 			}
 		}
 		else
