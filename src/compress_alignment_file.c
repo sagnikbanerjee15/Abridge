@@ -458,51 +458,45 @@ void compressAlignmentFile (
 				fprintf (fhw_qual , "%s" , "\n");
 				fprintf (fhw_qual , "%s" , "\n");
 				fprintf (fhw_qual , "%s" , "\n");
-
-				if ( strcmp (input_alignment_file_format , "SAM") == 0 )
-					line_len = getline ( &line , &len , fhr);
-				else if ( strcmp (input_alignment_file_format , "BAM") == 0 )
-					line_len = sam_read1 (fp_in , bamHdr , aln);
 			}
 		}
-		else
+
+		if ( strcmp (input_alignment_file_format , "SAM") == 0 )
 		{
-			if ( strcmp (input_alignment_file_format , "SAM") == 0 )
-			{
-				line_len = getline ( &line , &len , fhr);
-				//printf ("\nLine length %d" , line_len);
-				prepareSingleRecordFromAlignmentFile (line ,
-						fp_in , // File pointer if BAM file provided
-						bamHdr ,		// read header
-						aln ,
-						fhr ,
-						current_alignment ,
-						ended ,
-						input_alignment_file_format ,
-						AS_tag_presence ,
-						flag_ignore_alignment_scores ,
-						flag_ignore_soft_clippings ,
-						flag_ignore_mismatches ,
-						flag_ignore_all_quality_scores ,
-						flag_ignore_unmapped_sequences ,
-						flag_ignore_quality_scores_for_matched_bases ,
-						max_read_length ,
-						split_on_tab ,
-						split_on_colon ,
-						cigar_items_instance);
-			}
-
-			else if ( strcmp (input_alignment_file_format , "BAM") == 0 )
-			{
-				line_len = sam_read1 (fp_in , bamHdr , aln);
-				/*if ( total_number_of_alignments % 10000 == 0 )
-				 printf ("\nLine length %d total_number_of_alignments %d" ,
-				 line_len ,
-				 total_number_of_alignments);
-				 */
-				//fflush (stdout);
-			}
+			line_len = getline ( &line , &len , fhr);
+			//printf ("\nLine length %d" , line_len);
+			prepareSingleRecordFromAlignmentFile (line ,
+					fp_in , // File pointer if BAM file provided
+					bamHdr ,		// read header
+					aln ,
+					fhr ,
+					current_alignment ,
+					ended ,
+					input_alignment_file_format ,
+					AS_tag_presence ,
+					flag_ignore_alignment_scores ,
+					flag_ignore_soft_clippings ,
+					flag_ignore_mismatches ,
+					flag_ignore_all_quality_scores ,
+					flag_ignore_unmapped_sequences ,
+					flag_ignore_quality_scores_for_matched_bases ,
+					max_read_length ,
+					split_on_tab ,
+					split_on_colon ,
+					cigar_items_instance);
 		}
+
+		else if ( strcmp (input_alignment_file_format , "BAM") == 0 )
+		{
+			line_len = sam_read1 (fp_in , bamHdr , aln);
+			/*if ( total_number_of_alignments % 10000 == 0 )
+			 printf ("\nLine length %d total_number_of_alignments %d" ,
+			 line_len ,
+			 total_number_of_alignments);
+			 */
+			//fflush (stdout);
+		}
+
 
 		if ( line_len <= 0 ) break;
 	} while ( 1 );
