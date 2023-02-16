@@ -391,7 +391,8 @@ def compressSamFile( options , tags_present ):
     if options.quiet == False:
         logging.info( f"Starting compression for {input_filename}" )
     #print([row.split(":")[-1].strip() for row in open( programs_to_files['compute_information_for_better_memory_management']['summary_information_outputfilename'], "r" ).read().split("\n")])
-    max_input_reads_in_a_single_nucl_loc, total_number_of_alignments, max_read_length = [int(row.split(":")[-1].strip()) for row in open( programs_to_files['compute_information_for_better_memory_management']['summary_information_outputfilename'], "r" ).read().split("\n")[:-1]]
+    max_input_reads_in_a_single_nucl_loc, total_number_of_alignments, max_read_length = [int(row.split(":")[-1].strip()) for row in open( programs_to_files['compute_information_for_better_memory_management']['summary_information_outputfilename'], "r" ).read().split("\n")[:-2]]
+    samformatflags = open( programs_to_files['compute_information_for_better_memory_management']['summary_information_outputfilename'], "r" ).read().split("\n")[-2].split()[-1].split(",")
     
 
     cmd = f"(/usr/bin/time --verbose "
