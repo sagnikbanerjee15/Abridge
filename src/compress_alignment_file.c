@@ -420,7 +420,7 @@ void compressAlignmentFile (
 		sam_read1 (fp_in , bamHdr , aln);
 	}
 	//return;
-	fseek(fhr, -line_len, SEEK_SET);
+	fseek(fhr, -line_len, SEEK_CUR);
 	do
 	{
 
