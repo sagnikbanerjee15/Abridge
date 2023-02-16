@@ -302,7 +302,7 @@ void findSummaryInformation (
 	strcat(str, "samformatflags: ");
 	for(i=0;i<all_possible_samflags_index;i++)
 	{
-		convertUnsignedIntegerToString (temp_str_integer_to_string_conversion, all_possible_samflags[i])
+		convertUnsignedIntegerToString (temp_str_integer_to_string_conversion, all_possible_samflags[i]);
 		strcat(str, temp_str_integer_to_string_conversion);
 		if (i!=all_possible_samflags_index-1)
 			strcat(str,",");
