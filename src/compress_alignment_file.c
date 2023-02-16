@@ -383,7 +383,7 @@ void compressAlignmentFile (
 	while((line_len = getline ( &line , &len , fhr_samformatflag_dictionary_filename)) > 0)
 	{
 		splitByDelimiter(line, '\t', split_on_tab);
-		//printf("\n%s %s", split_on_tab[0], split_on_tab[1]);
+		printf("\n%s %s", split_on_tab[0], split_on_tab[1]);
 		//fflush(stdout);
 		strcpy(samflag_dictionary[samflag_dictionary_index]->samflag, split_on_tab[0]);
 		samflag_dictionary[samflag_dictionary_index]->character = split_on_tab[1][0];
