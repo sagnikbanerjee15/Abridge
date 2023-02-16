@@ -541,17 +541,20 @@ void compressAlignmentFile (
 			if ( flag_ignore_unmapped_sequences == 0 )
 			{
 				//Write the unmapped reads into file
+				fprintg (fhw_unmapped, "%s", "@");
+				fprintf (fhw_unmapped , "%s" , current_alignment->read_name);
+				fprintf (fhw_unmapped , "%s" , "\n");
 				fprintf (fhw_unmapped , "%s" , current_alignment->sequence);
 				fprintf (fhw_unmapped , "%s" , "\n");
 				//for ( i = 0 ; current_alignment->quality_scores[i] != '\0' ; i++ )
 				// current_alignment->quality_scores[i] -= QUAL_SCORE_ADJUSTMENT;
-				fprintf (fhw_qual , "%s" , "\n");
-				fprintf (fhw_qual , "%s" , "\n");
-				fprintf (fhw_qual , "%s" , "\n");
-				fprintf (fhw_qual ,
+				fprintf (fhw_unmapped , "%s" , "\n");
+				fprintf (fhw_unmapped , "%s" , "+");
+				fprintf (fhw_unmapped , "%s" , "\n");
+				fprintf (fhw_unmapped ,
 						"%s" ,
 						current_alignment->quality_scores);
-				fprintf (fhw_qual , "%s" , "\n");
+				fprintf (fhw_unmapped , "%s" , "\n");
 
 			}
 		}
