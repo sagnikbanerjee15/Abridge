@@ -380,7 +380,7 @@ void compressAlignmentFile (
 	/*
 	* Read the samformat flag mappings
 	*/
-	while((line_len = getline ( &line , &len , fhr)) > 0)
+	while((line_len = getline ( &line , &len , fhr_samformatflag_dictionary_filename)) > 0)
 	{
 		splitByDelimiter(line, '\t', split_on_tab);
 		printf("\n%s %s", split_on_tab[0], split_on_tab[1]);
