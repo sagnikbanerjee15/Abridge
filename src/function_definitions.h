@@ -448,7 +448,7 @@ void generateiCIGARString (
 		unsigned short int flag_ignore_quality_scores_for_matched_bases,
 		char *ended,
 		struct Cigar_Items *cigar_items_instance,
-		struct Samflag_Dictionary_Items *samflag_dictionary,
+		struct Samflag_Dictionary_Items **samflag_dictionary,
 		unsigned int samflag_dictionary_size)
 {
 	/*************************************************************************************************************************
@@ -863,15 +863,15 @@ void generateiCIGARString (
 			// Look for the appropriate character
 			for(samflag_dictionary_index=0; samflag_dictionary_index<samflag_dictionary_size;samflag_dictionary_index++)
 			{
-				printf("\nsamflag_in_dictionary=%s samflag_in_alignment=%s replacement_character = %c",samflag_dictionary[samflag_dictionary_index].samflag, sam_alignment_instance->samflag, samflag_dictionary[samflag_dictionary_index].character);
-				if(strcmp(samflag_dictionary[samflag_dictionary_index].samflag, sam_alignment_instance->samflag) == 0)
+				printf("\nsamflag_in_dictionary=%s samflag_in_alignment=%s replacement_character = %c",samflag_dictionary[samflag_dictionary_index]->samflag, sam_alignment_instance->samflag, samflag_dictionary[samflag_dictionary_index]->character);
+				if(strcmp(samflag_dictionary[samflag_dictionary_index]->samflag, sam_alignment_instance->samflag) == 0)
 					break;
 			}
 			if(samflag_dictionary_index==samflag_dictionary_size)
 			{
 				printf("\nBig Trouble");
 			}
-			sam_alignment_instance->icigar[i] = samflag_dictionary[samflag_dictionary_index].character;
+			sam_alignment_instance->icigar[i] = samflag_dictionary[samflag_dictionary_index]->character;
 		}
 	}
 
@@ -1100,7 +1100,7 @@ unsigned short int prepareSingleRecordFromAlignmentFile (
 		char **split_on_tab,
 		char **split_on_colon,
 		struct Cigar_Items *cigar_items_instance,
-		struct Samflag_Dictionary_Items *samflag_dictionary,
+		struct Samflag_Dictionary_Items **samflag_dictionary,
 		unsigned int samflag_dictionary_size)
 {
 	/*************************************************************************************************************************
