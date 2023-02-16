@@ -383,15 +383,17 @@ void compressAlignmentFile (
 	while((line_len = getline ( &line , &len , fhr_samformatflag_dictionary_filename)) > 0)
 	{
 		splitByDelimiter(line, '\t', split_on_tab);
-		printf("\n%s %s", split_on_tab[0], split_on_tab[1]);
+		//printf("\n%s %s", split_on_tab[0], split_on_tab[1]);
 		//fflush(stdout);
 		strcpy(samflag_dictionary[samflag_dictionary_index]->samflag, split_on_tab[0]);
 		samflag_dictionary[samflag_dictionary_index]->character = split_on_tab[1][0];
-		printf("\n%s %s", split_on_tab[0], samflag_dictionary[samflag_dictionary_index]->samflag);
-		printf("\n%s %c", split_on_tab[1], samflag_dictionary[samflag_dictionary_index]->character);
+		//printf("\n%s %s", split_on_tab[0], samflag_dictionary[samflag_dictionary_index]->samflag);
+		//printf("\n%s %c", split_on_tab[1], samflag_dictionary[samflag_dictionary_index]->character);
 		samflag_dictionary_index++;
 	}
 	samflag_dictionary_size = samflag_dictionary_index;
+	for(samflag_dictionary_index=0;samflag_dictionary_index<samflag_dictionary_size;samflag_dictionary_index++)
+		printf("\nDictionary items samflag=%s character=%c",samflag_dictionary[samflag_dictionary_index]->samflag, samflag_dictionary[samflag_dictionary_index]->character);
 	//return;
 
 	/*
