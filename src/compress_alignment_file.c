@@ -34,6 +34,7 @@ static struct argp_option options[] =
 { "name_of_file_with_read_names_to_short_read_names_and_NH" , 'r' , "SHORT_NAMES_NH_FILENAME" , 0 , "Enter the name of the file that contains the mapping between the long name to the short name and the NH values" , 0 } ,
 { "ended" , 'k' , "PE_OR_SE" , 0 , "Enter SE or PE to indicate whether the alignment file is SE or PE" , 0 } ,
 { "AS_tag_presence" , 'l' , "AS_tag_presence" , 0 , "Enter 1 or 0 depending on whether the AS tag is present or not" , 0 } ,
+{ "samformatflag_dictionary_filename", 'w', "SAMFORMATFLAG_DICTIONARY_FILENAME", 0 , "Enter the name of the file that contains the dictionary mapping the samformatflags with the alphabets", 0 } ,
 
 { "flag_ignore_soft_clippings" , 's' , 0 , 0 , "Set this flag to ignore soft clippings" , 0 } ,
 { "flag_ignore_mismatches" , 'm' , 0 , 0 , "Set this flag to ignore mismatches" , 0 } ,
@@ -60,6 +61,7 @@ struct arguments
 	char *unmapped_filename;
 	char *name_of_file_with_quality_scores;
 	char *name_of_file_with_read_names_to_short_read_names_and_NH;
+	char *samformatflag_dictionary_filename;
 	unsigned short int flag_ignore_soft_clippings;
 	unsigned short int flag_ignore_mismatches;
 	unsigned short int flag_ignore_all_quality_scores;
@@ -145,6 +147,9 @@ static error_t parse_opt (int key, char *arg, struct argp_state *state)
 		case 'u':
 			arguments->unmapped_filename = arg;
 			break;
+		case 'w':
+			arguments->samformatflag_dictionary_filename = arg;
+			break;
 
 		case ARGP_KEY_END:
 			// Reached the last key.
@@ -178,6 +183,7 @@ void compressAlignmentFile (
 		char *unmapped_filename,
 		char *name_of_file_with_quality_scores,
 		char *name_of_file_with_read_names_to_short_read_names_and_NH,
+		char *samformatflag_dictionary_filename,
 
 		unsigned short int flag_ignore_alignment_scores,
 		unsigned short int flag_ignore_soft_clippings,
@@ -550,6 +556,7 @@ int main (int argc, char *argv[])
 	arguments.name_of_file_with_quality_scores = "";
 	arguments.ended = "";
 	arguments.name_of_file_with_read_names_to_short_read_names_and_NH = "";
+	arguments.samformatflag_dictionary_filename = "";
 	arguments.flag_ignore_soft_clippings = 0;
 	arguments.flag_ignore_mismatches = 0;
 	arguments.flag_ignore_all_quality_scores = 0;
@@ -572,6 +579,7 @@ int main (int argc, char *argv[])
 	char name_of_file_with_quality_scores[MAX_FILENAME_LENGTH];
 	char name_of_file_with_read_names_to_short_read_names_and_NH[MAX_FILENAME_LENGTH];
 	char ended[TEN];
+	char samformatflag_dictionary_filename[MAX_FILENAME_LENGTH];
 
 	unsigned short int flag_ignore_soft_clippings;
 	unsigned short int flag_ignore_mismatches;
@@ -600,6 +608,8 @@ int main (int argc, char *argv[])
 			arguments.name_of_file_with_quality_scores);
 	strcpy(name_of_file_with_read_names_to_short_read_names_and_NH ,
 			arguments.name_of_file_with_read_names_to_short_read_names_and_NH);
+	strcpy(samformatflag_dictionary_filename,
+			arguments.samformatflag_dictionary_filename);
 
 	flag_ignore_alignment_scores = arguments.flag_ignore_alignment_scores; // Ignore the column 5 of SAM alignment file which is often set to 255 and also the AS tag if one is provided
 	flag_ignore_soft_clippings = arguments.flag_ignore_soft_clippings;
@@ -622,6 +632,7 @@ int main (int argc, char *argv[])
 			unmapped_filename ,
 			name_of_file_with_quality_scores ,
 			name_of_file_with_read_names_to_short_read_names_and_NH ,
+			samformatflag_dictionary_filename ,
 			flag_ignore_alignment_scores ,
 			flag_ignore_soft_clippings ,
 			flag_ignore_mismatches ,

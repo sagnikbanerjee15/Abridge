@@ -331,6 +331,8 @@ def constructFileNames( options ):
         programs_to_files['compress_alignment_file']['unmapped_filename'] = f"{options.temp_directory}/{inputalignedfilename_base}_unmapped"
         programs_to_files['compress_alignment_file']['name_of_file_with_quality_scores'] = f"{options.temp_directory}/{inputalignedfilename_base}_quality_scores"
         programs_to_files['compress_alignment_file']['name_of_file_with_read_names_to_short_read_names_and_NH'] = f"{options.temp_directory}/sorted_read_names_with_NH_and_short_read_names_sorted_by_pos"
+        programs_to_files['compress_alignment_file']['samformatflag_dictionary_filename'] = f"{options.temp_directory}/samformatflag_dictionary_filename"
+        
         programs_to_files['compress_alignment_file']['output'] = f"{options.outputs_and_errors_directory}/compress_alignment_file.output"
         programs_to_files['compress_alignment_file']['error'] = f"{options.outputs_and_errors_directory}/compress_alignment_file.error"
         
@@ -393,7 +395,12 @@ def compressSamFile( options , tags_present ):
     #print([row.split(":")[-1].strip() for row in open( programs_to_files['compute_information_for_better_memory_management']['summary_information_outputfilename'], "r" ).read().split("\n")])
     max_input_reads_in_a_single_nucl_loc, total_number_of_alignments, max_read_length = [int(row.split(":")[-1].strip()) for row in open( programs_to_files['compute_information_for_better_memory_management']['summary_information_outputfilename'], "r" ).read().split("\n")[:-2]]
     samformatflags = open( programs_to_files['compute_information_for_better_memory_management']['summary_information_outputfilename'], "r" ).read().split("\n")[-2].split()[-1].split(",")
-    
+    # N ommitted since it represents splices, D omitted since it represents Deletion
+    all_possible_alphabets_for_samformatflag = ['A', 'B', 'C', 'E', 'F', 'G', 'I',  'J', 'K', 'L', 'M', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
+    fhw = open(programs_to_files['compress_alignment_file']['samformatflag_dictionary_filename'], "w")
+    for i in range(len(samformatflags)):
+        fhw.write(samformatflags[i] + "\t" + all_possible_alphabets_for_samformatflag[i]+"\n")
+    fhw.close()
 
     cmd = f"(/usr/bin/time --verbose "
     cmd += f" compress_alignment_file "
@@ -408,6 +415,7 @@ def compressSamFile( options , tags_present ):
     cmd += f" --max_read_length {max_read_length}"
     cmd += f" --name_of_file_with_quality_scores {programs_to_files['compress_alignment_file']['name_of_file_with_quality_scores'] } "
     cmd += f" --name_of_file_with_read_names_to_short_read_names_and_NH {programs_to_files['compress_alignment_file']['name_of_file_with_read_names_to_short_read_names_and_NH'] } "
+    cmd += f" --samformatflag_dictionary_filename {programs_to_files['compress_alignment_file']['samformatflag_dictionary_filename']}"
     if options.single_ended==True:
         cmd += f" --ended SE "
     else:
