@@ -61,7 +61,6 @@ cwltool \
 RNA_Seq_sample="SRR23255807"
 DNA_Seq_sample="DRR427726"
 EC2_storage1=/data1
-EC2_storage2=/data2
 
 rm -rf \
 ${EC2_storage1}/ABRIDGE/testing/abrigde/${RNA_Seq_sample}_SE_all_tags_sorted_1_dev_temp  \
