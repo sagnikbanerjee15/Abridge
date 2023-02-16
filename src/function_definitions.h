@@ -878,7 +878,7 @@ void generateiCIGARString (
 
 	/************************************************************************************************************************/
 
-	printf ("\nCIGAR=%s\tMD=%s\n%s\n%s\n%s\n%s" ,
+	/*printf ("\nCIGAR=%s\tMD=%s\n%s\n%s\n%s\n%s" ,
 			sam_alignment_instance->cigar ,
 			sam_alignment_instance->MD ,
 			sam_alignment_instance->cigar_extended ,
@@ -886,6 +886,7 @@ void generateiCIGARString (
 			sam_alignment_instance->sequence_with_deletions_and_splice_indicators ,
 			sam_alignment_instance->icigar);
 	fflush (stdout);
+	*/
 
 }
 
