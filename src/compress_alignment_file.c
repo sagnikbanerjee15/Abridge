@@ -324,10 +324,6 @@ void compressAlignmentFile (
 
 	reference_id_quick_read = ( char* ) malloc (sizeof(char) * ONE_THOUSAND);
 	samflag_quick_read = ( char* ) malloc (sizeof(char) * ONE_THOUSAND);
-	prev_reference_name = ( char* ) malloc (sizeof(char) * ONE_THOUSAND);
-	prev_reference_name[0] = '\0';
-	curr_reference_name = ( char* ) malloc (sizeof(char) * ONE_THOUSAND);
-	curr_reference_name[0] = '\0';
 
 	current_alignment = allocateMemorySam_Alignment (max_read_length);
 	previous_alignment = allocateMemorySam_Alignment (max_read_length);
