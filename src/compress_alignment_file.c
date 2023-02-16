@@ -206,8 +206,8 @@ void compressAlignmentFile (
 	char *line = NULL; // for reading each line
 	char *line_name_of_file_with_read_names_to_short_read_names_and_NH = NULL;
 	char *entry_in_output_file; //entry in output file
-	char *prev_reference_name;
-	char *curr_reference_name;
+	char *previous_reference_name;
+	char *current_reference_name;
 	char *reference_id_quick_read;
 	char *samflag_quick_read;
 	char **modified_icigars;
@@ -236,13 +236,13 @@ void compressAlignmentFile (
 	int reference_sequence_index = 0;
 
 	long long int relative_position_to_previous_read_cluster;
-	long long int previous_position = -1;
-	long long int current_position;
-	long long int number_of_records_written = 0;
-	long long int number_of_records_read = 0;
-	long long int num_pools_written = 0;
-	long long int max_commas = 0;
-	long long int curr_commas = 0;
+	unsigned long long int previous_position = -1;
+	unsigned long long int current_position;
+	unsigned long long int number_of_records_written = 0;
+	unsigned long long int number_of_records_read = 0;
+	unsigned long long int num_pools_written = 0;
+	unsigned long long int max_commas = 0;
+	unsigned long long int curr_commas = 0;
 	unsigned long long int sam_alignment_instance_pool_size = 0;
 	unsigned long long int sam_alignment_instance_pool_index = 0;
 
@@ -344,10 +344,17 @@ void compressAlignmentFile (
 	for ( i = 0 ; i < max_reads_in_a_single_nucl_loc ; i++ )
 		modified_icigars[i] = ( char* ) malloc (sizeof(char) * MAX_SEQ_LEN);
 
-	sam_alignment_instance_pool = ( struct Sam_Alignment* ) malloc (sizeof(struct Sam_Alignment*) * max_reads_in_a_single_nucl_loc);
-	for ( i = 0 ; i < max_reads_in_a_single_nucl_loc ; i++ )
+	sam_alignment_instance_pool_size = max_reads_in_a_single_nucl_loc + 10;
+	sam_alignment_instance_pool = ( struct Sam_Alignment* ) malloc (sizeof(struct Sam_Alignment*) * sam_alignment_instance_pool_size);
+	for ( i = 0 ; i < sam_alignment_instance_pool_size ; i++ )
 		sam_alignment_instance_pool[i] = allocateMemorySam_Alignment (max_read_length);
-	sam_alignment_instance_pool_size = max_reads_in_a_single_nucl_loc;
+	sam_alignment_instance_pool_index = 0;
+
+	previous_reference_name = (char*)malloc(sizeof(char)*MAX_GENERAL_LENGTH);
+	current_reference_name = (char*)malloc(sizeof(char)*MAX_GENERAL_LENGTH);
+	previous_reference_name[0] = '\0';
+	current_reference_name[0] = '\0';
+
 	/****************************************************************************************************************************************/
 
 	/*
@@ -417,6 +424,7 @@ void compressAlignmentFile (
 		sam_read1 (fp_in , bamHdr , aln);
 	}
 	//return;
+	fseek(fhr, -line_len, SEEK_SET);
 	do
 	{
 
@@ -442,7 +450,7 @@ void compressAlignmentFile (
 
 		/****************************************************************************************/
 
-		/****************Collect Unmapped reads*************/
+		/****************Collect Unmapped reads*************************************************/
 		if ( current_alignment->samflag == 4 )
 		{
 			if ( flag_ignore_unmapped_sequences == 0 )
@@ -462,11 +470,24 @@ void compressAlignmentFile (
 
 			}
 		}
+		else
+		{
+			if(strlen(previous_reference_name)==0)
+			{
+				strcpy(previous_reference_name,)
+			}
+		}
 
+
+		/***********************************************************************************************************
+		 * Performs the following:
+		 * - Read in one record
+		 * - Converts the CIGAR to iCIGAR
+		 ***********************************************************************************************************/
 		if ( strcmp (input_alignment_file_format , "SAM") == 0 )
 		{
 			line_len = getline ( &line , &len , fhr);
-			//printf ("\nLine length %d" , line_len);
+			printf ("\nLine length %d Line %s" , line_len, line);
 			prepareSingleRecordFromAlignmentFile (line ,
 					fp_in , // File pointer if BAM file provided
 					bamHdr ,		// read header
@@ -487,7 +508,6 @@ void compressAlignmentFile (
 					split_on_colon ,
 					cigar_items_instance);
 		}
-
 		else if ( strcmp (input_alignment_file_format , "BAM") == 0 )
 		{
 			line_len = sam_read1 (fp_in , bamHdr , aln);
@@ -498,6 +518,7 @@ void compressAlignmentFile (
 			 */
 			//fflush (stdout);
 		}
+		/***********************************************************************************************************/
 
 
 		if ( line_len <= 0 ) break;

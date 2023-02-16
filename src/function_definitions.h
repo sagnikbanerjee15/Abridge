@@ -82,6 +82,7 @@ struct Sam_Alignment* allocateMemorySam_Alignment (unsigned int max_read_length)
 	s->quality_scores = ( char* ) malloc (sizeof(char) * max_read_length);
 	s->sequence_with_deletions_and_splice_indicators = ( char* ) malloc (sizeof(char) * max_read_length * 2);
 
+	s->written_to_file=0;
 	s->left_soft_clipped_sequence = ( char* ) malloc (sizeof(char) * max_read_length);
 	s->left_soft_clipped_sequence[0] = '\0';
 	s->right_soft_clipped_sequence = ( char* ) malloc (sizeof(char) * max_read_length);

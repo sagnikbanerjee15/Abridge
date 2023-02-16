@@ -24,7 +24,7 @@
 #define MAX_ICIGAR_LENGTH 100000
 #define MAX_ICIGAR_LENGTH_PASS1_COL2 10000000
 #define MAX_REFERENCE_SEQUENCES 300000
-#define MAX_GENERAL_LEN 1000000
+#define MAX_GENERAL_LENGTH 1000
 #define MAX_BUFFER_SIZE_FOR_READING_PASS2_FILE 1073741824
 #define MAX_REFERENCE_SEQ_LEN 1000000000
 #define MAX_FILES_FOR_MERGING 1000
@@ -122,6 +122,7 @@ struct Sam_Alignment
 	 * Other fields created by abridge
 	 */
 	unsigned short int read_sequence_len; // basically strlen(seq). Field is kept to prevent extra calls to strlen
+	unsigned short int written_to_file;
 	//struct Soft_Clippings soft_clippings; // Stores the left and the right soft clippings
 	//struct Cigar_Items *cigar_items;
 	//int number_of_cigar_items;
