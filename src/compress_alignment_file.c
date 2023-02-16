@@ -470,7 +470,7 @@ void compressAlignmentFile (
 		{
 			if(strlen(previous_reference_name)==0)
 			{
-				strcpy(previous_reference_name,)
+				//strcpy(previous_reference_name,)
 			}
 		}
 
