@@ -421,6 +421,7 @@ void compressAlignmentFile (
 	}
 	//return;
 	fseek(fhr, -line_len, SEEK_CUR);
+	current_alignment = sam_alignment_instance_pool[sam_alignment_instance_pool_index];
 	do
 	{
 
@@ -446,35 +447,6 @@ void compressAlignmentFile (
 
 		/****************************************************************************************/
 
-		/****************Collect Unmapped reads*************************************************/
-		if ( current_alignment->samflag == 4 )
-		{
-			if ( flag_ignore_unmapped_sequences == 0 )
-			{
-				//Write the unmapped reads into file
-				fprintf (fhw_unmapped , "%s" , current_alignment->sequence);
-				fprintf (fhw_unmapped , "%s" , "\n");
-				//for ( i = 0 ; current_alignment->quality_scores[i] != '\0' ; i++ )
-				// current_alignment->quality_scores[i] -= QUAL_SCORE_ADJUSTMENT;
-				fprintf (fhw_qual , "%s" , "\n");
-				fprintf (fhw_qual , "%s" , "\n");
-				fprintf (fhw_qual , "%s" , "\n");
-				fprintf (fhw_qual ,
-						"%s" ,
-						current_alignment->quality_scores);
-				fprintf (fhw_qual , "%s" , "\n");
-
-			}
-		}
-		else
-		{
-			if(strlen(previous_reference_name)==0)
-			{
-				//strcpy(previous_reference_name,)
-			}
-		}
-
-
 		/***********************************************************************************************************
 		 * Performs the following:
 		 * - Read in one record
@@ -483,7 +455,7 @@ void compressAlignmentFile (
 		if ( strcmp (input_alignment_file_format , "SAM") == 0 )
 		{
 			line_len = getline ( &line , &len , fhr);
-			printf ("\nLine length %d Line %s" , line_len, line);
+			//printf ("\nLine length %d Line %s" , line_len, line);
 			prepareSingleRecordFromAlignmentFile (line ,
 					fp_in , // File pointer if BAM file provided
 					bamHdr ,		// read header
@@ -515,6 +487,47 @@ void compressAlignmentFile (
 			//fflush (stdout);
 		}
 		/***********************************************************************************************************/
+		strcpy(current_reference_name, current_alignment->reference_name);
+		current_position = current_alignment->start_position;
+
+
+		/****************Collect Unmapped reads*************************************************/
+		if ( current_alignment->samflag == 4 )
+		{
+			if ( flag_ignore_unmapped_sequences == 0 )
+			{
+				//Write the unmapped reads into file
+				fprintf (fhw_unmapped , "%s" , current_alignment->sequence);
+				fprintf (fhw_unmapped , "%s" , "\n");
+				//for ( i = 0 ; current_alignment->quality_scores[i] != '\0' ; i++ )
+				// current_alignment->quality_scores[i] -= QUAL_SCORE_ADJUSTMENT;
+				fprintf (fhw_qual , "%s" , "\n");
+				fprintf (fhw_qual , "%s" , "\n");
+				fprintf (fhw_qual , "%s" , "\n");
+				fprintf (fhw_qual ,
+						"%s" ,
+						current_alignment->quality_scores);
+				fprintf (fhw_qual , "%s" , "\n");
+
+			}
+		}
+		else
+		{
+			if( strlen(previous_reference_name)==0 ) // The first alignment
+			{
+				strcpy(previous_reference_name, current_alignment->reference_name);
+				previous_position = current_alignment->start_position;
+			}
+			else if(strcmp(previous_reference_name, current_reference_name) == 0 && previous_position == current_position)
+			{
+				sam_alignment_instance_pool_index += 1;
+			}
+			else //Inspect each alignment and write to file
+			{
+
+			}
+		}
+
 		if ( line_len <= 0 ) break;
 	} while ( 1 );
 
