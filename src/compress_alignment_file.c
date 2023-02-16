@@ -205,6 +205,7 @@ void compressAlignmentFile (
 	FILE *fhw_unmapped;
 	FILE *fhw_qual;
 	FILE *fhr_name_of_file_with_read_names_to_short_read_names_and_NH;
+	FILE *fhr_samformatflag_dictionary_filename;
 
 	char **split_on_tab; // List of strings to store each element of a single alignment
 	char **split_on_colon; // List of strings to store tag information
@@ -251,6 +252,8 @@ void compressAlignmentFile (
 	unsigned long long int curr_commas = 0;
 	unsigned long long int sam_alignment_instance_pool_size = 0;
 	unsigned long long int sam_alignment_instance_pool_index = 0;
+	unsigned short int samflag_dictionary_index;
+	unsigned short int samflag_dictionary_size;
 
 	/* Variables if BAM file is provided*/
 	samFile *fp_in;            // File pointer if BAM file provided
@@ -266,6 +269,7 @@ void compressAlignmentFile (
 	struct Reference_Sequence_Info **reference_info;
 	struct Whole_Genome_Sequence *whole_genome;
 	struct Cigar_Items **cigar_items_instance;
+	struct Samflag_Dictionary_Items **samflag_dictionary;
 	/****************************************************************************************************************************************/
 
 	/****************************************************************************************************************************************
@@ -313,6 +317,13 @@ void compressAlignmentFile (
 				name_of_file_with_read_names_to_short_read_names_and_NH);
 		exit (1);
 	}
+	fhr_samformatflag_dictionary_filename = fopen(samformatflag_dictionary_filename, "r");
+	if (fhr_samformatflag_dictionary_filename == NULL)
+	{
+		printf("Error! File %s is not found",
+				samformatflag_dictionary_filename);
+		exit(1);
+	}
 
 	split_on_tab = ( char** ) malloc (sizeof(char*) * ONE_HUNDRED);
 	for ( i = 0 ; i < ONE_HUNDRED ; i++ )
@@ -357,7 +368,27 @@ void compressAlignmentFile (
 	previous_reference_name[0] = '\0';
 	current_reference_name[0] = '\0';
 
+	samflag_dictionary_size = 1000;
+	samflag_dictionary = (struct Samflag_Dictionary_Items*)malloc(sizeof(struct Samflag_Dictionary_Items*) * samflag_dictionary_size);
+	for( i =0;i <samflag_dictionary_size;i++)
+		samflag_dictionary[i] = allocateMemorySamflag_Dictionary_Items();
+	samflag_dictionary_index = 0;
+
+
 	/****************************************************************************************************************************************/
+
+	/*
+	* Read the samformat flag mappings
+	*/
+	while((line_len = getline ( &line , &len , fhr)) > 0)
+	{
+		splitByDelimiter(line, '\t', split_on_tab);
+		strcpy(samflag_dictionary[samflag_dictionary_index]->samflag, split_on_tab[0]);
+		samflag_dictionary[samflag_dictionary_index]->character = split_on_tab[1][0];
+		samflag_dictionary_index++;
+	}
+	samflag_dictionary_size = samflag_dictionary_index;
+
 
 	/*
 	 * Write the first line in output file

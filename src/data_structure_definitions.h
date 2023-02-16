@@ -146,13 +146,14 @@ struct Sam_Alignment
 	unsigned short int soft_clips_removed_sequence_len; // Length of the sequence without any soft clips
 };
 
-struct Paired_Ended_Dictionary_Items
+struct Samflag_Dictionary_Items
 {
 	/*************************************************************************************************************************
 	 * Data structure definition to outline how the dictionary is constructed for PE reads
 	 **************************************************************************************************************************/
-	char *character;
-	int *samflags;
+	char character;
+	char *samflag;
 };
+
 
 #endif /* _ABRIDGE_DATA_STRUCTURE_DEFINITIONS_H_ */
