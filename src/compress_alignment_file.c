@@ -568,7 +568,7 @@ void compressAlignmentFile (
 
 			}
 		}
-
+		break;
 		if ( line_len <= 0 ) break;
 	} while ( 1 );
 
