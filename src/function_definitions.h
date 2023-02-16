@@ -863,6 +863,7 @@ void generateiCIGARString (
 			// Look for the appropriate character
 			for(samflag_dictionary_index=0; samflag_dictionary_index<samflag_dictionary_size;samflag_dictionary_index++)
 			{
+				printf("\n%s %s",samflag_dictionary[samflag_dictionary_index].samflag, sam_alignment_instance->samflag);
 				if(strcmp(samflag_dictionary[samflag_dictionary_index].samflag, sam_alignment_instance->samflag) == 0)
 					break;
 			}
