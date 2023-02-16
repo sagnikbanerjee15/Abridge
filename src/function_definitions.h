@@ -80,6 +80,7 @@ struct Sam_Alignment* allocateMemorySam_Alignment (unsigned int max_read_length)
 
 	max_read_length += 5;
 	s->read_name = ( char* ) malloc (sizeof(char) * ONE_HUNDRED);
+	s->samflag = ( char* ) malloc (sizeof(char) * TEN);
 	s->reference_name = ( char* ) malloc (sizeof(char) * ONE_HUNDRED);
 	s->start_position = 0;
 	s->mapping_quality_score = ( char* ) malloc (sizeof(char) * TEN);
@@ -446,7 +447,9 @@ void generateiCIGARString (
 		unsigned short int flag_ignore_unmapped_sequences,
 		unsigned short int flag_ignore_quality_scores_for_matched_bases,
 		char *ended,
-		struct Cigar_Items *cigar_items_instance)
+		struct Cigar_Items *cigar_items_instance,
+		struct Samflag_Dictionary_Items *samflag_dictionary,
+		unsigned int samflag_dictionary_size)
 {
 	/*************************************************************************************************************************
 	 * Generate the integrated CIGAR string from CIGAR and MD
@@ -487,6 +490,7 @@ void generateiCIGARString (
 	unsigned short int i, j;
 
 	unsigned short int runlength;
+	unsigned int samflag_dictionary_index;
 	/********************************************************************/
 	sequence_with_deletions_and_splice_indicators_length = strlen (sam_alignment_instance->sequence_with_deletions_and_splice_indicators);
 	expanded_cigar_string_index = 0;
@@ -851,8 +855,28 @@ void generateiCIGARString (
 		strcat(sam_alignment_instance->icigar , str);
 	}
 
+	// Replace the M in the iCIGAR with samformatflag character
+	for(i=0; sam_alignment_instance->icigar[i]!='\0';i++)
+	{
+		if (sam_alignment_instance->icigar[i] == 'M')
+		{
+			// Look for the appropriate character
+			for(samflag_dictionary_index=0; samflag_dictionary_index<samflag_dictionary_size;samflag_dictionary_index++)
+			{
+				if(strcmp(samflag_dictionary[samflag_dictionary_index]->samflag, sam_alignment_instance->samflag) == 0)
+					break;
+			}
+			if(samflag_dictionary_index==samflag_dictionary_size)
+			{
+				printf("\nBig Trouble");
+			}
+			sam_alignment_instance->icigar[i] = samflag_dictionary[samflag_dictionary_index]->character;
+		}
+	}
+
+
 	/************************************************************************************************************************/
-	/*
+
 	printf ("\nCIGAR=%s\tMD=%s\n%s\n%s\n%s\n%s" ,
 			sam_alignment_instance->cigar ,
 			sam_alignment_instance->MD ,
@@ -861,7 +885,7 @@ void generateiCIGARString (
 			sam_alignment_instance->sequence_with_deletions_and_splice_indicators ,
 			sam_alignment_instance->icigar);
 	fflush (stdout);
-	*/
+
 }
 
 void processSoftClips (
@@ -979,7 +1003,7 @@ void populateSamAlignmentInstance (
 	/********************************************************************/
 
 	strcpy(dest->read_name , src[0]);
-	dest->samflag = convertStringToUnsignedInteger (src[1]);
+	strcpy(dest->samflag, src[1]);
 	strcpy(dest->reference_name , src[2]);
 	dest->start_position = convertStringToUnsignedInteger (src[3]);
 	strcpy(dest->mapping_quality_score , src[4]);
@@ -1074,7 +1098,9 @@ unsigned short int prepareSingleRecordFromAlignmentFile (
 		unsigned int max_read_length,
 		char **split_on_tab,
 		char **split_on_colon,
-		struct Cigar_Items *cigar_items_instance)
+		struct Cigar_Items *cigar_items_instance,
+		struct Samflag_Dictionary_Items *samflag_dictionary,
+		unsigned int samflag_dictionary_size)
 {
 	/*************************************************************************************************************************
 	 * Reads in each alignment and stores the values in them Sam_Alignment object
@@ -1144,7 +1170,9 @@ unsigned short int prepareSingleRecordFromAlignmentFile (
 			flag_ignore_unmapped_sequences ,
 			flag_ignore_quality_scores_for_matched_bases ,
 			ended ,
-			cigar_items_instance);
+			cigar_items_instance,
+			samflag_dictionary,
+			samflag_dictionary_size);
 	return 0;
 }
 
