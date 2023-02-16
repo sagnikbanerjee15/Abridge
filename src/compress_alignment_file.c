@@ -389,7 +389,7 @@ void compressAlignmentFile (
 		samflag_dictionary_index++;
 	}
 	samflag_dictionary_size = samflag_dictionary_index;
-
+	return;
 
 	/*
 	 * Write the first line in output file
