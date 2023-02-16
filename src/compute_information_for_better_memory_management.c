@@ -99,6 +99,9 @@ void findSummaryInformation (
 	unsigned long long int
 			maximum_number_of_reads_mapped_to_a_single_reference_nucleotide,
 			number_of_reads_mapped_to_the_current_reference_nucleotide;
+	unsigned int all_possible_samflags[10000];
+	unsigned int all_possible_samflags_index = 0;
+	unsigned int current_samformatflag;
 
 	FILE *fhr;
 	FILE *fhw;
@@ -118,6 +121,7 @@ void findSummaryInformation (
 	char **split_line; // List of strings to store each element of a single alignment
 	char **split_tags;
 	char *current_reference_name, *previous_reference_name;
+	char str_temp[1000];
 	/********************************************************************/
 
 	/********************************************************************
@@ -175,6 +179,7 @@ void findSummaryInformation (
 	{
 		sam_read1 (fp_in , bamHdr , aln);
 	}
+	fseek(fhr, -line_len, SEEK_CUR);
 
 	do
 	{
@@ -206,6 +211,18 @@ void findSummaryInformation (
 				//printf ("\nBreaking unaligned read encountered");
 				break;//Unaligned read}
 			}
+			current_samformatflag = convertStringToUnsignedInteger (split_line[1]);
+		}
+
+		for(i=0;i<all_possible_samflags_index;i++)
+		{
+			if(all_possible_samflags[i] ==  current_samformatflag)
+				break;
+		}
+		if(i==all_possible_samflags_index)
+		{
+			all_possible_samflags[all_possible_samflags_index] = current_samformatflag;
+			all_possible_samflags_index++;
 		}
 
 		if ( max_read_length < current_read_length )
@@ -281,9 +298,24 @@ void findSummaryInformation (
 			max_read_length);
 	strcat(str , temp_str_integer_to_string_conversion);
 	strcat(str , "\n");
+
+	strcat(str, "samformatflags: ");
+	for(i=0;i<all_possible_samflags_index;i++)
+	{
+		strcat(str, convertUnsignedIntegerToString (temp_str_integer_to_string_conversion, all_possible_samflags[i]));
+		if (i!=all_possible_samflags_index-1)
+			strcat(str,",");
+	}
+	strcat(str, "\n");
 	strcat(str , "\0");
 
+
 	fprintf (fhw , "%s" , str);
+
+
+
+
+
 	fclose (fhw);
 
 	if ( strcmp (input_alignment_file_format , "BAM") == 0 )

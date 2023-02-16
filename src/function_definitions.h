@@ -852,9 +852,6 @@ void generateiCIGARString (
 			sam_alignment_instance->sequence_with_deletions_and_splice_indicators ,
 			sam_alignment_instance->icigar);
 	fflush (stdout);
-	printf ("\n");
-
-
 }
 
 void processSoftClips (
