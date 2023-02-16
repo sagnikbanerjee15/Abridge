@@ -62,6 +62,7 @@ struct Samflag_Dictionary_Items* allocateMemorySamflag_Dictionary_Items()
 	instance = (struct Samflag_Dictionary_Items*) malloc (sizeof(struct Samflag_Dictionary_Items) * 1);
 	instance->character = ' ';
 	instance->samflag = (char*)malloc(sizeof(char)*TEN);
+	return instance;
 }
 
 struct Sam_Alignment* allocateMemorySam_Alignment (unsigned int max_read_length)
