@@ -391,6 +391,8 @@ void compressAlignmentFile (
 		//printf("\n%s %c", split_on_tab[1], samflag_dictionary[samflag_dictionary_index]->character);
 		samflag_dictionary_index++;
 	}
+
+	// Just printing
 	samflag_dictionary_size = samflag_dictionary_index;
 	for(samflag_dictionary_index=0;samflag_dictionary_index<samflag_dictionary_size;samflag_dictionary_index++)
 		printf("\nDictionary items samflag=%s character=%c",samflag_dictionary[samflag_dictionary_index]->samflag, samflag_dictionary[samflag_dictionary_index]->character);
