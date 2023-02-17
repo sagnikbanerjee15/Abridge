@@ -566,7 +566,7 @@ void compressAlignmentFile (
 			}
 			else //Inspect each alignment and write to file
 			{
-				printf("\nsam_alignment_instance_pool_index=%d, ended=%s",sam_alignment_instance_pool_index, ended);
+				//printf("\nsam_alignment_instance_pool_index=%d, ended=%s",sam_alignment_instance_pool_index, ended);
 				if(sam_alignment_instance_pool_index == 1)
 				{
 					// Only one alignment - write to file
@@ -581,6 +581,7 @@ void compressAlignmentFile (
 						}
 
 						fprintf (fhw_compressed , "%s" , line_to_be_written_to_file);
+						fprintf (fhw_compressed, "%s", "\n");
 					}
 				}
 				else
@@ -603,6 +604,7 @@ void compressAlignmentFile (
 						}
 
 						fprintf (fhw_compressed , "%s" , line_to_be_written_to_file);
+						fprintf (fhw_compressed, "%s", "\n");
 					}
 				}
 				if(strcmp(previous_reference_name,current_reference_name) == 0 )
