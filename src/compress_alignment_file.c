@@ -530,7 +530,7 @@ void compressAlignmentFile (
 
 
 		/****************Collect Unmapped reads*************************************************/
-		if ( strcmp(current_alignment->samflag, "4") )
+		if ( strcmp(current_alignment->samflag, "4") == 0)
 		{
 			if ( flag_ignore_unmapped_sequences == 0 )
 			{
