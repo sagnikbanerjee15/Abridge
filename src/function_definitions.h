@@ -875,7 +875,17 @@ void generateiCIGARString (
 		}
 	}
 
+	//Add the NH tag, NH is stored as a string
+	strcpy(sam_alignment_instance->icigar,sam_alignment_instance->NH);
 
+	// Add the MAPQ and the AS scores
+	if(flag_ignore_alignment_scores == 0)
+	{
+		strcpy(sam_alignment_instance->icigar,"~");
+		strcpy(sam_alignment_instance->icigar,sam_alignment_instance->mapping_quality_score);
+		strcpy(sam_alignment_instance->icigar,"~");
+		strcpy(sam_alignment_instance->icigar,sam_alignment_instance->AS);
+	}
 	/************************************************************************************************************************/
 
 	/*printf ("\nCIGAR=%s\tMD=%s\n%s\n%s\n%s\n%s" ,

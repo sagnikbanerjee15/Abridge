@@ -251,10 +251,11 @@ void compressAlignmentFile (
 	unsigned long long int max_commas = 0;
 	unsigned long long int curr_commas = 0;
 	unsigned long long int sam_alignment_instance_pool_size = 0;
-	unsigned long long int sam_alignment_instance_pool_index_start = 0;
-	unsigned long long int sam_alignment_instance_pool_index_end = 0;
+	unsigned long long int sam_alignment_instance_pool_index = 0;
 	unsigned short int samflag_dictionary_index;
 	unsigned short int samflag_dictionary_size;
+	unsigned long long int relative_start_postion_of_alignments_in_pool;
+	unsigned long long int actual_start_postion_of_alignments_in_pool;
 
 	/* Variables if BAM file is provided*/
 	samFile *fp_in;            // File pointer if BAM file provided
@@ -338,6 +339,7 @@ void compressAlignmentFile (
 	max_reads_in_a_single_nucl_loc += 5;
 
 	line_to_be_written_to_file = ( char* ) malloc (sizeof(char) * MAX_LINE_TO_BE_WRITTEN_TO_FILE);
+	line_to_be_written_to_file[0] = '\0';
 	qual_for_writeToFile = ( char* ) malloc (sizeof(char) * MAX_SEQ_LEN);
 
 	reference_id_quick_read = ( char* ) malloc (sizeof(char) * ONE_THOUSAND);
@@ -374,6 +376,8 @@ void compressAlignmentFile (
 		samflag_dictionary[i] = allocateMemorySamflag_Dictionary_Items();
 	samflag_dictionary_index = 0;
 
+	relative_start_postion_of_alignments_in_pool = 0;
+	actual_start_postion_of_alignments_in_pool = 0;
 
 	/****************************************************************************************************************************************/
 
@@ -463,7 +467,7 @@ void compressAlignmentFile (
 	}
 	//return;
 	fseek(fhr, -line_len, SEEK_CUR);
-	current_alignment = sam_alignment_instance_pool[sam_alignment_instance_pool_index_start];
+	current_alignment = sam_alignment_instance_pool[sam_alignment_instance_pool_index];
 	do
 	{
 		/****************************************************************************************/
@@ -547,18 +551,54 @@ void compressAlignmentFile (
 		}
 		else
 		{
-			if( strlen(previous_reference_name)==0 ) // The first alignment
+			if( strlen(previous_reference_name)==0) // The first alignment of the first reference sequence
 			{
 				strcpy(previous_reference_name, current_alignment->reference_name);
 				previous_position = current_alignment->start_position;
+				actual_start_postion_of_alignments_in_pool = current_alignment->start_position;
+				relative_start_postion_of_alignments_in_pool = current_alignment->start_position;
+
+				sam_alignment_instance_pool_index += 1;
 			}
-			else if(strcmp(previous_reference_name, current_reference_name) == 0 && previous_position == current_position)
+			else if(strcmp(previous_reference_name, current_reference_name) == 0 && previous_position == current_position) // Keep adding to the pool
 			{
-				sam_alignment_instance_pool_index_start += 1;
+				sam_alignment_instance_pool_index += 1;
 			}
 			else //Inspect each alignment and write to file
 			{
+				if(sam_alignment_instance_pool_index == 1)
+				{
+					// Only one alignment - write to file
+				}
+				else
+				{
+					// Iterate over the entire pool
+					for(unsigned long long int i=0; i<sam_alignment_instance_pool_index; i++)
+					{
+						for(unsigned long long int j=i+1; j<sam_alignment_instance_pool_index; j++)
+						{
 
+						}
+						if(strcmp(ended, "SE"))
+						{
+							if(relative_start_postion_of_alignments_in_pool > 1)
+							{
+								convertUnsignedIntegerToString (str , ( unsigned long long ) relative_start_postion_of_alignments_in_pool);
+								strcpy(line_to_be_written_to_file, str);
+								strcat(line_to_be_written_to_file, "\t");
+							}
+
+							fprintf (fhw_compressed , "%s" , line_to_be_written_to_file);
+						}
+					}
+
+
+				}
+
+				relative_start_postion_of_alignments_in_pool = current_alignment->start_position - previous_position;
+				actual_start_postion_of_alignments_in_pool = current_alignment->start_position;
+				strcpy(previous_reference_name, current_alignment->reference_name);
+				previous_position = current_alignment->start_position;
 			}
 		}
 		//break;
