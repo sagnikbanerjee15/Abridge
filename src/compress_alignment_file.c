@@ -542,7 +542,6 @@ void compressAlignmentFile (
 				fprintf (fhw_qual , "%s" , "\n");
 				fprintf (fhw_qual , "%s" , "\n");
 				fprintf (fhw_qual , "%s" , "\n");
-				fprintf (fhw_qual , "%s" , "\n");
 			}
 		}
 		else
