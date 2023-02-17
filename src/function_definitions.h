@@ -896,7 +896,7 @@ void generateiCIGARString (
 
 void replaceSingleCharacterInString(char *str, char old_char, char new_char)
 {
-	if(old==new)
+	if(old_char==new_char)
 		return;
 	for(unsigned int i=0;str[i]!='\0';i++)
 	{
