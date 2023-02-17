@@ -619,6 +619,7 @@ void compressAlignmentFile (
 					// Iterate over the entire pool
 					for(unsigned long long int i = 0; i < sam_alignment_instance_pool_index; i++)
 					{
+						if(sam_alignment_instance_pool[i]->level_of_similarity_to_parent_iCIGAR != 0) continue;
 						for(unsigned long long int j = i + 1; j < sam_alignment_instance_pool_index; j++)
 						{
 							if(sam_alignment_instance_pool[j]->level_of_similarity_to_parent_iCIGAR != 0) continue;
