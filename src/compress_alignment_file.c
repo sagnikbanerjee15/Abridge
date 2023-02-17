@@ -604,8 +604,6 @@ void compressAlignmentFile (
 						}
 						replaceSingleCharacterInString(sam_alignment_instance_pool[0]->icigar, 'M', sam_alignment_instance_pool[0]->replacement_character);
 						fprintf (fhw_compressed, "%s", sam_alignment_instance_pool[0]->icigar);
-						if(strcmp(sam_alignment_instance_pool[0]->NH,"1") != 0)
-							fprintf (fhw_compressed , "%s", sam_alignment_instance_pool[0]->NH);
 						fprintf (fhw_compressed , "%s", "\t");
 						if(strcmp(sam_alignment_instance_pool[0]->NH,"1") != 0) // Multi-mapped read so save read names
 						{
@@ -674,9 +672,12 @@ void compressAlignmentFile (
 						}
 
 						strcat(line_to_be_written_to_file_icigar, sam_alignment_instance_pool[i]->icigar);
-						strcat(line_to_be_written_to_file_icigar, "-");
-						convertUnsignedIntegerToString (str , ( unsigned long long ) number_of_repetitions_of_the_same_alignment);
-						strcat(line_to_be_written_to_file_icigar, str);
+						if(number_of_repetitions_of_the_same_alignment > 1)
+						{
+							strcat(line_to_be_written_to_file_icigar, "-");
+							convertUnsignedIntegerToString (str , ( unsigned long long ) number_of_repetitions_of_the_same_alignment);
+							strcat(line_to_be_written_to_file_icigar, str);
+						}
 						strcat(line_to_be_written_to_file_icigar, ",");
 						printf("\nNumber_of_repetitions_of_the_same_alignment=%d icigar=%s %s",number_of_repetitions_of_the_same_alignment, sam_alignment_instance_pool[i]->icigar, line_to_be_written_to_file_icigar);
 					}
