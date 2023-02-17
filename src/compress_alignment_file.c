@@ -466,27 +466,6 @@ void compressAlignmentFile (
 	current_alignment = sam_alignment_instance_pool[sam_alignment_instance_pool_index];
 	do
 	{
-
-		/***************************************************************************************
-		 * Read a line from the short read names file
-		 ****************************************************************************************/
-		/*
-		 if ( skip_shortening_read_names == 0 )
-		 {
-		 */
-		getline ( &line_name_of_file_with_read_names_to_short_read_names_and_NH ,
-				&len ,
-				fhr_name_of_file_with_read_names_to_short_read_names_and_NH);
-
-		splitByDelimiter (line_name_of_file_with_read_names_to_short_read_names_and_NH ,
-				'\t' ,
-				split_on_tab);
-		strcpy(current_alignment->read_name , split_on_tab[3]);
-		strcpy(current_alignment->NH , split_on_tab[2]);
-
-		/*}
-		 */
-
 		/****************************************************************************************/
 
 		/***********************************************************************************************************
@@ -531,6 +510,21 @@ void compressAlignmentFile (
 			//fflush (stdout);
 		}
 		/***********************************************************************************************************/
+
+
+		/***************************************************************************************
+		* Read a line from the short read names file
+		****************************************************************************************/
+		getline ( &line_name_of_file_with_read_names_to_short_read_names_and_NH ,
+						&len ,
+						fhr_name_of_file_with_read_names_to_short_read_names_and_NH);
+
+		splitByDelimiter (line_name_of_file_with_read_names_to_short_read_names_and_NH ,
+						'\t' ,
+						split_on_tab);
+		strcpy(current_alignment->read_name , split_on_tab[3]);
+		strcpy(current_alignment->NH , split_on_tab[2]);
+
 		strcpy(current_reference_name, current_alignment->reference_name);
 		current_position = current_alignment->start_position;
 
