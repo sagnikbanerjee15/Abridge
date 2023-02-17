@@ -528,7 +528,7 @@ void compressAlignmentFile (
 		strcpy(current_reference_name, current_alignment->reference_name);
 		current_position = current_alignment->start_position;
 
-
+		printf("\nSamformatflag %s %d",current_alignment->samflag, strcmp(current_alignment->samflag, "4"));
 		/****************Collect Unmapped reads*************************************************/
 		if ( strcmp(current_alignment->samflag, "4") == 0)
 		{

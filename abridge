@@ -522,9 +522,9 @@ def compressSamFile( options , tags_present ):
 
     cmd = f"(/usr/bin/time --verbose "
     cmd += f" zpaq a "
-    cmd += f" {options.outputfilename} "  # Final name of the compressed file ending in .abridge
+    cmd += f" {programs_to_files['zpaq_compress']['compressed_file']} "  # Final name of the compressed file ending in .abridge
     cmd += f" {programs_to_files['compress_alignment_file']['output_abridge_filename']} "  # The non redundant version of the sam file
-    cmd += f" {programs_to_files['compress_alignment_file']['unmapped_filename']} "  # Set of unmapped reads
+    #cmd += f" {programs_to_files['compress_alignment_file']['unmapped_filename']} "  # Set of unmapped reads
     cmd += f" {programs_to_files['zpaq_compress']['reference_sha512_filename']} "  # The 128 bit hash of the reference
     cmd += f" {programs_to_files['fclqc_compress']['outputfilename']}001* "  # FCLQC compressed quality scores file
     cmd += f" {programs_to_files['fclqc_compress']['outputfilename']}.prob "  # FCLQC compressed quality probability file
