@@ -657,7 +657,7 @@ void compressAlignmentFile (
 						convertUnsignedIntegerToString (str , ( unsigned long long ) number_of_repetitions_of_the_same_alignment);
 						strcpy(line_to_be_written_to_file_icigar, str);
 						strcpy(line_to_be_written_to_file_icigar, ",");
-						printf("\nNumber_of_repetitions_of_the_same_alignment=%d %s",number_of_repetitions_of_the_same_alignment, )line_to_be_written_to_file_icigar;
+						printf("\nNumber_of_repetitions_of_the_same_alignment=%d %s",number_of_repetitions_of_the_same_alignment, line_to_be_written_to_file_icigar);
 					}
 					if(strcmp(ended, "SE") == 0)
 					{
