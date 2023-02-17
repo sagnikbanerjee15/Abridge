@@ -637,8 +637,8 @@ void compressAlignmentFile (
 								number_of_repetitions_of_the_same_alignment += 1;
 								if(strcmp(sam_alignment_instance_pool[j]->NH,"1") != 0) // Multi-mapped read so save read names
 								{
-									strcpy(line_to_be_written_to_file_read_names, sam_alignment_instance_pool[j]->read_name);
-									strcpy(line_to_be_written_to_file_read_names, ",");
+									strcat(line_to_be_written_to_file_read_names, sam_alignment_instance_pool[j]->read_name);
+									strcat(line_to_be_written_to_file_read_names, ",");
 								}
 
 								if(flag_ignore_all_quality_scores == 0)
@@ -652,11 +652,11 @@ void compressAlignmentFile (
 							}
 						}
 
-						strcpy(line_to_be_written_to_file_icigar, sam_alignment_instance_pool[i]->icigar);
-						strcpy(line_to_be_written_to_file_icigar, "-");
+						strcat(line_to_be_written_to_file_icigar, sam_alignment_instance_pool[i]->icigar);
+						strcat(line_to_be_written_to_file_icigar, "-");
 						convertUnsignedIntegerToString (str , ( unsigned long long ) number_of_repetitions_of_the_same_alignment);
-						strcpy(line_to_be_written_to_file_icigar, str);
-						strcpy(line_to_be_written_to_file_icigar, ",");
+						strcat(line_to_be_written_to_file_icigar, str);
+						strcat(line_to_be_written_to_file_icigar, ",");
 						printf("\nNumber_of_repetitions_of_the_same_alignment=%d %s",number_of_repetitions_of_the_same_alignment, line_to_be_written_to_file_icigar);
 					}
 					if(strcmp(ended, "SE") == 0)
@@ -664,7 +664,7 @@ void compressAlignmentFile (
 						if(relative_start_postion_of_alignments_in_pool > 1)
 						{
 							convertUnsignedIntegerToString (str , ( unsigned long long ) relative_start_postion_of_alignments_in_pool);
-							strcpy(line_to_be_written_to_file, str);
+							strcat(line_to_be_written_to_file, str);
 						}
 
 						fprintf (fhw_compressed , "%s" , line_to_be_written_to_file);
