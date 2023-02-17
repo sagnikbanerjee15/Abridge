@@ -569,6 +569,18 @@ void compressAlignmentFile (
 				if(sam_alignment_instance_pool_index == 1)
 				{
 					// Only one alignment - write to file
+
+					if(strcmp(ended, "SE"))
+					{
+						if(relative_start_postion_of_alignments_in_pool > 1)
+						{
+							convertUnsignedIntegerToString (str , ( unsigned long long ) relative_start_postion_of_alignments_in_pool);
+							strcpy(line_to_be_written_to_file, str);
+							strcat(line_to_be_written_to_file, "\t");
+						}
+
+						fprintf (fhw_compressed , "%s" , line_to_be_written_to_file);
+					}
 				}
 				else
 				{
