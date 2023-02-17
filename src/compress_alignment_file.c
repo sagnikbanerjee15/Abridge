@@ -593,17 +593,14 @@ void compressAlignmentFile (
 						}
 
 						line_to_be_written_to_file[0] = '\0';
-
-
 						if(relative_start_postion_of_alignments_in_pool > 1)
 						{
 							convertUnsignedIntegerToString (str , ( unsigned long long ) relative_start_postion_of_alignments_in_pool);
 							strcpy(line_to_be_written_to_file, str);
+							fprintf (fhw_compressed , "%s" , line_to_be_written_to_file);
+							fprintf (fhw_compressed , "%s" , "\t");
 						}
-
-						fprintf (fhw_compressed , "%s" , line_to_be_written_to_file);
-						fprintf (fhw_compressed , "%s" , "\t");
-						replaceSingleCharacterInString(sam_alignment_instance_pool[i]->icigar, 'M', sam_alignment_instance_pool[i]->replacement_character);
+						replaceSingleCharacterInString(sam_alignment_instance_pool[0]->icigar, 'M', sam_alignment_instance_pool[0]->replacement_character);
 						fprintf (fhw_compressed, "%s", sam_alignment_instance_pool[0]->icigar);
 						fprintf (fhw_compressed , "%s" , "-1");
 						fprintf (fhw_compressed , "%s" , "\t");
