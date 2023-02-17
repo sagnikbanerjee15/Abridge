@@ -628,8 +628,8 @@ void compressAlignmentFile (
 							{
 								if(sam_alignment_instance_pool[i]->replacement_character == sam_alignment_instance_pool[j]->replacement_character)
 									sam_alignment_instance_pool[j]->level_of_similarity_to_parent_iCIGAR = 1;
-								else
-									sam_alignment_instance_pool[j]->level_of_similarity_to_parent_iCIGAR = 2;
+								//else
+									//sam_alignment_instance_pool[j]->level_of_similarity_to_parent_iCIGAR = 2;
 							}
 						}
 
