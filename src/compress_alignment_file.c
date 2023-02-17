@@ -535,17 +535,13 @@ void compressAlignmentFile (
 			if ( flag_ignore_unmapped_sequences == 0 )
 			{
 				//Write the unmapped reads into file
-				fprintf (fhw_unmapped, "%s", "@");
-				fprintf (fhw_unmapped , "%s" , current_alignment->read_name);
-				fprintf (fhw_unmapped , "%s" , "\n");
 				fprintf (fhw_unmapped , "%s" , current_alignment->sequence);
 				fprintf (fhw_unmapped , "%s" , "\n");
-				fprintf (fhw_unmapped , "%s" , "+");
-				fprintf (fhw_unmapped , "%s" , "\n");
-				fprintf (fhw_unmapped ,
-						"%s" ,
-						current_alignment->quality_scores);
-				fprintf (fhw_unmapped , "%s" , "\n");
+
+				fprintf (fhw_qual , "%s" , current_alignment->quality_scores);
+				fprintf (fhw_qual , "%s" , "\n");
+				fprintf (fhw_qual , "%s" , "\n");
+				fprintf (fhw_qual , "%s" , "\n");
 			}
 		}
 		else
