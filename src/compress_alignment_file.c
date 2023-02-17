@@ -603,6 +603,7 @@ void compressAlignmentFile (
 
 						fprintf (fhw_compressed , "%s" , line_to_be_written_to_file);
 						fprintf (fhw_compressed , "%s" , "\t");
+						replaceSingleCharacterInString(sam_alignment_instance_pool[i]->icigar, 'M', sam_alignment_instance_pool[i]->replacement_character);
 						fprintf (fhw_compressed, "%s", sam_alignment_instance_pool[0]->icigar);
 						fprintf (fhw_compressed , "%s" , "-1");
 						fprintf (fhw_compressed , "%s" , "\t");
