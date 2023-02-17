@@ -538,10 +538,11 @@ void compressAlignmentFile (
 				fprintf (fhw_unmapped , "%s" , current_alignment->sequence);
 				fprintf (fhw_unmapped , "%s" , "\n");
 
+				fprintf (fhw_qual , "%s" , "\n");
+				fprintf (fhw_qual , "%s" , "\n");
+				fprintf (fhw_qual , "%s" , "\n");
 				fprintf (fhw_qual , "%s" , current_alignment->quality_scores);
-				fprintf (fhw_qual , "%s" , "\n");
-				fprintf (fhw_qual , "%s" , "\n");
-				fprintf (fhw_qual , "%s" , "\n");
+
 			}
 		}
 		else
