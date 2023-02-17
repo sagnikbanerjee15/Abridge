@@ -219,6 +219,8 @@ void compressAlignmentFile (
 	char *samflag_quick_read;
 	char **modified_icigars;
 	char *line_to_be_written_to_file;
+	char *line_to_be_written_to_file_icigar;
+	char *line_to_be_written_to_file_read_names;
 	char *list_of_read_names;
 	char *list_of_qual_scores;
 	char *qual_for_writeToFile;
@@ -257,6 +259,8 @@ void compressAlignmentFile (
 	unsigned long long int relative_start_postion_of_alignments_in_pool;
 	unsigned long long int actual_start_postion_of_alignments_in_pool;
 	const unsigned long long int MAX_LENGTH_OF_LINE_TO_BE_WRITTEN_TO_FILE = (max_read_length + 15) * max_reads_in_a_single_nucl_loc + (10 * max_reads_in_a_single_nucl_loc);
+	const unsigned long long int MAX_LENGTH_OF_LINE_FOR_ICIGAR = (max_read_length + 15) * max_reads_in_a_single_nucl_loc;
+	const unsigned long long int MAX_LENGTH_OF_LINE_FOR_READ_NAMES = 10 * max_reads_in_a_single_nucl_loc;
 
 	/* Variables if BAM file is provided*/
 	samFile *fp_in;            // File pointer if BAM file provided
@@ -339,8 +343,13 @@ void compressAlignmentFile (
 	already_processed = ( short* ) malloc (sizeof(short) * max_reads_in_a_single_nucl_loc);
 	max_reads_in_a_single_nucl_loc += 5;
 
-	line_to_be_written_to_file = ( char* ) malloc (sizeof(char) * MAX_LINE_TO_BE_WRITTEN_TO_FILE);
+	line_to_be_written_to_file = ( char* ) malloc (sizeof(char) * MAX_LENGTH_OF_LINE_TO_BE_WRITTEN_TO_FILE);
 	line_to_be_written_to_file[0] = '\0';
+	line_to_be_written_to_file_icigar = (char*) malloc ( sizeof(char) * MAX_LENGTH_OF_LINE_FOR_ICIGAR);
+	line_to_be_written_to_file_icigar[0] = '\0';
+	line_to_be_written_to_file_read_names = (char*) malloc( sizeof(char) * MAX_LENGTH_OF_LINE_FOR_READ_NAMES);
+	line_to_be_written_to_file_read_names[0] = '\0';
+
 	qual_for_writeToFile = ( char* ) malloc (sizeof(char) * MAX_SEQ_LEN);
 
 	reference_id_quick_read = ( char* ) malloc (sizeof(char) * ONE_THOUSAND);
@@ -593,15 +602,60 @@ void compressAlignmentFile (
 						for(unsigned long long int j = i + 1; j < sam_alignment_instance_pool_index; j++)
 						{
 							sam_alignment_instance_pool[j]->level_of_similarity_to_parent_iCIGAR = 0;
-							if(sam_alignment_instance_pool[i]->replacement_character == sam_alignment_instance_pool[j]->replacement_character)
+							if(strcmp(sam_alignment_instance_pool[i]->icigar, sam_alignment_instance_pool[j]->icigar) == 0)
 							{
-								if(strcmp(sam_alignment_instance_pool[i]->icigar, sam_alignment_instance_pool[j]->icigar) == 0)
+								if(sam_alignment_instance_pool[i]->replacement_character == sam_alignment_instance_pool[j]->replacement_character == 0)
 									sam_alignment_instance_pool[j]->level_of_similarity_to_parent_iCIGAR = 1;
 								else
 									sam_alignment_instance_pool[j]->level_of_similarity_to_parent_iCIGAR = 2;
 							}
 						}
+						line_to_be_written_to_file_icigar[0] = '\0';
+						line_to_be_written_to_file_read_names[0] = '\0';
 
+						if(strcmp(sam_alignment_instance_pool[i]->NH,"1") != 0) // Multi-mapped read so save read names
+						{
+							strcpy(line_to_be_written_to_file_read_names, sam_alignment_instance_pool[i]->read_name);
+							strcpy(line_to_be_written_to_file_read_names, ",");
+						}
+
+						if(flag_ignore_all_quality_scores == 0)
+						{
+							fprintf (fhw_qual , "%s" , "\n");
+							fprintf (fhw_qual , "%s" , "\n");
+							fprintf (fhw_qual , "%s" , "\n");
+							fprintf (fhw_qual , "%s" , sam_alignment_instance_pool[i]->quality_scores);
+							fprintf (fhw_qual , "%s" , "\n");
+						}
+
+						replaceSingleCharacterInString(sam_alignment_instance_pool[i]->icigar, 'M', sam_alignment_instance_pool[i]->replacement_character);
+						unsigned long long int number_of_repetitions_of_the_same_alignment = 0 ;
+						for(unsigned long long int j = i + 1; j < sam_alignment_instance_pool_index; j++)
+						{
+							if(sam_alignment_instance_pool[j]->level_of_similarity_to_parent_iCIGAR == 1)
+							{
+								number_of_repetitions_of_the_same_alignment += 1;
+								if(strcmp(sam_alignment_instance_pool[j]->NH,"1") != 0) // Multi-mapped read so save read names
+								{
+									strcpy(line_to_be_written_to_file_read_names, sam_alignment_instance_pool[j]->read_name);
+									strcpy(line_to_be_written_to_file_read_names, ",");
+								}
+
+								if(flag_ignore_all_quality_scores == 0)
+								{
+									fprintf (fhw_qual , "%s" , "\n");
+									fprintf (fhw_qual , "%s" , "\n");
+									fprintf (fhw_qual , "%s" , "\n");
+									fprintf (fhw_qual , "%s" , sam_alignment_instance_pool[j]->quality_scores);
+									fprintf (fhw_qual , "%s" , "\n");
+								}
+							}
+						}
+						strcpy(line_to_be_written_to_file_icigar, sam_alignment_instance_pool[i]->icigar);
+						strcpy(line_to_be_written_to_file_icigar, "-");
+						convertUnsignedIntegerToString (str , ( unsigned long long ) number_of_repetitions_of_the_same_alignment);
+						strcpy(line_to_be_written_to_file_icigar, str);
+						strcpy(line_to_be_written_to_file_icigar, ",");
 					}
 					if(strcmp(ended, "SE") == 0)
 					{
@@ -613,6 +667,10 @@ void compressAlignmentFile (
 						}
 
 						fprintf (fhw_compressed , "%s" , line_to_be_written_to_file);
+						fprintf (fhw_compressed, "%s", "\t");
+						fprintf (fhw_compressed , "%s" , line_to_be_written_to_file_icigar);
+						fprintf (fhw_compressed, "%s", "\t");
+						fprintf (fhw_compressed , "%s" , line_to_be_written_to_file_read_names);
 						fprintf (fhw_compressed, "%s", "\n");
 					}
 				}

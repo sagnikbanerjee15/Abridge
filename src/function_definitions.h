@@ -894,6 +894,17 @@ void generateiCIGARString (
 
 }
 
+void replaceSingleCharacterInString(char *str, char old, char new)
+{
+	if(old==new)
+		return;
+	for(unsigned int i=0;str[i]!='\0';i++)
+	{
+		if(str[i]==old)
+			str[i]=new;
+	}
+}
+
 void processSoftClips (
 		struct Sam_Alignment *dest,
 		unsigned short int AS_tag_presence,
