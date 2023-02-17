@@ -92,7 +92,7 @@ struct Sam_Alignment* allocateMemorySam_Alignment (unsigned int max_read_length)
 	s->quality_scores = ( char* ) malloc (sizeof(char) * max_read_length);
 	s->sequence_with_deletions_and_splice_indicators = ( char* ) malloc (sizeof(char) * max_read_length * 2);
 
-	s->written_to_file=0;
+	s->level_of_similarity_to_parent_iCIGAR=0;
 	s->left_soft_clipped_sequence = ( char* ) malloc (sizeof(char) * max_read_length);
 	s->left_soft_clipped_sequence[0] = '\0';
 	s->right_soft_clipped_sequence = ( char* ) malloc (sizeof(char) * max_read_length);
@@ -856,24 +856,18 @@ void generateiCIGARString (
 	}
 
 	// Replace the M in the iCIGAR with samformatflag character
-	for(i=0; sam_alignment_instance->icigar[i]!='\0';i++)
+
+	for(samflag_dictionary_index=0; samflag_dictionary_index<samflag_dictionary_size;samflag_dictionary_index++)
 	{
-		if (sam_alignment_instance->icigar[i] == 'M')
-		{
-			// Look for the appropriate character
-			for(samflag_dictionary_index=0; samflag_dictionary_index<samflag_dictionary_size;samflag_dictionary_index++)
-			{
-				//printf("\nsamflag_in_dictionary=%s samflag_in_alignment=%s replacement_character = %c",samflag_dictionary[samflag_dictionary_index]->samflag, sam_alignment_instance->samflag, samflag_dictionary[samflag_dictionary_index]->character);
-				if(strcmp(samflag_dictionary[samflag_dictionary_index]->samflag, sam_alignment_instance->samflag) == 0)
-					break;
-			}
-			if(samflag_dictionary_index==samflag_dictionary_size)
-			{
-				printf("\nBig Trouble");
-			}
-			sam_alignment_instance->icigar[i] = samflag_dictionary[samflag_dictionary_index]->character;
-		}
+		//printf("\nsamflag_in_dictionary=%s samflag_in_alignment=%s replacement_character = %c",samflag_dictionary[samflag_dictionary_index]->samflag, sam_alignment_instance->samflag, samflag_dictionary[samflag_dictionary_index]->character);
+		if(strcmp(samflag_dictionary[samflag_dictionary_index]->samflag, sam_alignment_instance->samflag) == 0)
+			break;
 	}
+	if(samflag_dictionary_index==samflag_dictionary_size)
+	{
+		printf("\nBig Trouble");
+	}
+	sam_alignment_instance->replacement_character = samflag_dictionary[samflag_dictionary_index]->character;
 
 	//Add the NH tag, NH is stored as a string
 	strcpy(sam_alignment_instance->icigar,sam_alignment_instance->NH);

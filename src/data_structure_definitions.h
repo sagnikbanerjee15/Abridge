@@ -18,7 +18,7 @@
 #define MAX_POOL_SIZE 1000000
 #define MIN_POOL_SIZE 10000
 #define MAX_UNIQUE_CIGARS 10000
-#define MAX_LINE_LENGTH_TO_BE_WRITTEN_TO_FILE 10000000
+#define MAX_LINE_LENGTH_TO_BE_WRITTEN_TO_FILE 100000000
 #define MAX_LENGTH_RLE 1000
 #define MAX_CIGAR_FREQ_SIZE 1000000
 #define MAX_ICIGAR_LENGTH 100000
@@ -122,7 +122,8 @@ struct Sam_Alignment
 	 * Other fields created by abridge
 	 */
 	unsigned short int read_sequence_len; // basically strlen(seq). Field is kept to prevent extra calls to strlen
-	unsigned short int written_to_file;
+	unsigned short int level_of_similarity_to_parent_iCIGAR; // 0 --> unprocessed, 1 --> Exact match with the first iCIGAR, 2 --> Matches only the arrangement but not the samformatflag
+	char replacement_character;
 	//struct Soft_Clippings soft_clippings; // Stores the left and the right soft clippings
 	//struct Cigar_Items *cigar_items;
 	//int number_of_cigar_items;

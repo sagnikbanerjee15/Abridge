@@ -256,6 +256,7 @@ void compressAlignmentFile (
 	unsigned short int samflag_dictionary_size;
 	unsigned long long int relative_start_postion_of_alignments_in_pool;
 	unsigned long long int actual_start_postion_of_alignments_in_pool;
+	const unsigned long long int MAX_LENGTH_OF_LINE_TO_BE_WRITTEN_TO_FILE = (max_read_length + 15) * max_reads_in_a_single_nucl_loc + (10 * max_reads_in_a_single_nucl_loc);
 
 	/* Variables if BAM file is provided*/
 	samFile *fp_in;            // File pointer if BAM file provided
@@ -587,12 +588,20 @@ void compressAlignmentFile (
 				else
 				{
 					// Iterate over the entire pool
-					for(unsigned long long int i=0; i<sam_alignment_instance_pool_index; i++)
+					for(unsigned long long int i = 0; i < sam_alignment_instance_pool_index; i++)
 					{
-						for(unsigned long long int j=i+1; j<sam_alignment_instance_pool_index; j++)
+						for(unsigned long long int j = i + 1; j < sam_alignment_instance_pool_index; j++)
 						{
-
+							sam_alignment_instance_pool[j]->level_of_similarity_to_parent_iCIGAR = 0;
+							if(sam_alignment_instance_pool[i]-->replacement_character == sam_alignment_instance_pool[j]-->replacement_character)
+							{
+								if(strcmp(sam_alignment_instance_pool[i]->icigar, sam_alignment_instance_pool[j]->icigar) == 0)
+									sam_alignment_instance_pool[j]->level_of_similarity_to_parent_iCIGAR = 1;
+								else
+									sam_alignment_instance_pool[j]->level_of_similarity_to_parent_iCIGAR = 2;
+							}
 						}
+
 					}
 					if(strcmp(ended, "SE") == 0)
 					{
