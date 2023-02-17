@@ -591,24 +591,30 @@ void compressAlignmentFile (
 						{
 
 						}
-						if(strcmp(ended, "SE"))
-						{
-							if(relative_start_postion_of_alignments_in_pool > 1)
-							{
-								convertUnsignedIntegerToString (str , ( unsigned long long ) relative_start_postion_of_alignments_in_pool);
-								strcpy(line_to_be_written_to_file, str);
-								strcat(line_to_be_written_to_file, "\t");
-							}
-
-							fprintf (fhw_compressed , "%s" , line_to_be_written_to_file);
-						}
 					}
+					if(strcmp(ended, "SE"))
+					{
+						if(relative_start_postion_of_alignments_in_pool > 1)
+						{
+							convertUnsignedIntegerToString (str , ( unsigned long long ) relative_start_postion_of_alignments_in_pool);
+							strcpy(line_to_be_written_to_file, str);
+							strcat(line_to_be_written_to_file, "\t");
+						}
 
-
+						fprintf (fhw_compressed , "%s" , line_to_be_written_to_file);
+					}
+				}
+				if(strcmp(previous_reference_name,current_reference_name) == 0 )
+				{
+					relative_start_postion_of_alignments_in_pool = current_alignment->start_position - previous_position;
+					actual_start_postion_of_alignments_in_pool = current_alignment->start_position;
+				}
+				else
+				{
+					actual_start_postion_of_alignments_in_pool = current_alignment->start_position;
+					relative_start_postion_of_alignments_in_pool = current_alignment->start_position;
 				}
 
-				relative_start_postion_of_alignments_in_pool = current_alignment->start_position - previous_position;
-				actual_start_postion_of_alignments_in_pool = current_alignment->start_position;
 				strcpy(previous_reference_name, current_alignment->reference_name);
 				previous_position = current_alignment->start_position;
 			}
