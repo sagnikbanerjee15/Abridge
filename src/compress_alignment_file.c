@@ -615,8 +615,8 @@ void compressAlignmentFile (
 
 						if(strcmp(sam_alignment_instance_pool[i]->NH,"1") != 0) // Multi-mapped read so save read names
 						{
-							strcpy(line_to_be_written_to_file_read_names, sam_alignment_instance_pool[i]->read_name);
-							strcpy(line_to_be_written_to_file_read_names, ",");
+							strcat(line_to_be_written_to_file_read_names, sam_alignment_instance_pool[i]->read_name);
+							strcat(line_to_be_written_to_file_read_names, ",");
 						}
 
 						if(flag_ignore_all_quality_scores == 0)
@@ -627,10 +627,9 @@ void compressAlignmentFile (
 							fprintf (fhw_qual , "%s" , sam_alignment_instance_pool[i]->quality_scores);
 							fprintf (fhw_qual , "%s" , "\n");
 						}
-						printf("\nBefore replacement:%s",sam_alignment_instance_pool[i]->icigar);
+						//printf("\nBefore replacement:%s",sam_alignment_instance_pool[i]->icigar);
 						replaceSingleCharacterInString(sam_alignment_instance_pool[i]->icigar, 'M', sam_alignment_instance_pool[i]->replacement_character);
-
-						printf("\nAfter replacement:%s",sam_alignment_instance_pool[i]->icigar);
+						//printf("\nAfter replacement:%s",sam_alignment_instance_pool[i]->icigar);
 						unsigned long long int number_of_repetitions_of_the_same_alignment = 1 ;
 						for(unsigned long long int j = i + 1; j < sam_alignment_instance_pool_index; j++)
 						{
