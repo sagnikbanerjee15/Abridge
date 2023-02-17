@@ -569,10 +569,12 @@ void compressAlignmentFile (
 				relative_start_postion_of_alignments_in_pool = current_alignment->start_position;
 
 				sam_alignment_instance_pool_index += 1;
+				current_alignment = sam_alignment_instance_pool[sam_alignment_instance_pool_index];
 			}
 			else if(strcmp(previous_reference_name, current_reference_name) == 0 && previous_position == current_position) // Keep adding to the pool
 			{
 				sam_alignment_instance_pool_index += 1;
+				current_alignment = sam_alignment_instance_pool[sam_alignment_instance_pool_index];
 			}
 			else //Inspect each alignment and write to file
 			{
@@ -602,9 +604,12 @@ void compressAlignmentFile (
 						}
 						replaceSingleCharacterInString(sam_alignment_instance_pool[0]->icigar, 'M', sam_alignment_instance_pool[0]->replacement_character);
 						fprintf (fhw_compressed, "%s", sam_alignment_instance_pool[0]->icigar);
-						fprintf (fhw_compressed , "%s" , "-1");
-						fprintf (fhw_compressed , "%s" , "\t");
-						fprintf (fhw_compressed, "%s", sam_alignment_instance_pool[0]->read_name);
+						fprintf (fhw_compressed , "%s", "-1");
+						fprintf (fhw_compressed , "%s", "\t");
+						if(strcmp(sam_alignment_instance_pool[0]->NH,"1") != 0) // Multi-mapped read so save read names
+						{
+							fprintf (fhw_compressed, "%s", sam_alignment_instance_pool[0]->read_name);
+						}
 						fprintf (fhw_compressed, "%s", "\n");
 					}
 				}
@@ -679,7 +684,7 @@ void compressAlignmentFile (
 						if(relative_start_postion_of_alignments_in_pool > 1)
 						{
 							convertUnsignedIntegerToString (str , ( unsigned long long ) relative_start_postion_of_alignments_in_pool);
-							strcat(line_to_be_written_to_file, str);
+							strcpy(line_to_be_written_to_file, str);
 						}
 
 						fprintf (fhw_compressed , "%s" , line_to_be_written_to_file);
@@ -709,6 +714,7 @@ void compressAlignmentFile (
 
 				strcpy(previous_reference_name, current_alignment->reference_name);
 				previous_position = current_alignment->start_position;
+				current_alignment = sam_alignment_instance_pool[sam_alignment_instance_pool_index];
 			}
 		}
 		//break;
