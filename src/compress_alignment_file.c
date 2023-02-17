@@ -629,7 +629,7 @@ void compressAlignmentFile (
 						}
 
 						replaceSingleCharacterInString(sam_alignment_instance_pool[i]->icigar, 'M', sam_alignment_instance_pool[i]->replacement_character);
-						unsigned long long int number_of_repetitions_of_the_same_alignment = 0 ;
+						unsigned long long int number_of_repetitions_of_the_same_alignment = 1 ;
 						for(unsigned long long int j = i + 1; j < sam_alignment_instance_pool_index; j++)
 						{
 							if(sam_alignment_instance_pool[j]->level_of_similarity_to_parent_iCIGAR == 1)
@@ -651,6 +651,7 @@ void compressAlignmentFile (
 								}
 							}
 						}
+						prinft("\number_of_repetitions_of_the_same_alignment=%d",number_of_repetitions_of_the_same_alignment);
 						strcpy(line_to_be_written_to_file_icigar, sam_alignment_instance_pool[i]->icigar);
 						strcpy(line_to_be_written_to_file_icigar, "-");
 						convertUnsignedIntegerToString (str , ( unsigned long long ) number_of_repetitions_of_the_same_alignment);
