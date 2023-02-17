@@ -614,6 +614,8 @@ void compressAlignmentFile (
 				}
 				else
 				{
+					line_to_be_written_to_file_icigar[0] = '\0';
+					line_to_be_written_to_file_read_names[0] = '\0';
 					// Iterate over the entire pool
 					for(unsigned long long int i = 0; i < sam_alignment_instance_pool_index; i++)
 					{
@@ -628,8 +630,6 @@ void compressAlignmentFile (
 									sam_alignment_instance_pool[j]->level_of_similarity_to_parent_iCIGAR = 2;
 							}
 						}
-						line_to_be_written_to_file_icigar[0] = '\0';
-						line_to_be_written_to_file_read_names[0] = '\0';
 
 						if(strcmp(sam_alignment_instance_pool[i]->NH,"1") != 0) // Multi-mapped read so save read names
 						{
