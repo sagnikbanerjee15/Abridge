@@ -496,7 +496,7 @@ def compressSamFile( options , tags_present ):
     cmd += f" --input-file {programs_to_files['spring_compress']['unmapped_filename']}"
     cmd += f" --output-file {programs_to_files['spring_compress']['compressed_filename']}"
     cmd += f" --num-threads 1 "
-    cmd += f" ----quality-opts lossless"
+    cmd += f" --quality-opts lossless"
     cmd += f")"
     cmd += f" 1> {programs_to_files['spring_compress']['output']} "
     cmd += f" 2> {programs_to_files['spring_compress']['error']}"
