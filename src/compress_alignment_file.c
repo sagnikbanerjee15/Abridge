@@ -604,7 +604,8 @@ void compressAlignmentFile (
 						}
 						replaceSingleCharacterInString(sam_alignment_instance_pool[0]->icigar, 'M', sam_alignment_instance_pool[0]->replacement_character);
 						fprintf (fhw_compressed, "%s", sam_alignment_instance_pool[0]->icigar);
-						fprintf (fhw_compressed , "%s", "-1");
+						if(strcmp(sam_alignment_instance_pool[0]->NH,"1") != 0)
+							fprintf (fhw_compressed , "%s", sam_alignment_instance_pool[0]->NH);
 						fprintf (fhw_compressed , "%s", "\t");
 						if(strcmp(sam_alignment_instance_pool[0]->NH,"1") != 0) // Multi-mapped read so save read names
 						{
