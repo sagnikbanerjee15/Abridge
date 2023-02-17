@@ -583,15 +583,30 @@ void compressAlignmentFile (
 
 					if(strcmp(ended, "SE") == 0)
 					{
+						if(flag_ignore_all_quality_scores == 0)
+						{
+							fprintf (fhw_qual , "%s" , "\n");
+							fprintf (fhw_qual , "%s" , "\n");
+							fprintf (fhw_qual , "%s" , "\n");
+							fprintf (fhw_qual , "%s" , sam_alignment_instance_pool[0]->quality_scores);
+							fprintf (fhw_qual , "%s" , "\n");
+						}
+
 						line_to_be_written_to_file[0] = '\0';
+
+
 						if(relative_start_postion_of_alignments_in_pool > 1)
 						{
 							convertUnsignedIntegerToString (str , ( unsigned long long ) relative_start_postion_of_alignments_in_pool);
 							strcpy(line_to_be_written_to_file, str);
-							strcat(line_to_be_written_to_file, "\t");
 						}
 
 						fprintf (fhw_compressed , "%s" , line_to_be_written_to_file);
+						fprintf (fhw_compressed , "%s" , "\t");
+						fprintf (fhw_compressed, "%s", sam_alignment_instance_pool[0]->icigar);
+						fprintf (fhw_compressed , "%s" , "-1");
+						fprintf (fhw_compressed , "%s" , "\t");
+						fprintf (fhw_compressed, "%s", sam_alignment_instance_pool[0]->read_name);
 						fprintf (fhw_compressed, "%s", "\n");
 					}
 				}
