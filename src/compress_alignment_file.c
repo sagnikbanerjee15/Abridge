@@ -251,7 +251,8 @@ void compressAlignmentFile (
 	unsigned long long int max_commas = 0;
 	unsigned long long int curr_commas = 0;
 	unsigned long long int sam_alignment_instance_pool_size = 0;
-	unsigned long long int sam_alignment_instance_pool_index = 0;
+	unsigned long long int sam_alignment_instance_pool_index_start = 0;
+	unsigned long long int sam_alignment_instance_pool_index_end = 0;
 	unsigned short int samflag_dictionary_index;
 	unsigned short int samflag_dictionary_size;
 
@@ -361,7 +362,6 @@ void compressAlignmentFile (
 	sam_alignment_instance_pool = ( struct Sam_Alignment* ) malloc (sizeof(struct Sam_Alignment*) * sam_alignment_instance_pool_size);
 	for ( i = 0 ; i < sam_alignment_instance_pool_size ; i++ )
 		sam_alignment_instance_pool[i] = allocateMemorySam_Alignment (max_read_length);
-	sam_alignment_instance_pool_index = 0;
 
 	previous_reference_name = (char*)malloc(sizeof(char)*MAX_GENERAL_LENGTH);
 	current_reference_name = (char*)malloc(sizeof(char)*MAX_GENERAL_LENGTH);
@@ -463,7 +463,7 @@ void compressAlignmentFile (
 	}
 	//return;
 	fseek(fhr, -line_len, SEEK_CUR);
-	current_alignment = sam_alignment_instance_pool[sam_alignment_instance_pool_index];
+	current_alignment = sam_alignment_instance_pool[sam_alignment_instance_pool_index_start];
 	do
 	{
 		/****************************************************************************************/
@@ -542,6 +542,7 @@ void compressAlignmentFile (
 				fprintf (fhw_qual , "%s" , "\n");
 				fprintf (fhw_qual , "%s" , "\n");
 				fprintf (fhw_qual , "%s" , "\n");
+				fprintf (fhw_qual , "%s" , "\n");
 			}
 		}
 		else
@@ -553,7 +554,7 @@ void compressAlignmentFile (
 			}
 			else if(strcmp(previous_reference_name, current_reference_name) == 0 && previous_position == current_position)
 			{
-				sam_alignment_instance_pool_index += 1;
+				sam_alignment_instance_pool_index_start += 1;
 			}
 			else //Inspect each alignment and write to file
 			{
