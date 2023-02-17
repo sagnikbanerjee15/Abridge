@@ -894,14 +894,14 @@ void generateiCIGARString (
 
 }
 
-void replaceSingleCharacterInString(char *str, char old, char new)
+void replaceSingleCharacterInString(char *str, char old_char, char new_char)
 {
 	if(old==new)
 		return;
 	for(unsigned int i=0;str[i]!='\0';i++)
 	{
-		if(str[i]==old)
-			str[i]=new;
+		if(str[i]==old_char)
+			str[i]=new_char;
 	}
 }
 

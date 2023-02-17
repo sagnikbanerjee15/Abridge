@@ -627,8 +627,10 @@ void compressAlignmentFile (
 							fprintf (fhw_qual , "%s" , sam_alignment_instance_pool[i]->quality_scores);
 							fprintf (fhw_qual , "%s" , "\n");
 						}
-
+						printf("\nBefore replacement: %s",sam_alignment_instance_pool[i]->icigar);
 						replaceSingleCharacterInString(sam_alignment_instance_pool[i]->icigar, 'M', sam_alignment_instance_pool[i]->replacement_character);
+
+						printf("\nAfter replacement: %s",sam_alignment_instance_pool[i]->icigar);
 						unsigned long long int number_of_repetitions_of_the_same_alignment = 1 ;
 						for(unsigned long long int j = i + 1; j < sam_alignment_instance_pool_index; j++)
 						{
