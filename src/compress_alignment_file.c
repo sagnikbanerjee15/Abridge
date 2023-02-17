@@ -663,7 +663,6 @@ void compressAlignmentFile (
 						{
 							convertUnsignedIntegerToString (str , ( unsigned long long ) relative_start_postion_of_alignments_in_pool);
 							strcpy(line_to_be_written_to_file, str);
-							strcat(line_to_be_written_to_file, "\t");
 						}
 
 						fprintf (fhw_compressed , "%s" , line_to_be_written_to_file);
