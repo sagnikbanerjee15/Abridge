@@ -571,7 +571,7 @@ void compressAlignmentFile (
 				{
 					// Only one alignment - write to file
 
-					if(strcmp(ended, "SE"))
+					if(strcmp(ended, "SE") == 0)
 					{
 						if(relative_start_postion_of_alignments_in_pool > 1)
 						{
@@ -593,7 +593,7 @@ void compressAlignmentFile (
 
 						}
 					}
-					if(strcmp(ended, "SE"))
+					if(strcmp(ended, "SE") == 0)
 					{
 						if(relative_start_postion_of_alignments_in_pool > 1)
 						{
