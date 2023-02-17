@@ -566,7 +566,7 @@ void compressAlignmentFile (
 			}
 			else //Inspect each alignment and write to file
 			{
-				printf("\nsam_alignment_instance_pool_index=%d, ended=%s",sam_alignment_instance_pool_index, endeds);
+				printf("\nsam_alignment_instance_pool_index=%d, ended=%s",sam_alignment_instance_pool_index, ended);
 				if(sam_alignment_instance_pool_index == 1)
 				{
 					// Only one alignment - write to file
