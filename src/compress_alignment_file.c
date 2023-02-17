@@ -583,6 +583,7 @@ void compressAlignmentFile (
 
 					if(strcmp(ended, "SE") == 0)
 					{
+						line_to_be_written_to_file[0] = '\0';
 						if(relative_start_postion_of_alignments_in_pool > 1)
 						{
 							convertUnsignedIntegerToString (str , ( unsigned long long ) relative_start_postion_of_alignments_in_pool);
@@ -676,6 +677,12 @@ void compressAlignmentFile (
 						fprintf (fhw_compressed, "%s", "\n");
 					}
 				}
+				struct Sam_Alignment *swap;
+				swap = sam_alignment_instance_pool[0];
+				sam_alignment_instance_pool[0] = sam_alignment_instance_pool[sam_alignment_instance_pool_index];
+				sam_alignment_instance_pool[sam_alignment_instance_pool_index] = swap;
+				sam_alignment_instance_pool_index = 0;
+
 				if(strcmp(previous_reference_name,current_reference_name) == 0 )
 				{
 					relative_start_postion_of_alignments_in_pool = current_alignment->start_position - previous_position;
