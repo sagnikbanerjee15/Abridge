@@ -729,7 +729,7 @@ void compressAlignmentFile (
 									}
 								}
 								//strcat(line_to_be_written_to_file_icigar, sam_alignment_instance_pool[i]->icigar);
-								line_to_be_written_to_file_icigar[strlen(line_to_be_written_to_file_icigar)] =  sam_alignment_instance_pool[i]->replacement_character;
+								line_to_be_written_to_file_icigar[strlen(line_to_be_written_to_file_icigar)] =  sam_alignment_instance_pool[j]->replacement_character;
 								line_to_be_written_to_file_icigar[strlen(line_to_be_written_to_file_icigar) + 1] = '\0';
 								if(number_of_repetitions_of_the_same_alignment > 1)
 								{
