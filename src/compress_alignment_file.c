@@ -258,6 +258,7 @@ void compressAlignmentFile (
 	unsigned short int samflag_dictionary_size;
 	unsigned long long int relative_start_postion_of_alignments_in_pool;
 	unsigned long long int actual_start_postion_of_alignments_in_pool;
+	unsigned long long int number_of_alignments_read;
 	const unsigned long long int MAX_LENGTH_OF_LINE_TO_BE_WRITTEN_TO_FILE = (max_read_length + 15) * max_reads_in_a_single_nucl_loc + (10 * max_reads_in_a_single_nucl_loc);
 	const unsigned long long int MAX_LENGTH_OF_LINE_FOR_ICIGAR = (max_read_length + 15) * max_reads_in_a_single_nucl_loc;
 	const unsigned long long int MAX_LENGTH_OF_LINE_FOR_READ_NAMES = 10 * max_reads_in_a_single_nucl_loc;
@@ -388,6 +389,7 @@ void compressAlignmentFile (
 
 	relative_start_postion_of_alignments_in_pool = 0;
 	actual_start_postion_of_alignments_in_pool = 0;
+	number_of_alignments_read=0;
 
 	/****************************************************************************************************************************************/
 
@@ -482,6 +484,9 @@ void compressAlignmentFile (
 	{
 		/****************************************************************************************/
 
+		if(number_of_alignments_read==2)
+			break;
+		number_of_alignments_read++;
 		/***********************************************************************************************************
 		 * Performs the following:
 		 * - Read in one record
@@ -578,7 +583,7 @@ void compressAlignmentFile (
 			}
 			else //Inspect each alignment and write to file
 			{
-				//printf("\nsam_alignment_instance_pool_index=%d, ended=%s",sam_alignment_instance_pool_index, ended);
+				printf("\nsam_alignment_instance_pool_index=%d, ended=%s",sam_alignment_instance_pool_index, ended);
 				if(sam_alignment_instance_pool_index == 1)
 				{
 					// Only one alignment - write to file
@@ -616,7 +621,7 @@ void compressAlignmentFile (
 				{
 					line_to_be_written_to_file_icigar[0] = '\0';
 					line_to_be_written_to_file_read_names[0] = '\0';
-					// Iterate over the entire pool
+					// Iterate over the entire pools
 					for(unsigned long long int i = 0; i < sam_alignment_instance_pool_index; i++)
 					{
 						if(sam_alignment_instance_pool[i]->level_of_similarity_to_parent_iCIGAR != 0) continue;
@@ -683,7 +688,6 @@ void compressAlignmentFile (
 						strcat(line_to_be_written_to_file_icigar, ",");
 
 
-
 						for(unsigned long long int j = i + 1; j < sam_alignment_instance_pool_index; j++)
 						{
 
@@ -738,7 +742,6 @@ void compressAlignmentFile (
 									strcat(line_to_be_written_to_file_icigar, str);
 								}
 								strcat(line_to_be_written_to_file_icigar, ",");
-
 							}
 						}
 
