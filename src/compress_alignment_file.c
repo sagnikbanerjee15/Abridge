@@ -607,7 +607,9 @@ void compressAlignmentFile (
 							fprintf (fhw_compressed , "%s" , line_to_be_written_to_file);
 							fprintf (fhw_compressed , "%s" , "\t");
 						}
+						printf("\nBefore replacement:%s",sam_alignment_instance_pool[0]->icigar);
 						replaceSingleCharacterInString(sam_alignment_instance_pool[0]->icigar, 'M', sam_alignment_instance_pool[0]->replacement_character);
+						printf("\nAfter  replacement:%s",sam_alignment_instance_pool[0]->icigar);
 						fprintf (fhw_compressed, "%s", sam_alignment_instance_pool[0]->icigar);
 						fprintf (fhw_compressed , "%s", "\t");
 						if(strcmp(sam_alignment_instance_pool[0]->NH,"1") != 0) // Multi-mapped read so save read names
@@ -652,7 +654,7 @@ void compressAlignmentFile (
 							fprintf (fhw_qual , "%s" , sam_alignment_instance_pool[i]->quality_scores);
 							fprintf (fhw_qual , "%s" , "\n");
 						}
-						printf("\nBefore replacement:%s",sam_alignment_instance_pool[i]->icigar);
+						//printf("\nBefore replacement:%s",sam_alignment_instance_pool[i]->icigar);
 						replaceSingleCharacterInString(sam_alignment_instance_pool[i]->icigar, 'M', sam_alignment_instance_pool[i]->replacement_character);
 						//printf("\nAfter replacement:%s",sam_alignment_instance_pool[i]->icigar);
 						unsigned long long int number_of_repetitions_of_the_same_alignment = 1 ;
