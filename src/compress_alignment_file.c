@@ -579,7 +579,9 @@ void compressAlignmentFile (
 			else if(strcmp(previous_reference_name, current_reference_name) == 0 && previous_position == current_position) // Keep adding to the pool
 			{
 				sam_alignment_instance_pool_index += 1;
+				previous_position = current_alignment->start_position;
 				current_alignment = sam_alignment_instance_pool[sam_alignment_instance_pool_index];
+
 			}
 			else //Inspect each alignment and write to file
 			{
@@ -607,9 +609,9 @@ void compressAlignmentFile (
 							fprintf (fhw_compressed , "%s" , line_to_be_written_to_file);
 							fprintf (fhw_compressed , "%s" , "\t");
 						}
-						printf("\nBefore replacement:%s",sam_alignment_instance_pool[0]->icigar);
+						//printf("\nBefore replacement:%s",sam_alignment_instance_pool[0]->icigar);
 						replaceSingleCharacterInString(sam_alignment_instance_pool[0]->icigar, 'M', sam_alignment_instance_pool[0]->replacement_character);
-						printf("\nAfter  replacement:%s",sam_alignment_instance_pool[0]->icigar);
+						//printf("\nAfter  replacement:%s",sam_alignment_instance_pool[0]->icigar);
 						fprintf (fhw_compressed, "%s", sam_alignment_instance_pool[0]->icigar);
 						fprintf (fhw_compressed , "%s", "\t");
 						if(strcmp(sam_alignment_instance_pool[0]->NH,"1") != 0) // Multi-mapped read so save read names
