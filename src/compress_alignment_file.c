@@ -779,7 +779,7 @@ void compressAlignmentFile (
 				swap = sam_alignment_instance_pool[0];
 				sam_alignment_instance_pool[0] = sam_alignment_instance_pool[sam_alignment_instance_pool_index];
 				sam_alignment_instance_pool[sam_alignment_instance_pool_index] = swap;
-				sam_alignment_instance_pool_index = 0;
+				sam_alignment_instance_pool_index = 1;
 
 				if(strcmp(previous_reference_name,current_reference_name) == 0 )
 				{
