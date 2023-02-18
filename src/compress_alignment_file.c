@@ -581,12 +581,11 @@ void compressAlignmentFile (
 				sam_alignment_instance_pool_index += 1;
 				previous_position = current_alignment->start_position;
 				current_alignment = sam_alignment_instance_pool[sam_alignment_instance_pool_index];
-
 			}
 			else //Inspect each alignment and write to file
 			{
 				printf("\nsam_alignment_instance_pool_index=%d, ended=%s line=%s",sam_alignment_instance_pool_index, ended, line);
-				relative_start_postion_of_alignments_in_pool = current_alignment->start_position - previous_position;
+
 				if(sam_alignment_instance_pool_index == 1)
 				{
 					// Only one alignment - write to file
