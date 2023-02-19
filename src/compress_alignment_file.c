@@ -174,6 +174,146 @@ static error_t parse_opt (int key, char *arg, struct argp_state *state)
 static struct argp argp =
 { options , parse_opt , args_doc , doc , 0 , 0 , 0 };
 
+void comparePoolAndWriteToFile(char *line_to_be_written_to_file_icigar,
+		char *line_to_be_written_to_file_read_names,
+		struct Sam_Alignment **sam_alignment_instance_pool,
+		unsigned long long int sam_alignment_instance_pool_index,
+
+		unsigned short int flag_ignore_alignment_scores,
+		unsigned short int flag_ignore_soft_clippings,
+		unsigned short int flag_ignore_mismatches,
+		unsigned short int flag_ignore_all_quality_scores,
+		unsigned short int flag_ignore_unmapped_sequences,
+		unsigned short int flag_ignore_quality_scores_for_matched_bases
+		)
+{
+	line_to_be_written_to_file_icigar[0] = '\0';
+	line_to_be_written_to_file_read_names[0] = '\0';
+	// Iterate over the entire pools
+	for(unsigned long long int i = 0; i < sam_alignment_instance_pool_index; i++)
+	{
+		if(sam_alignment_instance_pool[i]->level_of_similarity_to_parent_iCIGAR != 0) continue;
+		for(unsigned long long int j = i + 1; j < sam_alignment_instance_pool_index; j++)
+		{
+			if(sam_alignment_instance_pool[j]->level_of_similarity_to_parent_iCIGAR != 0) continue;
+			//sam_alignment_instance_pool[j]->level_of_similarity_to_parent_iCIGAR = 0;
+			if(strcmp(sam_alignment_instance_pool[i]->icigar, sam_alignment_instance_pool[j]->icigar) == 0)
+			{
+				if(sam_alignment_instance_pool[i]->replacement_character == sam_alignment_instance_pool[j]->replacement_character)
+					sam_alignment_instance_pool[j]->level_of_similarity_to_parent_iCIGAR = 1;
+				else
+					sam_alignment_instance_pool[j]->level_of_similarity_to_parent_iCIGAR = 2;
+			}
+		}
+
+		if(strcmp(sam_alignment_instance_pool[i]->NH,"1") != 0) // Multi-mapped read so save read names
+		{
+			strcat(line_to_be_written_to_file_read_names, sam_alignment_instance_pool[i]->read_name);
+			strcat(line_to_be_written_to_file_read_names, ",");
+		}
+
+		if(flag_ignore_all_quality_scores == 0)
+		{
+			fprintf (fhw_qual , "%s" , "\n");
+			fprintf (fhw_qual , "%s" , "\n");
+			fprintf (fhw_qual , "%s" , "\n");
+			fprintf (fhw_qual , "%s" , sam_alignment_instance_pool[i]->quality_scores);
+			fprintf (fhw_qual , "%s" , "\n");
+		}
+		//printf("\nBefore replacement:%s",sam_alignment_instance_pool[i]->icigar);
+		replaceSingleCharacterInString(sam_alignment_instance_pool[i]->icigar, 'M', sam_alignment_instance_pool[i]->replacement_character);
+		//printf("\nAfter replacement:%s",sam_alignment_instance_pool[i]->icigar);
+		unsigned long long int number_of_repetitions_of_the_same_alignment = 1 ;
+		for(unsigned long long int j = i + 1; j < sam_alignment_instance_pool_index; j++)
+		{
+			if(sam_alignment_instance_pool[j]->level_of_similarity_to_parent_iCIGAR == 1)
+			{
+				number_of_repetitions_of_the_same_alignment += 1;
+				if(strcmp(sam_alignment_instance_pool[j]->NH,"1") != 0) // Multi-mapped read so save read names
+				{
+					strcat(line_to_be_written_to_file_read_names, sam_alignment_instance_pool[j]->read_name);
+					strcat(line_to_be_written_to_file_read_names, ",");
+				}
+
+				if(flag_ignore_all_quality_scores == 0)
+				{
+					fprintf (fhw_qual , "%s" , "\n");
+					fprintf (fhw_qual , "%s" , "\n");
+					fprintf (fhw_qual , "%s" , "\n");
+					fprintf (fhw_qual , "%s" , sam_alignment_instance_pool[j]->quality_scores);
+					fprintf (fhw_qual , "%s" , "\n");
+				}
+			}
+		}
+
+		strcat(line_to_be_written_to_file_icigar, sam_alignment_instance_pool[i]->icigar);
+		if(number_of_repetitions_of_the_same_alignment > 1)
+		{
+			strcat(line_to_be_written_to_file_icigar, "-");
+			convertUnsignedIntegerToString (str , ( unsigned long long ) number_of_repetitions_of_the_same_alignment);
+			strcat(line_to_be_written_to_file_icigar, str);
+		}
+		strcat(line_to_be_written_to_file_icigar, ",");
+
+
+		for(unsigned long long int j = i + 1; j < sam_alignment_instance_pool_index; j++)
+		{
+
+			if(strcmp(sam_alignment_instance_pool[j]->NH,"1") != 0) // Multi-mapped read so save read names
+			{
+				strcat(line_to_be_written_to_file_read_names, sam_alignment_instance_pool[j]->read_name);
+				strcat(line_to_be_written_to_file_read_names, ",");
+			}
+
+			if(flag_ignore_all_quality_scores == 0)
+			{
+				fprintf (fhw_qual , "%s" , "\n");
+				fprintf (fhw_qual , "%s" , "\n");
+				fprintf (fhw_qual , "%s" , "\n");
+				fprintf (fhw_qual , "%s" , sam_alignment_instance_pool[j]->quality_scores);
+				fprintf (fhw_qual , "%s" , "\n");
+			}
+
+			number_of_repetitions_of_the_same_alignment = 0;
+			if(sam_alignment_instance_pool[j]->level_of_similarity_to_parent_iCIGAR == 2)
+			{
+				for(unsigned long long k = j + 1; k < sam_alignment_instance_pool_index; k++  )
+				{
+					if(sam_alignment_instance_pool[k]->level_of_similarity_to_parent_iCIGAR == 2 && sam_alignment_instance_pool[j]->replacement_character == sam_alignment_instance_pool[k]->replacement_character )
+					{
+						number_of_repetitions_of_the_same_alignment += 1;
+						sam_alignment_instance_pool[k]->level_of_similarity_to_parent_iCIGAR = 3;
+
+						if(strcmp(sam_alignment_instance_pool[k]->NH,"1") != 0) // Multi-mapped read so save read names
+						{
+							strcat(line_to_be_written_to_file_read_names, sam_alignment_instance_pool[k]->read_name);
+							strcat(line_to_be_written_to_file_read_names, ",");
+						}
+
+						if(flag_ignore_all_quality_scores == 0)
+						{
+							fprintf (fhw_qual , "%s" , "\n");
+							fprintf (fhw_qual , "%s" , "\n");
+							fprintf (fhw_qual , "%s" , "\n");
+							fprintf (fhw_qual , "%s" , sam_alignment_instance_pool[k]->quality_scores);
+							fprintf (fhw_qual , "%s" , "\n");
+						}
+					}
+				}
+				//strcat(line_to_be_written_to_file_icigar, sam_alignment_instance_pool[i]->icigar);
+				line_to_be_written_to_file_icigar[strlen(line_to_be_written_to_file_icigar)] =  sam_alignment_instance_pool[j]->replacement_character;
+				line_to_be_written_to_file_icigar[strlen(line_to_be_written_to_file_icigar) + 1] = '\0';
+				if(number_of_repetitions_of_the_same_alignment > 1)
+				{
+					strcat(line_to_be_written_to_file_icigar, "-");
+					convertUnsignedIntegerToString (str , ( unsigned long long ) number_of_repetitions_of_the_same_alignment);
+					strcat(line_to_be_written_to_file_icigar, str);
+				}
+				strcat(line_to_be_written_to_file_icigar, ",");
+			}
+		}
+}
+
 void compressAlignmentFile (
 		char *reference_filename,
 		char *input_alignment_filename,
