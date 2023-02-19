@@ -179,6 +179,9 @@ void comparePoolAndWriteToFile(char *line_to_be_written_to_file_icigar,
 		struct Sam_Alignment **sam_alignment_instance_pool,
 		unsigned long long int sam_alignment_instance_pool_index,
 
+		FILE *fhw_qual,
+		FILE *fhw_compressed,
+
 		unsigned short int flag_ignore_alignment_scores,
 		unsigned short int flag_ignore_soft_clippings,
 		unsigned short int flag_ignore_mismatches,
