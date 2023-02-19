@@ -189,11 +189,17 @@ void comparePoolAndWriteToFile(char *line_to_be_written_to_file_icigar,
 		unsigned short int flag_ignore_unmapped_sequences,
 		unsigned short int flag_ignore_quality_scores_for_matched_bases,
 
-		unsigned long long int relative_position
+		unsigned long long int relative_position,
+		unsigned long long int actual_position
 		)
 {
 
 	char str[1000];
+
+	//Remove this section later
+	convertUnsignedIntegerToString (str , ( unsigned long long ) actual_position);
+	fprintf(fhw_compressed, "%s", str);
+	fprintf(fhw_compressed, "%s", "\t");
 
 	if(relative_position>1)
 	{
@@ -789,7 +795,8 @@ void compressAlignmentFile (
 												flag_ignore_all_quality_scores,
 												flag_ignore_unmapped_sequences,
 												flag_ignore_quality_scores_for_matched_bases,
-												relative_position_to_previous_read_cluster
+												relative_position_to_previous_read_cluster,
+												previous_position
 												);
 					relative_position_to_previous_read_cluster = current_position - previous_position;
 
