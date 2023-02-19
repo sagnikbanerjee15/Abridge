@@ -847,8 +847,11 @@ void compressAlignmentFile (
 				current_alignment = sam_alignment_instance_pool[sam_alignment_instance_pool_index];
 			}
 		}
-		printf("\nRelative position=%u Actual position=%u", relative_position_to_previous_read_cluster, previous_position);
-		relative_position_to_previous_read_cluster = current_position - previous_position;
+		if ( strcmp(current_alignment->samflag, "4") == 0)
+		{
+			printf("\nRelative position=%u Actual position=%u", relative_position_to_previous_read_cluster, previous_position);
+			relative_position_to_previous_read_cluster = current_position - previous_position;
+		}
 		//break;
 		if ( line_len <= 0 ) break;
 	} while ( 1 );
