@@ -866,6 +866,8 @@ void compressAlignmentFile (
 		{
 			printf("\nRelative position=%u Actual position=%u", relative_position_to_previous_read_cluster, previous_position);
 			relative_position_to_previous_read_cluster = current_position - previous_position;
+
+			current_alignment = previous_alignment;
 		}
 		//break;
 		if ( line_len <= 0 ) break;
