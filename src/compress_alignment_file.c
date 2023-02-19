@@ -320,7 +320,7 @@ void comparePoolAndWriteToFile(char *line_to_be_written_to_file_icigar,
 
 				if(sam_alignment_instance_pool[j]->level_of_similarity_to_parent_iCIGAR == 2)
 				{
-					number_of_repetitions_of_the_same_alignment = 0;
+					number_of_repetitions_of_the_same_alignment = 1;
 					for(unsigned long long k = j + 1; k < sam_alignment_instance_pool_index; k++  )
 					{
 						if(sam_alignment_instance_pool[k]->level_of_similarity_to_parent_iCIGAR == 2 && sam_alignment_instance_pool[j]->replacement_character == sam_alignment_instance_pool[k]->replacement_character )
