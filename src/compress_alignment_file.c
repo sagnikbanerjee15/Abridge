@@ -362,7 +362,10 @@ void comparePoolAndWriteToFile(char *line_to_be_written_to_file_icigar,
 				}
 			}
 		}
-
+		if(line_to_be_written_to_file_icigar[strlen(line_to_be_written_to_file_icigar) - 1] ==',')
+			line_to_be_written_to_file_icigar[strlen(line_to_be_written_to_file_icigar) - 1] = '\0';
+		if(line_to_be_written_to_file_read_names[strlen(line_to_be_written_to_file_read_names) - 1] ==',')
+			line_to_be_written_to_file_read_names[strlen(line_to_be_written_to_file_read_names) - 1] = '\0';
 		fprintf(fhw_compressed, "%s", line_to_be_written_to_file_icigar);
 		fprintf(fhw_compressed, "%s", "\t");
 		fprintf(fhw_compressed, "%s", line_to_be_written_to_file_read_names);
