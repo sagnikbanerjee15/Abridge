@@ -774,6 +774,8 @@ void compressAlignmentFile (
 				}
 				else // Position has changed
 				{
+					if(relative_position_to_previous_read_cluster==0)
+						relative_position_to_previous_read_cluster=previous_position;
 					printf("\nRelative position=%u Actual position=%u", relative_position_to_previous_read_cluster, previous_position);
 					comparePoolAndWriteToFile(line_to_be_written_to_file_icigar,
 												line_to_be_written_to_file_read_names,
