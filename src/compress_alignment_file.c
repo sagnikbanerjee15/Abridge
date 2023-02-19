@@ -588,16 +588,9 @@ void compressAlignmentFile (
 				}
 				else // Position has changed
 				{
-					if(previous_position == relative_position_to_previous_read_cluster) // First position in the reference
-					{
-						printf("\nRelative position=%u Actual position=%u", relative_position_to_previous_read_cluster, previous_position);
-						relative_position_to_previous_read_cluster = current_position - previous_position;
-					}
-					else
-					{
-						printf("\nRelative position=%u Actual position=%u", relative_position_to_previous_read_cluster, previous_position);
-						relative_position_to_previous_read_cluster = current_position - previous_position;
-					}
+					printf("\nRelative position=%u Actual position=%u", relative_position_to_previous_read_cluster, previous_position);
+					relative_position_to_previous_read_cluster = current_position - previous_position;
+
 					previous_position = current_position;
 					previous_alignment = current_alignment;
 					current_position = current_alignment->start_position;
