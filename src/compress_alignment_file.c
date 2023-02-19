@@ -358,7 +358,7 @@ void comparePoolAndWriteToFile(char *line_to_be_written_to_file_icigar,
 					line_to_be_written_to_file_icigar[strlen(line_to_be_written_to_file_icigar) + 1] = '\0';
 					if(actual_position = 3666)
 					{
-						printf("\ni=%u j=%u k=%u number_of_repetitions_of_the_same_alignment=%u", i, j, k, number_of_repetitions_of_the_same_alignment);
+						printf("\ni=%u j=%u number_of_repetitions_of_the_same_alignment=%u", i, j, number_of_repetitions_of_the_same_alignment);
 					}
 					if(number_of_repetitions_of_the_same_alignment > 1)
 					{
