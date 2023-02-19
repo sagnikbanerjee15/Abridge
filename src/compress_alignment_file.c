@@ -601,6 +601,9 @@ void compressAlignmentFile (
 					previous_position = current_position;
 					previous_alignment = current_alignment;
 					current_position = current_alignment->start_position;
+
+					sam_alignment_instance_pool_index += 1;
+					current_alignment = sam_alignment_instance_pool[sam_alignment_instance_pool_index];
 				}
 			}
 			continue;
