@@ -602,7 +602,17 @@ void compressAlignmentFile (
 					previous_alignment = current_alignment;
 					current_position = current_alignment->start_position;
 
-					sam_alignment_instance_pool_index += 1;
+					//sam_alignment_instance_pool_index += 1;
+					//current_alignment = sam_alignment_instance_pool[sam_alignment_instance_pool_index];
+
+					struct Sam_Alignment *swap;
+					swap = sam_alignment_instance_pool[0];
+					sam_alignment_instance_pool[0] = sam_alignment_instance_pool[sam_alignment_instance_pool_index];
+					sam_alignment_instance_pool[sam_alignment_instance_pool_index] = swap;
+					sam_alignment_instance_pool_index = 1;
+
+					strcpy(previous_reference_name, current_alignment->reference_name);
+					previous_position = current_alignment->start_position;
 					current_alignment = sam_alignment_instance_pool[sam_alignment_instance_pool_index];
 				}
 			}
