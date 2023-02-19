@@ -235,6 +235,10 @@ void comparePoolAndWriteToFile(char *line_to_be_written_to_file_icigar,
 	{
 		for(unsigned long long int i = 0; i < sam_alignment_instance_pool_index; i++)
 		{
+			if(actual_position == 3667)
+			{
+				printf("\n3667 %s", sam_alignment_instance_pool[i]->icigar);
+			}
 			if(sam_alignment_instance_pool[i]->level_of_similarity_to_parent_iCIGAR != 0) continue;
 			for(unsigned long long int j = i + 1; j < sam_alignment_instance_pool_index; j++)
 			{
