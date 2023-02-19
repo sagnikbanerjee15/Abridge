@@ -584,7 +584,9 @@ void compressAlignmentFile (
 			{
 				if(previous_position == current_position) // Keep adding to the pool
 				{
-
+					sam_alignment_instance_pool_index += 1;
+					previous_position = current_alignment->start_position;
+					current_alignment = sam_alignment_instance_pool[sam_alignment_instance_pool_index];
 				}
 				else // Position has changed
 				{
