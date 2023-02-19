@@ -187,11 +187,17 @@ void comparePoolAndWriteToFile(char *line_to_be_written_to_file_icigar,
 		unsigned short int flag_ignore_mismatches,
 		unsigned short int flag_ignore_all_quality_scores,
 		unsigned short int flag_ignore_unmapped_sequences,
-		unsigned short int flag_ignore_quality_scores_for_matched_bases
+		unsigned short int flag_ignore_quality_scores_for_matched_bases,
+
+		unsigned long long int relative_position
 		)
 {
 
 	char str[1000];
+
+	convertUnsignedIntegerToString (str , ( unsigned long long ) relative_position);
+	fprintf(fhw_compressed, "%s", str);
+	fprintf(fhw_compressed, "%s", "\t");
 
 	line_to_be_written_to_file_icigar[0] = '\0';
 	line_to_be_written_to_file_read_names[0] = '\0';
@@ -746,6 +752,21 @@ void compressAlignmentFile (
 
 					//sam_alignment_instance_pool_index += 1;
 					//current_alignment = sam_alignment_instance_pool[sam_alignment_instance_pool_index];
+
+					comparePoolAndWriteToFile(line_to_be_written_to_file_icigar,
+							line_to_be_written_to_file_read_names,
+							sam_alignment_instance_pool,
+							sam_alignment_instance_pool_index,
+							fhw_qual,
+							fhw_compressed,
+							flag_ignore_alignment_scores,
+							flag_ignore_soft_clippings,
+							flag_ignore_mismatches,
+							flag_ignore_all_quality_scores,
+							flag_ignore_unmapped_sequences,
+							flag_ignore_quality_scores_for_matched_bases,
+							relative_position_to_previous_read_cluster
+							)
 
 					struct Sam_Alignment *swap;
 					swap = sam_alignment_instance_pool[0];
