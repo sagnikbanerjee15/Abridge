@@ -201,6 +201,52 @@ void comparePoolAndWriteToFile(char *line_to_be_written_to_file_icigar,
 	fprintf(fhw_compressed, "%s", str);
 	fprintf(fhw_compressed, "%s", "\t");
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	/*
+	 * Old Code - Remove later
+	 */
+
 	if(relative_position>1)
 	{
 		convertUnsignedIntegerToString (str , ( unsigned long long ) relative_position);
@@ -873,257 +919,26 @@ void compressAlignmentFile (
 					current_alignment = sam_alignment_instance_pool[sam_alignment_instance_pool_index];
 				}
 			}
-			continue;
-
-
-
-
-
-
-
-
-
-
-
-			if( strlen(previous_reference_name)==0) // The first alignment of the first reference sequence
-			{
-				strcpy(previous_reference_name, current_alignment->reference_name);
-				previous_position = current_alignment->start_position;
-				actual_start_postion_of_alignments_in_pool = current_alignment->start_position;
-				relative_start_postion_of_alignments_in_pool = current_alignment->start_position;
-
-				sam_alignment_instance_pool_index += 1;
-				current_alignment = sam_alignment_instance_pool[sam_alignment_instance_pool_index];
-			}
-			else if(strcmp(previous_reference_name, current_reference_name) == 0 && previous_position == current_position) // Keep adding to the pool
-			{
-				sam_alignment_instance_pool_index += 1;
-				previous_position = current_alignment->start_position;
-				current_alignment = sam_alignment_instance_pool[sam_alignment_instance_pool_index];
-			}
-			else //Inspect each alignment and write to file
-			{
-				//printf("\nsam_alignment_instance_pool_index=%d, ended=%s line=%s",sam_alignment_instance_pool_index, ended, line);
-
-				if(sam_alignment_instance_pool_index == 1)
-				{
-					// Only one alignment - write to file
-
-					if(strcmp(ended, "SE") == 0)
-					{
-						if(flag_ignore_all_quality_scores == 0)
-						{
-							fprintf (fhw_qual , "%s" , "\n");
-							fprintf (fhw_qual , "%s" , "\n");
-							fprintf (fhw_qual , "%s" , "\n");
-							fprintf (fhw_qual , "%s" , sam_alignment_instance_pool[0]->quality_scores);
-							fprintf (fhw_qual , "%s" , "\n");
-						}
-
-						line_to_be_written_to_file[0] = '\0';
-
-						if(relative_start_postion_of_alignments_in_pool > 1)
-						{
-							convertUnsignedIntegerToString (str , ( unsigned long long ) relative_start_postion_of_alignments_in_pool);
-							strcpy(line_to_be_written_to_file, str);
-							fprintf (fhw_compressed , "%s" , line_to_be_written_to_file);
-							fprintf (fhw_compressed , "%s" , "\t");
-						}
-						//printf("\nBefore replacement:%s",sam_alignment_instance_pool[0]->icigar);
-						replaceSingleCharacterInString(sam_alignment_instance_pool[0]->icigar, 'M', sam_alignment_instance_pool[0]->replacement_character);
-						//printf("\nAfter  replacement:%s",sam_alignment_instance_pool[0]->icigar);
-						fprintf (fhw_compressed, "%s", sam_alignment_instance_pool[0]->icigar);
-						fprintf (fhw_compressed , "%s", "\t");
-						if(strcmp(sam_alignment_instance_pool[0]->NH,"1") != 0) // Multi-mapped read so save read names
-						{
-							fprintf (fhw_compressed, "%s", sam_alignment_instance_pool[0]->read_name);
-						}
-						fprintf (fhw_compressed, "%s", "\n");
-					}
-				}
-				else
-				{
-					line_to_be_written_to_file_icigar[0] = '\0';
-					line_to_be_written_to_file_read_names[0] = '\0';
-					// Iterate over the entire pools
-					for(unsigned long long int i = 0; i < sam_alignment_instance_pool_index; i++)
-					{
-						if(sam_alignment_instance_pool[i]->level_of_similarity_to_parent_iCIGAR != 0) continue;
-						for(unsigned long long int j = i + 1; j < sam_alignment_instance_pool_index; j++)
-						{
-							if(sam_alignment_instance_pool[j]->level_of_similarity_to_parent_iCIGAR != 0) continue;
-							//sam_alignment_instance_pool[j]->level_of_similarity_to_parent_iCIGAR = 0;
-							if(strcmp(sam_alignment_instance_pool[i]->icigar, sam_alignment_instance_pool[j]->icigar) == 0)
-							{
-								if(sam_alignment_instance_pool[i]->replacement_character == sam_alignment_instance_pool[j]->replacement_character)
-									sam_alignment_instance_pool[j]->level_of_similarity_to_parent_iCIGAR = 1;
-								else
-									sam_alignment_instance_pool[j]->level_of_similarity_to_parent_iCIGAR = 2;
-							}
-						}
-
-						if(strcmp(sam_alignment_instance_pool[i]->NH,"1") != 0) // Multi-mapped read so save read names
-						{
-							strcat(line_to_be_written_to_file_read_names, sam_alignment_instance_pool[i]->read_name);
-							strcat(line_to_be_written_to_file_read_names, ",");
-						}
-
-						if(flag_ignore_all_quality_scores == 0)
-						{
-							fprintf (fhw_qual , "%s" , "\n");
-							fprintf (fhw_qual , "%s" , "\n");
-							fprintf (fhw_qual , "%s" , "\n");
-							fprintf (fhw_qual , "%s" , sam_alignment_instance_pool[i]->quality_scores);
-							fprintf (fhw_qual , "%s" , "\n");
-						}
-						//printf("\nBefore replacement:%s",sam_alignment_instance_pool[i]->icigar);
-						replaceSingleCharacterInString(sam_alignment_instance_pool[i]->icigar, 'M', sam_alignment_instance_pool[i]->replacement_character);
-						//printf("\nAfter replacement:%s",sam_alignment_instance_pool[i]->icigar);
-						unsigned long long int number_of_repetitions_of_the_same_alignment = 1 ;
-						for(unsigned long long int j = i + 1; j < sam_alignment_instance_pool_index; j++)
-						{
-							if(sam_alignment_instance_pool[j]->level_of_similarity_to_parent_iCIGAR == 1)
-							{
-								number_of_repetitions_of_the_same_alignment += 1;
-								if(strcmp(sam_alignment_instance_pool[j]->NH,"1") != 0) // Multi-mapped read so save read names
-								{
-									strcat(line_to_be_written_to_file_read_names, sam_alignment_instance_pool[j]->read_name);
-									strcat(line_to_be_written_to_file_read_names, ",");
-								}
-
-								if(flag_ignore_all_quality_scores == 0)
-								{
-									fprintf (fhw_qual , "%s" , "\n");
-									fprintf (fhw_qual , "%s" , "\n");
-									fprintf (fhw_qual , "%s" , "\n");
-									fprintf (fhw_qual , "%s" , sam_alignment_instance_pool[j]->quality_scores);
-									fprintf (fhw_qual , "%s" , "\n");
-								}
-							}
-						}
-
-						strcat(line_to_be_written_to_file_icigar, sam_alignment_instance_pool[i]->icigar);
-						if(number_of_repetitions_of_the_same_alignment > 1)
-						{
-							strcat(line_to_be_written_to_file_icigar, "-");
-							convertUnsignedIntegerToString (str , ( unsigned long long ) number_of_repetitions_of_the_same_alignment);
-							strcat(line_to_be_written_to_file_icigar, str);
-						}
-						strcat(line_to_be_written_to_file_icigar, ",");
-
-
-						for(unsigned long long int j = i + 1; j < sam_alignment_instance_pool_index; j++)
-						{
-
-							if(strcmp(sam_alignment_instance_pool[j]->NH,"1") != 0) // Multi-mapped read so save read names
-							{
-								strcat(line_to_be_written_to_file_read_names, sam_alignment_instance_pool[j]->read_name);
-								strcat(line_to_be_written_to_file_read_names, ",");
-							}
-
-							if(flag_ignore_all_quality_scores == 0)
-							{
-								fprintf (fhw_qual , "%s" , "\n");
-								fprintf (fhw_qual , "%s" , "\n");
-								fprintf (fhw_qual , "%s" , "\n");
-								fprintf (fhw_qual , "%s" , sam_alignment_instance_pool[j]->quality_scores);
-								fprintf (fhw_qual , "%s" , "\n");
-							}
-
-							number_of_repetitions_of_the_same_alignment = 0;
-							if(sam_alignment_instance_pool[j]->level_of_similarity_to_parent_iCIGAR == 2)
-							{
-								for(unsigned long long k = j + 1; k < sam_alignment_instance_pool_index; k++  )
-								{
-									if(sam_alignment_instance_pool[k]->level_of_similarity_to_parent_iCIGAR == 2 && sam_alignment_instance_pool[j]->replacement_character == sam_alignment_instance_pool[k]->replacement_character )
-									{
-										number_of_repetitions_of_the_same_alignment += 1;
-										sam_alignment_instance_pool[k]->level_of_similarity_to_parent_iCIGAR = 3;
-
-										if(strcmp(sam_alignment_instance_pool[k]->NH,"1") != 0) // Multi-mapped read so save read names
-										{
-											strcat(line_to_be_written_to_file_read_names, sam_alignment_instance_pool[k]->read_name);
-											strcat(line_to_be_written_to_file_read_names, ",");
-										}
-
-										if(flag_ignore_all_quality_scores == 0)
-										{
-											fprintf (fhw_qual , "%s" , "\n");
-											fprintf (fhw_qual , "%s" , "\n");
-											fprintf (fhw_qual , "%s" , "\n");
-											fprintf (fhw_qual , "%s" , sam_alignment_instance_pool[k]->quality_scores);
-											fprintf (fhw_qual , "%s" , "\n");
-										}
-									}
-								}
-								//strcat(line_to_be_written_to_file_icigar, sam_alignment_instance_pool[i]->icigar);
-								line_to_be_written_to_file_icigar[strlen(line_to_be_written_to_file_icigar)] =  sam_alignment_instance_pool[j]->replacement_character;
-								line_to_be_written_to_file_icigar[strlen(line_to_be_written_to_file_icigar) + 1] = '\0';
-								if(number_of_repetitions_of_the_same_alignment > 1)
-								{
-									strcat(line_to_be_written_to_file_icigar, "-");
-									convertUnsignedIntegerToString (str , ( unsigned long long ) number_of_repetitions_of_the_same_alignment);
-									strcat(line_to_be_written_to_file_icigar, str);
-								}
-								strcat(line_to_be_written_to_file_icigar, ",");
-							}
-						}
-
-
-
-
-
-
-
-
-
-
-
-						//printf("\nNumber_of_repetitions_of_the_same_alignment=%d icigar=%s %s",number_of_repetitions_of_the_same_alignment, sam_alignment_instance_pool[i]->icigar, line_to_be_written_to_file_icigar);
-					}
-					if(strcmp(ended, "SE") == 0)
-					{
-						if(relative_start_postion_of_alignments_in_pool > 1)
-						{
-							convertUnsignedIntegerToString (str , ( unsigned long long ) relative_start_postion_of_alignments_in_pool);
-							strcpy(line_to_be_written_to_file, str);
-						}
-
-						fprintf (fhw_compressed , "%s" , line_to_be_written_to_file);
-						fprintf (fhw_compressed, "%s", "\t");
-						fprintf (fhw_compressed , "%s" , line_to_be_written_to_file_icigar);
-						fprintf (fhw_compressed, "%s", "\t");
-						fprintf (fhw_compressed , "%s" , line_to_be_written_to_file_read_names);
-						fprintf (fhw_compressed, "%s", "\n");
-					}
-				}
-				struct Sam_Alignment *swap;
-				swap = sam_alignment_instance_pool[0];
-				sam_alignment_instance_pool[0] = sam_alignment_instance_pool[sam_alignment_instance_pool_index];
-				sam_alignment_instance_pool[sam_alignment_instance_pool_index] = swap;
-				sam_alignment_instance_pool_index = 1;
-
-				if(strcmp(previous_reference_name,current_reference_name) == 0 )
-				{
-					relative_start_postion_of_alignments_in_pool = current_alignment->start_position - previous_position;
-					actual_start_postion_of_alignments_in_pool = current_alignment->start_position;
-				}
-				else
-				{
-					actual_start_postion_of_alignments_in_pool = current_alignment->start_position;
-					relative_start_postion_of_alignments_in_pool = current_alignment->start_position;
-				}
-
-				strcpy(previous_reference_name, current_alignment->reference_name);
-				previous_position = current_alignment->start_position;
-				current_alignment = sam_alignment_instance_pool[sam_alignment_instance_pool_index];
-			}
 		}
 		if ( strcmp(previous_alignment->samflag, "4") != 0) // Skip for unaligned reads
 		{
 			printf("\nRelative position=%u Actual position=%u", relative_position_to_previous_read_cluster, previous_position);
 			relative_position_to_previous_read_cluster = current_position - previous_position;
-
+			comparePoolAndWriteToFile(line_to_be_written_to_file_icigar,
+															line_to_be_written_to_file_read_names,
+															sam_alignment_instance_pool,
+															sam_alignment_instance_pool_index,
+															fhw_qual,
+															fhw_compressed,
+															flag_ignore_alignment_scores,
+															flag_ignore_soft_clippings,
+															flag_ignore_mismatches,
+															flag_ignore_all_quality_scores,
+															flag_ignore_unmapped_sequences,
+															flag_ignore_quality_scores_for_matched_bases,
+															relative_position_to_previous_read_cluster,
+															previous_position
+															);
 			current_alignment = previous_alignment;
 		}
 		//break;

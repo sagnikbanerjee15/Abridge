@@ -111,6 +111,8 @@ struct Sam_Alignment* allocateMemorySam_Alignment (unsigned int max_read_length)
 	s->md_extended[0] = '\0';
 	s->icigar = ( char* ) malloc (sizeof(char) * ( max_read_length * 2 ));
 	s->icigar[0] = '\0';
+	s->icigar_appended_with_replacement_character = (char*) malloc(sizeof(char)*(max_read_length*2));
+	s->icigar_appended_with_replacement_character[0] = '\0';
 	s->qual_for_mismatches_and_indels = ( char* ) malloc (sizeof(char) * max_read_length);
 	s->qual_for_mismatches_and_indels[0] = '\0';
 	//s->splices = ( char** ) malloc (sizeof(char*) * 100);
@@ -881,6 +883,11 @@ void generateiCIGARString (
 		strcat(sam_alignment_instance->icigar,sam_alignment_instance->AS);
 	}
 	/************************************************************************************************************************/
+
+	strcpy(sam_alignment_instance->icigar_appended_with_replacement_character, sam_alignment_instance->icigar);
+	str[0] = sam_alignment_instance->replacemnt_character;
+	str[1]='\0';
+	strcat(sam_alignment_instance->icigar_appended_with_replacement_character, str );
 
 	/*printf ("\nCIGAR=%s\tMD=%s\n%s\n%s\n%s\n%s" ,
 			sam_alignment_instance->cigar ,

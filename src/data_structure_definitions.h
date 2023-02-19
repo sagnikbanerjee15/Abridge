@@ -133,6 +133,7 @@ struct Sam_Alignment
 	unsigned short int *cigar_extended_reference_skips; //Has the exact same length as that of the cigar_extended but stores the number of nucleotides of reference that is skipped. Value is defined only for 'N' and 'D'
 	char *md_extended;    // Required for generating iCIGAR
 	char *icigar; // Stores the integrated representation comprising of all relevant information about the alignment - the iCIGAR
+	char *icigar_appended_with_replacement_character;
 	char *qual_for_mismatches_and_indels; // Stores the quality scores of only those bases that were mismatches or indels
 	//char **splices;
 
