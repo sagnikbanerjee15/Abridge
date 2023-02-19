@@ -575,6 +575,7 @@ void compressAlignmentFile (
 				previous_position = current_alignment->start_position;
 				actual_start_postion_of_alignments_in_pool = current_alignment->start_position;
 				relative_start_postion_of_alignments_in_pool = current_alignment->start_position;
+				previous_alignment = current_alignment;
 
 				sam_alignment_instance_pool_index += 1;
 				current_alignment = sam_alignment_instance_pool[sam_alignment_instance_pool_index];
@@ -598,6 +599,7 @@ void compressAlignmentFile (
 						relative_position_to_previous_read_cluster = current_position - previous_position;
 					}
 					previous_position = current_position;
+					previous_alignment = current_alignment;
 					current_position = current_alignment->start_position;
 				}
 			}
@@ -847,7 +849,7 @@ void compressAlignmentFile (
 				current_alignment = sam_alignment_instance_pool[sam_alignment_instance_pool_index];
 			}
 		}
-		if ( strcmp(current_alignment->samflag, "4") != 0)
+		if ( strcmp(previous_alignment->samflag, "4") != 0) // Skip for unaligned reads
 		{
 			printf("\nRelative position=%u Actual position=%u", relative_position_to_previous_read_cluster, previous_position);
 			relative_position_to_previous_read_cluster = current_position - previous_position;
