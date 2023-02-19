@@ -222,9 +222,7 @@ void comparePoolAndWriteToFile(char *line_to_be_written_to_file_icigar,
 		fprintf (fhw_compressed, "%s", sam_alignment_instance_pool[0]->icigar);
 		fprintf (fhw_compressed , "%s", "\t");
 		if(strcmp(sam_alignment_instance_pool[0]->NH,"1") != 0) // Multi-mapped read so save read names
-		{
 			fprintf (fhw_compressed, "%s", sam_alignment_instance_pool[0]->read_name);
-		}
 		fprintf (fhw_compressed, "%s", "\n");
 	}
 	else
@@ -352,6 +350,11 @@ void comparePoolAndWriteToFile(char *line_to_be_written_to_file_icigar,
 				}
 			}
 		}
+
+		fprintf(fhw_compressed, "%s", line_to_be_written_to_file_icigar);
+		fprintf(fhw_compressed, "%s", "\t");
+		fprintf(fhw_compressed, "%s", line_to_be_written_to_file_read_names);
+		fprintf(fhw_compressed, "%s", "\n");
 	}
 }
 
