@@ -318,6 +318,7 @@ void comparePoolAndWriteToFile(char *line_to_be_written_to_file_icigar,
 				strcat(line_to_be_written_to_file_icigar, ",");
 			}
 		}
+	}
 }
 
 void compressAlignmentFile (
