@@ -531,20 +531,23 @@ void compressAlignmentFile (
 		/***********************************************************************************************************/
 
 		/***************************************************************************************
-		* Read a line from the short read names file
+		* Read a line from the short read names file for aligned reads
 		****************************************************************************************/
-		getline ( &line_name_of_file_with_read_names_to_short_read_names_and_NH ,
-						&len ,
-						fhr_name_of_file_with_read_names_to_short_read_names_and_NH);
+		if ( strcmp(current_alignment->samflag, "4") != 0)
+		{
+			getline ( &line_name_of_file_with_read_names_to_short_read_names_and_NH ,
+							&len ,
+							fhr_name_of_file_with_read_names_to_short_read_names_and_NH);
 
-		splitByDelimiter (line_name_of_file_with_read_names_to_short_read_names_and_NH ,
-						'\t' ,
-						split_on_tab);
-		strcpy(current_alignment->read_name , split_on_tab[3]);
-		strcpy(current_alignment->NH , split_on_tab[2]);
+			splitByDelimiter (line_name_of_file_with_read_names_to_short_read_names_and_NH ,
+							'\t' ,
+							split_on_tab);
+			strcpy(current_alignment->read_name , split_on_tab[3]);
+			strcpy(current_alignment->NH , split_on_tab[2]);
 
-		strcpy(current_reference_name, current_alignment->reference_name);
-		current_position = current_alignment->start_position;
+			strcpy(current_reference_name, current_alignment->reference_name);
+			current_position = current_alignment->start_position;
+		}
 
 		//printf("\nSamformatflag %s %d",current_alignment->samflag, strcmp(current_alignment->samflag, "4"));
 		/****************Collect Unmapped reads*************************************************/

@@ -1161,6 +1161,10 @@ unsigned short int prepareSingleRecordFromAlignmentFile (
 				flag_ignore_unmapped_sequences ,
 				flag_ignore_quality_scores_for_matched_bases);
 	}
+
+	// Return 1 if the alignment is of an unmapped read
+	if ( strcmp(current_alignment->samflag, "4") == 0)
+		return 1;
 	/*
 	 * Process soft clipped fields - find the soft clipped portions of the reads and prepare the corresponding fields
 	 */
