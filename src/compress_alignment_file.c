@@ -484,8 +484,8 @@ void compressAlignmentFile (
 	{
 		/****************************************************************************************/
 
-		if(number_of_alignments_read==10000)
-			break;
+		//if(number_of_alignments_read==10000)
+			//break;
 		number_of_alignments_read++;
 		/***********************************************************************************************************
 		 * Performs the following:
