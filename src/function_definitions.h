@@ -885,7 +885,7 @@ void generateiCIGARString (
 	/************************************************************************************************************************/
 
 	strcpy(sam_alignment_instance->icigar_appended_with_replacement_character, sam_alignment_instance->icigar);
-	str[0] = sam_alignment_instance->replacemnt_character;
+	str[0] = sam_alignment_instance->replacement_character;
 	str[1]='\0';
 	strcat(sam_alignment_instance->icigar_appended_with_replacement_character, str );
 
