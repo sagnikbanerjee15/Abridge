@@ -235,7 +235,7 @@ void comparePoolAndWriteToFile(char *line_to_be_written_to_file_icigar,
 	{
 		for(unsigned long long int i = 0; i < sam_alignment_instance_pool_index; i++)
 		{
-			if(actual_position == 3667)
+			if(actual_position == 3666)
 			{
 				printf("\n3666 %s %c", sam_alignment_instance_pool[i]->icigar, sam_alignment_instance_pool[i]->replacement_character);
 			}
