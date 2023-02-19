@@ -190,6 +190,9 @@ void comparePoolAndWriteToFile(char *line_to_be_written_to_file_icigar,
 		unsigned short int flag_ignore_quality_scores_for_matched_bases
 		)
 {
+
+	char str[1000];
+
 	line_to_be_written_to_file_icigar[0] = '\0';
 	line_to_be_written_to_file_read_names[0] = '\0';
 	// Iterate over the entire pools
