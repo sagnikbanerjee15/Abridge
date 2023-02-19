@@ -530,7 +530,6 @@ void compressAlignmentFile (
 		}
 		/***********************************************************************************************************/
 
-		relative_start_postion_of_alignments_in_pool = current_alignment->start_position - previous_position;
 		/***************************************************************************************
 		* Read a line from the short read names file
 		****************************************************************************************/
@@ -566,6 +565,54 @@ void compressAlignmentFile (
 		}
 		else
 		{
+			if(strcmp(previous_reference_name, current_reference_name)!=0) //The reference has changed
+			{
+				// Insert code to print out the header information
+				strcpy(previous_reference_name, current_alignment->reference_name);
+				previous_position = current_alignment->start_position;
+				actual_start_postion_of_alignments_in_pool = current_alignment->start_position;
+				relative_start_postion_of_alignments_in_pool = current_alignment->start_position;
+
+				sam_alignment_instance_pool_index += 1;
+				current_alignment = sam_alignment_instance_pool[sam_alignment_instance_pool_index];
+			}
+			else // On the same reference
+			{
+				if(previous_position == current_position) // Keep adding to the pool
+				{
+					if(current_position == relative_position_to_previous_read_cluster) // First position in the reference
+					{
+
+					}
+				}
+				else // Position has changed
+				{
+					if(previous_position == relative_position_to_previous_read_cluster) // First position in the reference
+					{
+						printf("\nRelative position=%u Actual position=%u", relative_position_to_previous_read_cluster, previous_position);
+						relative_position_to_previous_read_cluster = current_position - previous_position;
+					}
+					else
+					{
+						printf("\nRelative position=%u Actual position=%u", relative_position_to_previous_read_cluster, previous_position);
+						relative_position_to_previous_read_cluster = current_position - previous_position;
+					}
+					previous_position = current_position;
+					current_position = current_alignment->start_position;
+				}
+			}
+			continue;
+
+
+
+
+
+
+
+
+
+
+
 			if( strlen(previous_reference_name)==0) // The first alignment of the first reference sequence
 			{
 				strcpy(previous_reference_name, current_alignment->reference_name);
@@ -584,7 +631,7 @@ void compressAlignmentFile (
 			}
 			else //Inspect each alignment and write to file
 			{
-				printf("\nsam_alignment_instance_pool_index=%d, ended=%s line=%s",sam_alignment_instance_pool_index, ended, line);
+				//printf("\nsam_alignment_instance_pool_index=%d, ended=%s line=%s",sam_alignment_instance_pool_index, ended, line);
 
 				if(sam_alignment_instance_pool_index == 1)
 				{
@@ -760,7 +807,7 @@ void compressAlignmentFile (
 
 
 
-						printf("\nNumber_of_repetitions_of_the_same_alignment=%d icigar=%s %s",number_of_repetitions_of_the_same_alignment, sam_alignment_instance_pool[i]->icigar, line_to_be_written_to_file_icigar);
+						//printf("\nNumber_of_repetitions_of_the_same_alignment=%d icigar=%s %s",number_of_repetitions_of_the_same_alignment, sam_alignment_instance_pool[i]->icigar, line_to_be_written_to_file_icigar);
 					}
 					if(strcmp(ended, "SE") == 0)
 					{
