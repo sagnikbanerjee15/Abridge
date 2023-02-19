@@ -334,7 +334,7 @@ void comparePoolAndWriteToFile(char *line_to_be_written_to_file_icigar,
 					{
 						if(actual_position == 3666)
 						{
-							printf("\ni=%u j=%u k=%u j_char=%c k_char=%k",i, j, k, sam_alignment_instance_pool[j]->replacement_character, sam_alignment_instance_pool[k]->replacement_character );
+							printf("\ni=%u j=%u k=%u j_char=%c k_char=%c",i, j, k, sam_alignment_instance_pool[j]->replacement_character, sam_alignment_instance_pool[k]->replacement_character );
 						}
 						if(sam_alignment_instance_pool[k]->level_of_similarity_to_parent_iCIGAR == 2 && sam_alignment_instance_pool[j]->replacement_character == sam_alignment_instance_pool[k]->replacement_character )
 						{
