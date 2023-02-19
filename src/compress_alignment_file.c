@@ -271,6 +271,7 @@ void comparePoolAndWriteToFile(char *line_to_be_written_to_file_icigar,
 			{
 				if(sam_alignment_instance_pool[j]->level_of_similarity_to_parent_iCIGAR == 1)
 				{
+					sam_alignment_instance_pool[j]->level_of_similarity_to_parent_iCIGAR = 3;
 					number_of_repetitions_of_the_same_alignment += 1;
 					if(strcmp(sam_alignment_instance_pool[j]->NH,"1") != 0) // Multi-mapped read so save read names
 					{
