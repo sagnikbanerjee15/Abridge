@@ -174,6 +174,35 @@ static error_t parse_opt (int key, char *arg, struct argp_state *state)
 static struct argp argp =
 { options , parse_opt , args_doc , doc , 0 , 0 , 0 };
 
+unsigned long long int findPivotPosition(struct Sam_Alignment **sam_alignment_instance_pool, unsigned long long int low, unsigned long long int high)
+{
+	char pivot[MAX_SEQ_LEN*2];
+}
+
+void quickSortSamAlignmentPool(struct Sam_Alignment **sam_alignment_instance_pool, unsigned long long int low, unsigned long long int high)
+{
+	if(low<high)
+	{
+		unsigned long long int pivot_position = findPivotPosition(sam_alignment_instance_pool, low, high);
+		quickSortSamAlignmentPool(sam_alignment_instance_pool, low, pivot_position - 1);
+		quickSortSamAlignmentPool(sam_alignment_instance_pool, pivot_position + 1, high);
+	}
+}
+
+void sortSamAlignmentPoolBasedOnIgicar(struct Sam_Alignment **sam_alignment_instance_pool,
+		unsigned long long int sam_alignment_instance_pool_index)
+{
+	/*
+	 * Sorts the entire pool based on icigar_appended_with_replacement_character
+	 */
+	if(sam_alignment_instance_pool_index == 1)
+		return;
+
+	quickSortSamAlignmentPool(sam_alignment_instance_pool,
+			0,
+			sam_alignment_instance_pool_index - 1);
+}
+
 void comparePoolAndWriteToFile(char *line_to_be_written_to_file_icigar,
 		char *line_to_be_written_to_file_read_names,
 		struct Sam_Alignment **sam_alignment_instance_pool,
@@ -202,7 +231,8 @@ void comparePoolAndWriteToFile(char *line_to_be_written_to_file_icigar,
 	fprintf(fhw_compressed, "%s", "\t");
 
 
-
+	sortSamAlignmentPoolBasedOnIgicar(sam_alignment_instance_pool,
+			sam_alignment_instance_pool_index)
 
 
 
