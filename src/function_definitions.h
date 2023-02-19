@@ -865,7 +865,7 @@ void generateiCIGARString (
 	}
 	if(samflag_dictionary_index==samflag_dictionary_size)
 	{
-		printf("\nBig Trouble");
+		printf("\nBig Trouble samflag=%s",sam_alignment_instance->samflag);
 	}
 	sam_alignment_instance->replacement_character = samflag_dictionary[samflag_dictionary_index]->character;
 
