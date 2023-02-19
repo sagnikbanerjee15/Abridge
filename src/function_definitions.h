@@ -1163,7 +1163,7 @@ unsigned short int prepareSingleRecordFromAlignmentFile (
 	}
 
 	// Return 1 if the alignment is of an unmapped read
-	if ( strcmp(current_alignment->samflag, "4") == 0)
+	if ( strcmp(sam_alignment_instance->samflag, "4") == 0)
 		return 1;
 	/*
 	 * Process soft clipped fields - find the soft clipped portions of the reads and prepare the corresponding fields
