@@ -177,6 +177,8 @@ static struct argp argp =
 unsigned long long int findPivotPosition(struct Sam_Alignment **sam_alignment_instance_pool, unsigned long long int low, unsigned long long int high)
 {
 	char pivot[MAX_SEQ_LEN*2];
+
+	strcpy(pivot, sam_alignment_instance_pool[high]->icigar_appended_with_replacement_character);
 }
 
 void quickSortSamAlignmentPool(struct Sam_Alignment **sam_alignment_instance_pool, unsigned long long int low, unsigned long long int high)
@@ -232,7 +234,7 @@ void comparePoolAndWriteToFile(char *line_to_be_written_to_file_icigar,
 
 
 	sortSamAlignmentPoolBasedOnIgicar(sam_alignment_instance_pool,
-			sam_alignment_instance_pool_index)
+			sam_alignment_instance_pool_index);
 
 
 
