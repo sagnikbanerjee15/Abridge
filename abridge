@@ -70,6 +70,7 @@ def parseCommandLineArguments():
     optional_named.add_argument( "--ignore_soft_clippings", help = "Ignore all soft clippings. Read will be trimmed down to only the portion which were aligned to the reference", action = "store_true" )
     optional_named.add_argument( "--ignore_mismatches", help = "All mismatches will be ignored", action = "store_true" )
     optional_named.add_argument( "--ignore_unmapped_reads", help = "Request abridge to discard all reads that are unmapped", action = "store_true" )
+    optional_named.add_argument( "--spring_or_fclqc", help = "Enter which compressor to use. Enter SPRING or FCLQC", default = "FCLQC")
     
     # Decompression
     optional_named.add_argument( "--quality", help = "Enter dummy quality scores while decompressing", default = 'I' )
@@ -336,11 +337,17 @@ def constructFileNames( options ):
         programs_to_files['compress_alignment_file']['output'] = f"{options.outputs_and_errors_directory}/compress_alignment_file.output"
         programs_to_files['compress_alignment_file']['error'] = f"{options.outputs_and_errors_directory}/compress_alignment_file.error"
         
-        programs_to_files['spring_compress'] = {}
-        programs_to_files['spring_compress']['unmapped_filename'] = programs_to_files['compress_alignment_file']['unmapped_filename']
-        programs_to_files['spring_compress']['compressed_filename'] = f"{options.temp_directory}/{inputalignedfilename_base}_unmapped_compressed.spring"
-        programs_to_files['spring_compress']['output'] = f"{options.outputs_and_errors_directory}/spring_compress.output"
-        programs_to_files['spring_compress']['error'] = f"{options.outputs_and_errors_directory}/spring_compress.error"
+        programs_to_files['spring_compress_aligned_reads'] = {}
+        programs_to_files['spring_compress_aligned_reads']['input_filename'] = programs_to_files['compress_alignment_file']['name_of_file_with_quality_scores']
+        programs_to_files['spring_compress_aligned_reads']['output_filename'] = f"{programs_to_files['compress_alignment_file']['name_of_file_with_quality_scores']}.spring"
+        programs_to_files['spring_compress_aligned_reads']['output'] = f"{options.outputs_and_errors_directory}/spring_compress_aligned_reads.output"
+        programs_to_files['spring_compress_aligned_reads']['error'] = f"{options.outputs_and_errors_directory}/spring_compress_aligned_reads.error"
+
+        programs_to_files['spring_compress_unaligned_reads'] = {}
+        programs_to_files['spring_compress_unaligned_reads']['input_filename'] = programs_to_files['compress_alignment_file']['unmapped_filename']
+        programs_to_files['spring_compress_unaligned_reads']['output_filename'] = f"{programs_to_files['compress_alignment_file']['unmapped_filename']}.spring"
+        programs_to_files['spring_compress_unaligned_reads']['output'] = f"{options.outputs_and_errors_directory}/spring_compress_unaligned_reads.output"
+        programs_to_files['spring_compress_unaligned_reads']['error'] = f"{options.outputs_and_errors_directory}/spring_compress_unaligned_reads.error"
         
         programs_to_files['fclqc_compress'] = {}
         programs_to_files['fclqc_compress']['parameter_file'] = f"{options.temp_directory}/parameter.json"
@@ -445,7 +452,8 @@ def compressSamFile( options , tags_present ):
     if options.skip_shortening_read_names == True:
         cmd += f" --skip_shortening_read_names"
     cmd += f" --max_reads_in_a_single_nucl_loc {max_input_reads_in_a_single_nucl_loc}"
-    
+    cmd += f" --spring_or_fclqc {options.spring_or_fclqc}"    
+
     cmd += f") "
     cmd += f" 1> {programs_to_files['compress_alignment_file']['output'] }"
     cmd += f" 2> {programs_to_files['compress_alignment_file']['error'] }"
@@ -459,30 +467,61 @@ def compressSamFile( options , tags_present ):
     ######################################################################################
     number_of_quality_scores = total_number_of_alignments + 100
 
-    # Create the parameter file for fclqc
-    fhw = open( f"{options.temp_directory}/parameter.json", "w" )
-    fhw.write( "{\n" )
-    fhw.write( f"\t\"precision\": 52,\n" )
-    fhw.write( f"\t\"file_size\": {number_of_quality_scores},\n" )
-    fhw.write( f"\t\"thread_num\": 1,\n" )
-    fhw.write( f"\t\"first_line\": 1,\n" )
-    fhw.write( f"\t\"last_line\": {number_of_quality_scores*4}\n" )
-    fhw.write( "}\n" )
-    fhw.close()
+    if options.spring_or_fclqc == "FCLQC":
+        # Create the parameter file for fclqc
+        fhw = open( f"{options.temp_directory}/parameter.json", "w" )
+        fhw.write( "{\n" )
+        fhw.write( f"\t\"precision\": 52,\n" )
+        fhw.write( f"\t\"file_size\": {number_of_quality_scores},\n" )
+        fhw.write( f"\t\"thread_num\": 1,\n" )
+        fhw.write( f"\t\"first_line\": 1,\n" )
+        fhw.write( f"\t\"last_line\": {number_of_quality_scores*4}\n" )
+        fhw.write( "}\n" )
+        fhw.close()
 
-    if options.quiet == False:
-        logging.info( "Starting compression with fclqc" )
-    cmd = f"(/usr/bin/time --verbose "
-    cmd += f" main "
-    cmd += f" -c {programs_to_files['compress_alignment_file']['name_of_file_with_quality_scores'] } "
-    cmd += f" {programs_to_files['fclqc_compress']['outputfilename']}"
-    cmd += f" {options.temp_directory}/parameter.json"
-    cmd += f") "
-    cmd += f" 1> {programs_to_files['fclqc_compress']['output']} "
-    cmd += f" 2> {programs_to_files['fclqc_compress']['error']}"
-    if options.quiet == False:
-        logging.info( f"Running command - {cmd}" )
-    os.system(cmd)
+        if options.quiet == False:
+            logging.info( "Starting compression with fclqc" )
+        cmd = f"(/usr/bin/time --verbose "
+        cmd += f" main "
+        cmd += f" -c {programs_to_files['compress_alignment_file']['name_of_file_with_quality_scores'] } "
+        cmd += f" {programs_to_files['fclqc_compress']['outputfilename']}"
+        cmd += f" {options.temp_directory}/parameter.json"
+        cmd += f") "
+        cmd += f" 1> {programs_to_files['fclqc_compress']['output']} "
+        cmd += f" 2> {programs_to_files['fclqc_compress']['error']}"
+        if options.quiet == False:
+            logging.info( f"Running command - {cmd}" )
+        os.system(cmd)
+    elif options.spring_or_fclqc == "SPRING":
+        # Compress with SPRING
+        cmd = f"(/usr/bin/time --verbose "
+        cmd += " spring "
+        cmd += f" --compress "
+        cmd += f" --num-threads 1 "
+        cmd += f" --no-ids "
+        cmd += f" --input-file {programs_to_files['spring_compress_aligned_reads']['input_filename']}"
+        cmd += f" --output-file {programs_to_files['spring_compress_aligned_reads']['output_filename']}"
+        cmd += f") "
+        cmd += f" 1> {programs_to_files['spring_compress_aligned_reads']['output']} "
+        cmd += f" 2> {programs_to_files['spring_compress_aligned_reads']['error']}"
+        if options.quiet == False:
+            logging.info( f"Running command - {cmd}" )
+        os.system(cmd) 
+
+        cmd = f"(/usr/bin/time --verbose "
+        cmd += " spring "
+        cmd += f" --compress "
+        cmd += f" --num-threads 1 "
+        cmd += f" --no-ids "
+        cmd += f" --allow-read-reordering "
+        cmd += f" --input-file {programs_to_files['spring_compress_unaligned_reads']['input_filename']}"
+        cmd += f" --output-file {programs_to_files['spring_compress_unaligned_reads']['output_filename']}"
+        cmd += f") "
+        cmd += f" 1> {programs_to_files['spring_compress_unaligned_reads']['output']} "
+        cmd += f" 2> {programs_to_files['spring_compress_unaligned_reads']['error']}"
+        if options.quiet == False:
+            logging.info( f"Running command - {cmd}" )
+        os.system(cmd)
     
     ######################################################################################
     # Generate SHA512 for reference file
@@ -499,22 +538,39 @@ def compressSamFile( options , tags_present ):
     if options.quiet == False:
         logging.info( "Starting compression with zpaq" )
 
-    cmd = f"(/usr/bin/time --verbose "
-    cmd += f" zpaq a "
-    cmd += f" {programs_to_files['zpaq_compress']['compressed_file']} "  # Final name of the compressed file ending in .abridge
-    cmd += f" {programs_to_files['compress_alignment_file']['output_abridge_filename']} "  # The non redundant version of the sam file
-    cmd += f" {programs_to_files['compress_alignment_file']['unmapped_filename']} "  # Set of unmapped reads
-    cmd += f" {programs_to_files['zpaq_compress']['reference_sha512_filename']} "  # The 128 bit hash of the reference
-    cmd += f" {programs_to_files['fclqc_compress']['outputfilename']}001* "  # FCLQC compressed quality scores file
-    cmd += f" {programs_to_files['fclqc_compress']['outputfilename']}.prob "  # FCLQC compressed quality probability file
-    cmd += f" -m3 -t{options.cpu} -f "
-    cmd += f" -noattributes "
-    cmd += f") "
-    cmd += f"1> {programs_to_files['zpaq_compress']['output']} "
-    cmd += f"2> {programs_to_files['zpaq_compress']['error']} "
-    if options.quiet == False:
-        logging.info( f"Running command - {cmd}" )
-    os.system(cmd)
+    if options.spring_or_fclqc == "FCLQC":
+        cmd = f"(/usr/bin/time --verbose "
+        cmd += f" zpaq a "
+        cmd += f" {programs_to_files['zpaq_compress']['compressed_file']} "  # Final name of the compressed file ending in .abridge
+        cmd += f" {programs_to_files['compress_alignment_file']['output_abridge_filename']} "  # The non redundant version of the sam file
+        cmd += f" {programs_to_files['compress_alignment_file']['unmapped_filename']} "  # Set of unmapped reads
+        cmd += f" {programs_to_files['zpaq_compress']['reference_sha512_filename']} "  # The 128 bit hash of the reference
+        cmd += f" {programs_to_files['fclqc_compress']['outputfilename']}* "  # FCLQC compressed quality scores file
+        #cmd += f" {programs_to_files['fclqc_compress']['outputfilename']}.prob "  # FCLQC compressed quality probability file
+        cmd += f" -m3 -t{options.cpu} -f "
+        cmd += f" -noattributes "
+        cmd += f") "
+        cmd += f"1> {programs_to_files['zpaq_compress']['output']} "
+        cmd += f"2> {programs_to_files['zpaq_compress']['error']} "
+        if options.quiet == False:
+            logging.info( f"Running command - {cmd}" )
+        os.system(cmd)
+    elif options.spring_or_fclqc == "SPRING": 
+        cmd = f"(/usr/bin/time --verbose "
+        cmd += f" zpaq a "
+        cmd += f" {programs_to_files['zpaq_compress']['compressed_file']} "  # Final name of the compressed file ending in .abridge
+        cmd += f" {programs_to_files['compress_alignment_file']['output_abridge_filename']} "  # The non redundant version of the sam file
+        cmd += f" {programs_to_files['zpaq_compress']['reference_sha512_filename']} "  # The 128 bit hash of the reference
+        cmd += f" {programs_to_files['spring_compress_aligned_reads']['output_filename']} "  # SPRING compressed file for aligned reads
+        cmd += f" {programs_to_files['spring_compress_unaligned_reads']['output_filename']} "  # SPRING compressed file for unaligned reads
+        cmd += f" -m3 -t{options.cpu} -f "
+        cmd += f" -noattributes "
+        cmd += f") "
+        cmd += f"1> {programs_to_files['zpaq_compress']['output']} "
+        cmd += f"2> {programs_to_files['zpaq_compress']['error']} "
+        if options.quiet == False:
+            logging.info( f"Running command - {cmd}" )
+        os.system(cmd) 
 
 def findEndedness( options, logging ):
     """

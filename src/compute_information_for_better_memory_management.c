@@ -16,15 +16,15 @@ static char args_doc[] = ""; // No standard arguments
 							 // (i.e. arguments without "names")
 
 static struct argp_option options[] =
-{
-/*
- * Options.  Field 1 in ARGP.
- * Order of fields: {NAME, KEY, ARG, FLAGS, DOC, GROUP}.
- */
-{ "input_alignment_filename" , 'i' , "SAM_FILENAME" , 0 , "Enter the name of the SAM file to be compressed" , 0 } ,
-{ "input_alignment_file_format" , 'j' , "ended" , 0 , "Enter the format of the alignment file. Must be either SAM or BAM" , 0 } ,
-{ "summary_information_outputfilename" , 'o' , "TEXT_FILENAME" , 0 , "Enter the name of the output file that will contain (1) the value of maximum number of reads mapped to a single nucleotide (2) Total number of alignments (3) Maximum read length" , 0 } ,
-{ 0 , 0 , 0 , 0 , 0 , 0 } // Last entry should be all zeros in all fields
+	{
+		/*
+		 * Options.  Field 1 in ARGP.
+		 * Order of fields: {NAME, KEY, ARG, FLAGS, DOC, GROUP}.
+		 */
+		{"input_alignment_filename", 'i', "SAM_FILENAME", 0, "Enter the name of the SAM file to be compressed", 0},
+		{"input_alignment_file_format", 'j', "ended", 0, "Enter the format of the alignment file. Must be either SAM or BAM", 0},
+		{"summary_information_outputfilename", 'o', "TEXT_FILENAME", 0, "Enter the name of the output file that will contain (1) the value of maximum number of reads mapped to a single nucleotide (2) Total number of alignments (3) Maximum read length", 0},
+		{0, 0, 0, 0, 0, 0} // Last entry should be all zeros in all fields
 };
 
 struct arguments
@@ -38,7 +38,7 @@ struct arguments
 	unsigned short int AS_tag_presence;
 };
 
-static error_t parse_opt (int key, char *arg, struct argp_state *state)
+static error_t parse_opt(int key, char *arg, struct argp_state *state)
 {
 	/*
 	 * Parser. Field 2 in ARGP.
@@ -50,43 +50,43 @@ static error_t parse_opt (int key, char *arg, struct argp_state *state)
 	struct arguments *arguments = state->input;
 
 	// Figure out which option we are parsing, and decide how to store it
-	switch ( key )
+	switch (key)
 	{
-		case 'i':
-			arguments->input_alignment_filename = arg;
-			break;
-		case 'j':
-			arguments->input_alignment_file_format = arg;
-			break;
-		case 'o':
-			arguments->summary_information_outputfilename = arg;
-			break;
-		case ARGP_KEY_END:
-			// Reached the last key.
-			// Check if our inputsamfilename and outputfilename REQUIRED "options" have been set to non-default values
-			/*if ( strcmp (arguments->input_alignment_filename , "") == 0 || strcmp (strupr (arguments->input_alignment_file_format) ,
-			 "SAM") != 0 || strcmp (strupr (arguments->input_alignment_file_format) ,
-			 "BAM") != 0 || strcmp (arguments->summary_information_outputfilename ,
-			 "") == 0 || strcmp (arguments->ended , "") == 0 )
-			 {
-			 argp_usage (state);
-			 }*/
-			break;
+	case 'i':
+		arguments->input_alignment_filename = arg;
+		break;
+	case 'j':
+		arguments->input_alignment_file_format = arg;
+		break;
+	case 'o':
+		arguments->summary_information_outputfilename = arg;
+		break;
+	case ARGP_KEY_END:
+		// Reached the last key.
+		// Check if our inputsamfilename and outputfilename REQUIRED "options" have been set to non-default values
+		/*if ( strcmp (arguments->input_alignment_filename , "") == 0 || strcmp (strupr (arguments->input_alignment_file_format) ,
+		 "SAM") != 0 || strcmp (strupr (arguments->input_alignment_file_format) ,
+		 "BAM") != 0 || strcmp (arguments->summary_information_outputfilename ,
+		 "") == 0 || strcmp (arguments->ended , "") == 0 )
+		 {
+		 argp_usage (state);
+		 }*/
+		break;
 
-		default:
-			return ARGP_ERR_UNKNOWN;
+	default:
+		return ARGP_ERR_UNKNOWN;
 	}
 	return 0;
 }
 
 // Our argp parser.
 static struct argp argp =
-{ options , parse_opt , args_doc , doc , 0 , 0 , 0 };
+	{options, parse_opt, args_doc, doc, 0, 0, 0};
 
-void findSummaryInformation (
-		char *input_alignment_filename,
-		char *input_alignment_file_format,
-		char *summary_information_outputfilename)
+void findSummaryInformation(
+	char *input_alignment_filename,
+	char *input_alignment_file_format,
+	char *summary_information_outputfilename)
 {
 	/********************************************************************
 	 * Variable declaration
@@ -95,10 +95,10 @@ void findSummaryInformation (
 	unsigned short int max_read_length, current_read_length;
 	unsigned long long int total_number_of_alignments;
 	unsigned long long int current_reference_position,
-			previous_reference_position;
+		previous_reference_position;
 	unsigned long long int
-			maximum_number_of_reads_mapped_to_a_single_reference_nucleotide,
-			number_of_reads_mapped_to_the_current_reference_nucleotide;
+		maximum_number_of_reads_mapped_to_a_single_reference_nucleotide,
+		number_of_reads_mapped_to_the_current_reference_nucleotide;
 	unsigned int all_possible_samflags[10000];
 	unsigned int all_possible_samflags_index = 0;
 	unsigned int current_samformatflag;
@@ -107,16 +107,16 @@ void findSummaryInformation (
 	FILE *fhw;
 
 	/* Variables if BAM file is provided*/
-	samFile *fp_in;            // File pointer if BAM file provided
-	bam_hdr_t *bamHdr;         // read header
-	bam1_t *aln = bam_init1 (); // initialize an alignment
+	samFile *fp_in;			   // File pointer if BAM file provided
+	bam_hdr_t *bamHdr;		   // read header
+	bam1_t *aln = bam_init1(); // initialize an alignment
 
 	size_t len = 0;
 	ssize_t line_len;
 
 	char str[ONE_THOUSAND];
 	char temp_str_integer_to_string_conversion[ONE_HUNDRED];
-	char *temp;        // Useless
+	char *temp;		   // Useless
 	char *line = NULL; // for reading each line
 	char **split_line; // List of strings to store each element of a single alignment
 	char **split_tags;
@@ -127,118 +127,119 @@ void findSummaryInformation (
 	/********************************************************************
 	 * Variable initialization
 	 ********************************************************************/
-	if ( strcmp (input_alignment_file_format , "SAM") == 0 )
+	if (strcmp(input_alignment_file_format, "SAM") == 0)
 	{
-		fhr = fopen (input_alignment_filename , "r");
-		if ( fhr == NULL )
+		fhr = fopen(input_alignment_filename, "r");
+		if (fhr == NULL)
 		{
-			printf ("Error! File %s not found" , input_alignment_filename);
-			exit (1);
+			printf("Error! File %s not found", input_alignment_filename);
+			exit(1);
 		}
 	}
-	else if ( strcmp (input_alignment_file_format , "BAM") == 0 )
+	else if (strcmp(input_alignment_file_format, "BAM") == 0)
 	{
-		fp_in = hts_open (input_alignment_filename , "r");
-		bamHdr = sam_hdr_read (fp_in);
+		fp_in = hts_open(input_alignment_filename, "r");
+		bamHdr = sam_hdr_read(fp_in);
 	}
-	fhw = fopen (summary_information_outputfilename , "w");
-	if ( fhw == NULL )
+	fhw = fopen(summary_information_outputfilename, "w");
+	if (fhw == NULL)
 	{
-		printf ("%s File cannot be created" ,
-				summary_information_outputfilename);
-		exit (1);
+		printf("%s File cannot be created",
+			   summary_information_outputfilename);
+		exit(1);
 	}
 
 	max_read_length = 0;
 	maximum_number_of_reads_mapped_to_a_single_reference_nucleotide = 0;
 	number_of_reads_mapped_to_the_current_reference_nucleotide = 0;
 
-	split_line = ( char** ) malloc (sizeof(char*) * ONE_HUNDRED);
-	for ( i = 0 ; i < ONE_HUNDRED ; i++ )
-		split_line[i] = ( char* ) malloc (sizeof(char) * MAX_SEQ_LEN);
+	split_line = (char **)malloc(sizeof(char *) * ONE_HUNDRED);
+	for (i = 0; i < ONE_HUNDRED; i++)
+		split_line[i] = (char *)malloc(sizeof(char) * MAX_SEQ_LEN);
 
-	split_tags = ( char** ) malloc (sizeof(char*) * ONE_HUNDRED);
-	for ( i = 0 ; i < ONE_HUNDRED ; i++ )
-		split_tags[i] = ( char* ) malloc (sizeof(char) * TEN);
+	split_tags = (char **)malloc(sizeof(char *) * ONE_HUNDRED);
+	for (i = 0; i < ONE_HUNDRED; i++)
+		split_tags[i] = (char *)malloc(sizeof(char) * TEN);
 
-	current_reference_name = ( char* ) malloc (sizeof(char) * ONE_HUNDRED);
+	current_reference_name = (char *)malloc(sizeof(char) * ONE_HUNDRED);
 	current_reference_name[0] = '\0';
-	previous_reference_name = ( char* ) malloc (sizeof(char) * ONE_HUNDRED);
+	previous_reference_name = (char *)malloc(sizeof(char) * ONE_HUNDRED);
 	previous_reference_name[0] = '\0';
 
 	total_number_of_alignments = 0;
 	str[0] = '\0';
 	/********************************************************************/
 
-	if ( strcmp (input_alignment_file_format , "SAM") == 0 )
+	if (strcmp(input_alignment_file_format, "SAM") == 0)
 	{
-		while ( ( line_len = getline ( &line , &len , fhr) ) != -1 )
-			if ( line[0] != '@' ) break;
+		while ((line_len = getline(&line, &len, fhr)) != -1)
+			if (line[0] != '@')
+				break;
 	}
-	if ( strcmp (input_alignment_file_format , "BAM") == 0 )
+	if (strcmp(input_alignment_file_format, "BAM") == 0)
 	{
-		sam_read1 (fp_in , bamHdr , aln);
+		sam_read1(fp_in, bamHdr, aln);
 	}
 	fseek(fhr, -line_len, SEEK_CUR);
 
 	do
 	{
 		total_number_of_alignments += 1;
-		//if ( total_number_of_alignments == 100 ) break;
+		// if ( total_number_of_alignments == 100 ) break;
 		/*if ( total_number_of_alignments % 100000 == 0 )
 		 printf ("\nTotal number of alignments %d" ,
 		 total_number_of_alignments);
 		 */
-		if ( strcmp (input_alignment_file_format , "BAM") == 0 )
+		if (strcmp(input_alignment_file_format, "BAM") == 0)
 		{
 			current_reference_position = aln->core.pos + 1;
-			if ( current_reference_position == 0 )
+			if (current_reference_position == 0)
 			{
-				//printf ("\nBreaking unaligned read encountered");
-				break;//Unaligned read}
+				// printf ("\nBreaking unaligned read encountered");
+				break; // Unaligned read}
 			}
 			current_reference_name = bamHdr->target_name[aln->core.tid];
 			current_read_length = aln->core.l_qseq;
 		}
-		else if ( strcmp (input_alignment_file_format , "SAM") == 0 )
+		else if (strcmp(input_alignment_file_format, "SAM") == 0)
 		{
-			splitByDelimiter (line , '\t' , split_line);
-			current_read_length = strlen (split_line[9]);
-			strcpy(current_reference_name , split_line[2]);
-			current_reference_position = convertStringToUnsignedInteger (split_line[3]);
-			if ( current_reference_position == 0 )
+			splitByDelimiter(line, '\t', split_line);
+			current_read_length = strlen(split_line[9]);
+			strcpy(current_reference_name, split_line[2]);
+			current_reference_position = convertStringToUnsignedInteger(split_line[3]);
+			if (current_reference_position == 0)
 			{
-				//printf ("\nBreaking unaligned read encountered");
-				break;//Unaligned read}
+				// printf ("\nBreaking unaligned read encountered");
+				break; // Unaligned read}
 			}
-			current_samformatflag = convertStringToUnsignedInteger (split_line[1]);
+			current_samformatflag = convertStringToUnsignedInteger(split_line[1]);
 		}
 
-		for(i=0;i<all_possible_samflags_index;i++)
+		for (i = 0; i < all_possible_samflags_index; i++)
 		{
-			if(all_possible_samflags[i] ==  current_samformatflag)
+			if (all_possible_samflags[i] == current_samformatflag)
 				break;
 		}
-		if(i==all_possible_samflags_index)
+		if (i == all_possible_samflags_index)
 		{
 			all_possible_samflags[all_possible_samflags_index] = current_samformatflag;
 			all_possible_samflags_index++;
 		}
 
-		if ( max_read_length < current_read_length )
+		if (max_read_length < current_read_length)
 			max_read_length = current_read_length;
 
-		if ( strlen (previous_reference_name) == 0 )
+		/*if (strlen(previous_reference_name) == 0)
 		{
-			strcpy(previous_reference_name , current_reference_name);
+			strcpy(previous_reference_name, current_reference_name);
 		}
-		else if ( strcmp (current_reference_name , previous_reference_name) != 0 ) // Different reference sequence encountered
+		else if (strcmp(current_reference_name, previous_reference_name) != 0) // Different reference sequence encountered
 		{
 			previous_reference_position = -1;
-		}
-
-		//if ( current_reference_position == 0 ) continue;
-		if ( maximum_number_of_reads_mapped_to_a_single_reference_nucleotide == 0 )
+		}*/
+		// printf("\nCurrent_position %llu", current_reference_position);
+		//  if ( current_reference_position == 0 ) continue;
+		if (maximum_number_of_reads_mapped_to_a_single_reference_nucleotide == 0)
 		{
 			previous_reference_position = current_reference_position;
 			maximum_number_of_reads_mapped_to_a_single_reference_nucleotide = 1;
@@ -246,88 +247,88 @@ void findSummaryInformation (
 		}
 		else
 		{
-			if ( previous_reference_position == current_reference_position )
+			if (previous_reference_position == current_reference_position)
 				number_of_reads_mapped_to_the_current_reference_nucleotide += 1;
 			else
 			{
-				if ( number_of_reads_mapped_to_the_current_reference_nucleotide > maximum_number_of_reads_mapped_to_a_single_reference_nucleotide )
+				if (number_of_reads_mapped_to_the_current_reference_nucleotide > maximum_number_of_reads_mapped_to_a_single_reference_nucleotide)
+				{
+					// printf("\nmaximum_number_of_reads_mapped_to_a_single_reference_nucleotide = %llu position = %llu", maximum_number_of_reads_mapped_to_a_single_reference_nucleotide, current_reference_position);
 					maximum_number_of_reads_mapped_to_a_single_reference_nucleotide = number_of_reads_mapped_to_the_current_reference_nucleotide;
+				}
 				previous_reference_position = current_reference_position;
 				number_of_reads_mapped_to_the_current_reference_nucleotide = 0;
 			}
 		}
 
-		if ( strcmp (input_alignment_file_format , "SAM") == 0 )
+		if (strcmp(input_alignment_file_format, "SAM") == 0)
 		{
-			line_len = getline ( &line , &len , fhr);
-			//printf ("\nLine length %d" , line_len);
+			line_len = getline(&line, &len, fhr);
+			// printf ("\nLine length %d" , line_len);
 		}
 
-		if ( strcmp (input_alignment_file_format , "BAM") == 0 )
+		if (strcmp(input_alignment_file_format, "BAM") == 0)
 		{
-			line_len = sam_read1 (fp_in , bamHdr , aln);
+			line_len = sam_read1(fp_in, bamHdr, aln);
 			/*if ( total_number_of_alignments % 10000 == 0 )
 			 printf ("\nLine length %d total_number_of_alignments %d" ,
 			 line_len ,
 			 total_number_of_alignments);
 			 */
-			//fflush (stdout);
+			// fflush (stdout);
 		}
 
-		if ( line_len <= 0 ) break;
-	} while ( 1 );
+		if (line_len <= 0)
+			break;
+	} while (1);
 
-	if ( number_of_reads_mapped_to_the_current_reference_nucleotide > maximum_number_of_reads_mapped_to_a_single_reference_nucleotide )
+	if (number_of_reads_mapped_to_the_current_reference_nucleotide > maximum_number_of_reads_mapped_to_a_single_reference_nucleotide)
 		maximum_number_of_reads_mapped_to_a_single_reference_nucleotide = number_of_reads_mapped_to_the_current_reference_nucleotide;
 
-	strcat(str ,
-			"maximum_number_of_reads_mapped_to_a_single_reference_nucleotide: ");
-	convertUnsignedIntegerToString (temp_str_integer_to_string_conversion ,
-			maximum_number_of_reads_mapped_to_a_single_reference_nucleotide);
-	strcat(str , temp_str_integer_to_string_conversion);
-	strcat(str , "\n");
+	strcat(str,
+		   "maximum_number_of_reads_mapped_to_a_single_reference_nucleotide: ");
+	convertUnsignedIntegerToString(temp_str_integer_to_string_conversion,
+								   maximum_number_of_reads_mapped_to_a_single_reference_nucleotide);
+	strcat(str, temp_str_integer_to_string_conversion);
+	strcat(str, "\n");
 
-	strcat(str , "total_number_of_alignments: ");
-	convertUnsignedIntegerToString (temp_str_integer_to_string_conversion ,
-			total_number_of_alignments);
-	strcat(str , temp_str_integer_to_string_conversion);
-	strcat(str , "\n");
+	strcat(str, "total_number_of_alignments: ");
+	convertUnsignedIntegerToString(temp_str_integer_to_string_conversion,
+								   total_number_of_alignments);
+	strcat(str, temp_str_integer_to_string_conversion);
+	strcat(str, "\n");
 
-	strcat(str , "max_read_length:");
-	convertUnsignedIntegerToString (temp_str_integer_to_string_conversion ,
-			max_read_length);
-	strcat(str , temp_str_integer_to_string_conversion);
-	strcat(str , "\n");
+	strcat(str, "max_read_length:");
+	convertUnsignedIntegerToString(temp_str_integer_to_string_conversion,
+								   max_read_length);
+	strcat(str, temp_str_integer_to_string_conversion);
+	strcat(str, "\n");
 
 	strcat(str, "samformatflags: ");
-	for(i=0;i<all_possible_samflags_index;i++)
+	for (i = 0; i < all_possible_samflags_index; i++)
 	{
-		convertUnsignedIntegerToString (temp_str_integer_to_string_conversion, all_possible_samflags[i]);
+		convertUnsignedIntegerToString(temp_str_integer_to_string_conversion, all_possible_samflags[i]);
 		strcat(str, temp_str_integer_to_string_conversion);
-		if (i!=all_possible_samflags_index-1)
-			strcat(str,",");
+		if (i != all_possible_samflags_index - 1)
+			strcat(str, ",");
 	}
 	strcat(str, "\n");
-	strcat(str , "\0");
+	strcat(str, "\0");
 
+	fprintf(fhw, "%s", str);
 
-	fprintf (fhw , "%s" , str);
+	fclose(fhw);
 
-
-
-
-
-	fclose (fhw);
-
-	if ( strcmp (input_alignment_file_format , "BAM") == 0 )
+	if (strcmp(input_alignment_file_format, "BAM") == 0)
 	{
-		bam_destroy1 (aln);
+		bam_destroy1(aln);
 		sam_close(fp_in);
 	}
-	else fclose (fhr);
+	else
+		fclose(fhr);
 }
 
-int main (int argc, char *argv[])
+int main(int argc, char *argv[])
 {
 	/********************************************************************
 	 * Named CLI
@@ -336,13 +337,13 @@ int main (int argc, char *argv[])
 
 	// Parse our arguments; every option seen by parse_opt will be reflected in arguments.
 	// Default values.
-	arguments.input_alignment_filename = "";// Empty string - only contains null character
+	arguments.input_alignment_filename = ""; // Empty string - only contains null character
 	arguments.summary_information_outputfilename = "";
 	arguments.input_alignment_file_format = "";
 	arguments.AS_tag_presence = 0;
 	arguments.ended = "";
 
-	argp_parse ( &argp , argc , argv , 0 , 0 , &arguments);
+	argp_parse(&argp, argc, argv, 0, 0, &arguments);
 	/********************************************************************
 	 * Variable declaration
 	 ********************************************************************/
@@ -358,14 +359,14 @@ int main (int argc, char *argv[])
 	 * Variable initialization
 	 ********************************************************************/
 
-	strcpy(input_alignment_filename , arguments.input_alignment_filename);
-	strcpy(input_alignment_file_format ,
-			strupr (arguments.input_alignment_file_format));
-	strcpy(summary_information_outputfilename ,
-			arguments.summary_information_outputfilename);
+	strcpy(input_alignment_filename, arguments.input_alignment_filename);
+	strcpy(input_alignment_file_format,
+		   strupr(arguments.input_alignment_file_format));
+	strcpy(summary_information_outputfilename,
+		   arguments.summary_information_outputfilename);
 
 	/********************************************************************/
-	findSummaryInformation (input_alignment_filename ,
-			input_alignment_file_format ,
-			summary_information_outputfilename);
+	findSummaryInformation(input_alignment_filename,
+						   input_alignment_file_format,
+						   summary_information_outputfilename);
 }

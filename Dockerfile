@@ -10,9 +10,9 @@ ENV DEBIAN_FRONTEND=noninteractive
 # Update base image and install software
 RUN apt-get -y update
 RUN apt-get -y install --fix-missing git python3 less vim wget time zlib1g zlib1g-dev lzma-dev \
-	libncurses5-dev libcurl4-nss-dev liblzma-dev libncursesw5-dev make unzip zip build-essential \
-	gcc g++ cmake ca-certificates libbz2-dev xz-utils htop autoconf automake binutils bison flex \
-	gettext libtool patch pkg-config p7zip-full p7zip pip perl libc6-dbg gdb valgrind
+    libncurses5-dev libcurl4-nss-dev liblzma-dev libncursesw5-dev make unzip zip build-essential \
+    gcc g++ cmake ca-certificates libbz2-dev xz-utils htop autoconf automake binutils bison flex \
+    gettext libtool patch pkg-config p7zip-full p7zip pip perl libc6-dbg gdb valgrind
 RUN apt-get clean all
 
 # Install base utilities
@@ -25,8 +25,8 @@ RUN apt-get update && \
 # Install miniconda
 ENV CONDA_DIR /opt/conda
 RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda.sh && \
-     /bin/bash ~/miniconda.sh -b -p /opt/conda
-     
+    /bin/bash ~/miniconda.sh -b -p /opt/conda
+
 # Put conda in path so we can use conda activate
 ENV PATH=$CONDA_DIR/bin:$PATH
 
@@ -104,17 +104,19 @@ RUN pip install ruffus
 
 ARG ABRIDGE_VERSION=1.2.0
 COPY marker /dev/null
-RUN mkdir -p /software/abridge && cd /software/abridge && \
-	git clone --recurse-submodules https://github.com/sagnikbanerjee15/Abridge.git && \
-	cd Abridge && \
-	make htslib
-	
+# RUN mkdir -p /software/abridge && cd /software/abridge && git clone --recurse-submodules https://github.com/sagnikbanerjee15/Abridge.git && make htslib && make install
 
-RUN cd /software/abridge/Abridge && \
-	git pull && \
-	make install
-	
-ENV PATH=${PATH}:/software/abridge/Abridge:/software/abridge/Abridge/src:/software/abridge/Abridge/bin
+#ENV PATH=${PATH}:/software/abridge/Abridge:/software/abridge/Abridge/src:/software/abridge/Abridge/bin
+ENV PATH=${PATH}:/work/ABRIDGE/Abridge:/work/ABRIDGE/Abridge/src:/work/ABRIDGE/Abridge/bin 
 ENV LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/local/lib"
 
 ENV PATH=${PATH}:/opt/samtools/bin
+
+###################################################################################################################################################################################################
+# Spring
+###################################################################################################################################################################################################
+
+RUN conda config --add channels defaults
+RUN conda config --add channels bioconda
+RUN conda config --add channels conda-forge
+RUN conda install -y spring

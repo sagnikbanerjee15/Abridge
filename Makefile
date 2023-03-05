@@ -15,7 +15,7 @@ all: $(PROGS)
 %: %.c
 
 install: $(PROGS)
-	cp -p $(PROGS) $(INSTALLDIR)
+	mv $(PROGS) $(INSTALLDIR)
 
 htslib:
 	cd submodules/htslib && autoreconf -i && ./configure && make && make install

@@ -1,14 +1,14 @@
-# include <stdio.h>
-# include <stdlib.h>
-# include <string.h>
-# include <argp.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <argp.h>
 
 // Set up the argument parser
 const char *argp_program_version = "abridge printReadNamesAndLineNumbers 1.2.0";
 const char *argp_program_bug_address = "sagnikbanerjee15@gmail.com";
 static char doc[] = "findAllTags will scan a sam file and output the unique list of alignment tags";
-static char args_doc[] = "";  // No standard arguments
-							  // (i.e. arguments without "names")
+static char args_doc[] = ""; // No standard arguments
+							 // (i.e. arguments without "names")
 
 /*
  * Options.  Field 1 in ARGP.
@@ -16,16 +16,16 @@ static char args_doc[] = "";  // No standard arguments
  */
 
 static struct argp_option options[] =
-{
-{ "inputsamfilename", 'i', "SAMFILENAME", 0, "inputsamfilename of object to download", 0 },
-{ 0, 0, 0, 0, 0, 0 } // Last entry should be all zeros in all fields
+	{
+		{"inputsamfilename", 'i', "SAMFILENAME", 0, "inputsamfilename of object to download", 0},
+		{0, 0, 0, 0, 0, 0} // Last entry should be all zeros in all fields
 };
 
 /* Used by main to communicate with parse_opt. */
 struct arguments
 {
 	// char *args[0];   // No standard arguments (without flags)
-	char *inputsamfilename;	  // Argument for --inputsamfilename / -i
+	char *inputsamfilename; // Argument for --inputsamfilename / -i
 };
 
 /*
@@ -34,39 +34,39 @@ struct arguments
  * Parse a single option.
  */
 
-static error_t parse_opt( int key, char *arg, struct argp_state *state )
+static error_t parse_opt(int key, char *arg, struct argp_state *state)
 {
 	/* Get the input argument from argp_parse, which we
 	 know is a pointer to our arguments structure. */
 	struct arguments *arguments = state->input;
 
 	// Figure out which option we are parsing, and decide how to store it
-	switch ( key )
+	switch (key)
 	{
-		case 'i':
-			arguments->inputsamfilename = arg;
-			break;
+	case 'i':
+		arguments->inputsamfilename = arg;
+		break;
 
-		case ARGP_KEY_END:
-			// Reached the last key.
-			// Check if our inputsamfilename and outputfilename REQUIRED "options" have been set to non-default values
-			if ( strcmp( arguments->inputsamfilename, "" ) == 0 )
-			{
-				argp_usage( state );
-			}
-			break;
+	case ARGP_KEY_END:
+		// Reached the last key.
+		// Check if our inputsamfilename and outputfilename REQUIRED "options" have been set to non-default values
+		if (strcmp(arguments->inputsamfilename, "") == 0)
+		{
+			argp_usage(state);
+		}
+		break;
 
-		default:
-			return ARGP_ERR_UNKNOWN;
+	default:
+		return ARGP_ERR_UNKNOWN;
 	}
 	return 0;
 }
 
 // Our argp parser.
 static struct argp argp =
-{ options, parse_opt, args_doc, doc, 0, 0, 0 };
+	{options, parse_opt, args_doc, doc, 0, 0, 0};
 
-void printReadNamesAndLineNumbers( char *inputfilename )
+void printReadNamesAndLineNumbers(char *inputfilename)
 {
 	/********************************************************************
 	 * Variable declaration
@@ -91,37 +91,37 @@ void printReadNamesAndLineNumbers( char *inputfilename )
 	/********************************************************************
 	 * Variable initialization
 	 ********************************************************************/
-	read_name = ( char* ) malloc( sizeof(char) * 100 );
+	read_name = (char *)malloc(sizeof(char) * 100);
 
-	fhr = fopen( inputfilename, "r" );
-	if ( fhr == NULL )
+	fhr = fopen(inputfilename, "r");
+	if (fhr == NULL)
 	{
-		printf( "Error! File %s not found", inputfilename );
-		exit( 1 );
+		printf("Error! File %s not found", inputfilename);
+		exit(1);
 	}
 	/********************************************************************/
 
-	while ( (line_len = getline( &line, &len, fhr )) != -1 )
-		if ( line[0] != '@' )
+	while ((line_len = getline(&line, &len, fhr)) != -1)
+		if (line[0] != '@')
 			break;
 	line_number = 0;
 	do
 	{
 		j = 0;
-		for ( i = 0; line[i] != '\t'; i++ )
+		for (i = 0; line[i] != '\t'; i++)
 			read_name[j++] = line[i];
 
-		printf( "%s", read_name );
-		printf( "\t" );
-		printf( "%lld", line_number );
-		printf( "\n" );
+		printf("%s", read_name);
+		printf("\t");
+		printf("%lld", line_number);
+		printf("\n");
 		line_number++;
-	} while ( (line_len = getline( &line, &len, fhr )) != -1 );
+	} while ((line_len = getline(&line, &len, fhr)) != -1);
 
-	fclose( fhr );
+	fclose(fhr);
 }
 
-int main( int argc, char **argv )
+int main(int argc, char **argv)
 {
 	/********************************************************************
 	 * Named CLI
@@ -132,8 +132,8 @@ int main( int argc, char **argv )
 	// Default values.
 	arguments.inputsamfilename = ""; // Empty string - only contains null character
 
-	argp_parse( &argp, argc, argv, 0, 0, &arguments );
+	argp_parse(&argp, argc, argv, 0, 0, &arguments);
 	/********************************************************************/
-	printReadNamesAndLineNumbers( arguments.inputsamfilename );
+	printReadNamesAndLineNumbers(arguments.inputsamfilename);
 	return 0;
 }
