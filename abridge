@@ -473,7 +473,7 @@ def compressSamFile( options , tags_present ):
         fhw.write( "{\n" )
         fhw.write( f"\t\"precision\": 52,\n" )
         fhw.write( f"\t\"file_size\": {number_of_quality_scores},\n" )
-        fhw.write( f"\t\"thread_num\": 1,\n" )
+        fhw.write( f"\t\"thread_num\": {options.cpu},\n" )
         fhw.write( f"\t\"first_line\": 1,\n" )
         fhw.write( f"\t\"last_line\": {number_of_quality_scores*4}\n" )
         fhw.write( "}\n" )
@@ -497,7 +497,7 @@ def compressSamFile( options , tags_present ):
         cmd = f"(/usr/bin/time --verbose "
         cmd += " spring "
         cmd += f" --compress "
-        cmd += f" --num-threads 1 "
+        cmd += f" --num-threads {options.cpu} "
         cmd += f" --no-ids "
         cmd += f" --input-file {programs_to_files['spring_compress_aligned_reads']['input_filename']}"
         cmd += f" --output-file {programs_to_files['spring_compress_aligned_reads']['output_filename']}"
@@ -511,7 +511,7 @@ def compressSamFile( options , tags_present ):
         cmd = f"(/usr/bin/time --verbose "
         cmd += " spring "
         cmd += f" --compress "
-        cmd += f" --num-threads 1 "
+        cmd += f" --num-threads {options.cpu} "
         cmd += f" --no-ids "
         cmd += f" --allow-read-reordering "
         cmd += f" --input-file {programs_to_files['spring_compress_unaligned_reads']['input_filename']}"

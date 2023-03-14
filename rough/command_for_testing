@@ -60,28 +60,62 @@ DNA_Seq_sample="DRR427726"
 EC2_storage=/data
 
 rm -rf \
-${EC2_storage}/ABRIDGE/testing/abrigde/${RNA_Seq_sample}_SE_all_tags_sorted_selected_regions_dev_temp \
-${EC2_storage}/ABRIDGE/testing/abrigde/${RNA_Seq_sample}_SE_all_tags_sorted_selected_regions_dev.abridge
+${EC2_storage}/ABRIDGE/testing/abrigde/${RNA_Seq_sample}_SE_all_tags_sample_spring_dev \
+${EC2_storage}/ABRIDGE/testing/abrigde/${RNA_Seq_sample}_SE_all_tags_sample_spring_dev.abridge
 
 nohup abridge \
 --compress \
 --reference ${EC2_storage}/ABRIDGE/testing/reference/Arabidopsis_thaliana.TAIR10.dna_sm.toplevel.fa \
---outputfilename ${EC2_storage}/ABRIDGE/testing/abridge/${RNA_Seq_sample}_SE_all_tags_sorted_selected_regions_spring_dev.abridge \
---inputalignedfilename ${EC2_storage}/ABRIDGE/testing/alignments/rna_seq_chromosome_all/${RNA_Seq_sample}_SE_all_tags_sorted_selected_regions.sam \
---temp_directory ${EC2_storage}/ABRIDGE/testing/abridge/${RNA_Seq_sample}_SE_all_tags_sorted_selected_regions_spring_dev \
+--outputfilename ${EC2_storage}/ABRIDGE/testing/abridge/${RNA_Seq_sample}_SE_all_tags_sample_spring_dev.abridge \
+--inputalignedfilename ${EC2_storage}/ABRIDGE/testing/alignments/rna_seq_sample/${RNA_Seq_sample}_SE_all_tags_sorted.sam  \
+--temp_directory ${EC2_storage}/ABRIDGE/testing/abridge/${RNA_Seq_sample}_SE_all_tags_sample_spring_dev \
 --spring_or_fclqc SPRING \
-1> ${EC2_storage}/ABRIDGE/testing/abridge/${RNA_Seq_sample}_SE_all_tags_sorted_selected_regions_spring_dev.output \
-2> ${EC2_storage}/ABRIDGE/testing/abridge/${RNA_Seq_sample}_SE_all_tags_sorted_selected_regions_spring_dev.error &
-
+--cpu 12 \
+1> ${EC2_storage}/ABRIDGE/testing/abridge/${RNA_Seq_sample}_SE_all_tags_sample_spring_dev.output \
+2> ${EC2_storage}/ABRIDGE/testing/abridge/${RNA_Seq_sample}_SE_all_tags_sample_spring_dev.error &
 
 nohup abridge \
 --compress \
 --reference ${EC2_storage}/ABRIDGE/testing/reference/Arabidopsis_thaliana.TAIR10.dna_sm.toplevel.fa \
---outputfilename ${EC2_storage}/ABRIDGE/testing/abridge/${RNA_Seq_sample}_SE_all_tags_sorted_selected_regions_fclqc_dev.abridge \
---inputalignedfilename ${EC2_storage}/ABRIDGE/testing/alignments/rna_seq_chromosome_all/${RNA_Seq_sample}_SE_all_tags_sorted_selected_regions.sam \
---temp_directory ${EC2_storage}/ABRIDGE/testing/abridge/${RNA_Seq_sample}_SE_all_tags_sorted_selected_regions_fclqc_dev \
+--outputfilename ${EC2_storage}/ABRIDGE/testing/abridge/${RNA_Seq_sample}_SE_all_tags_whole_spring_dev.abridge \
+--inputalignedfilename ${EC2_storage}/ABRIDGE/testing/alignments/rna_seq_whole/${RNA_Seq_sample}_SE_all_tags_sorted.sam  \
+--temp_directory ${EC2_storage}/ABRIDGE/testing/abridge/${RNA_Seq_sample}_SE_all_tags_whole_spring_dev \
+--spring_or_fclqc SPRING \
+--cpu 12 \
+1> ${EC2_storage}/ABRIDGE/testing/abridge/${RNA_Seq_sample}_SE_all_tags_whole_spring_dev.output \
+2> ${EC2_storage}/ABRIDGE/testing/abridge/${RNA_Seq_sample}_SE_all_tags_whole_spring_dev.error &
+
+nohup abridge \
+--compress \
+--reference ${EC2_storage}/ABRIDGE/testing/reference/Arabidopsis_thaliana.TAIR10.dna_sm.toplevel.fa \
+--outputfilename ${EC2_storage}/ABRIDGE/testing/abridge/${RNA_Seq_sample}_PE_all_tags_sample_spring_dev.abridge \
+--inputalignedfilename ${EC2_storage}/ABRIDGE/testing/alignments/rna_seq_sample/${RNA_Seq_sample}_PE_all_tags_sorted.sam  \
+--temp_directory ${EC2_storage}/ABRIDGE/testing/abridge/${RNA_Seq_sample}_PE_all_tags_sample_spring_dev \
+--spring_or_fclqc SPRING \
+--cpu 12 \
+1> ${EC2_storage}/ABRIDGE/testing/abridge/${RNA_Seq_sample}_PE_all_tags_sample_spring_dev.output \
+2> ${EC2_storage}/ABRIDGE/testing/abridge/${RNA_Seq_sample}_PE_all_tags_sample_spring_dev.error &
+
+nohup abridge \
+--compress \
+--reference ${EC2_storage}/ABRIDGE/testing/reference/Arabidopsis_thaliana.TAIR10.dna_sm.toplevel.fa \
+--outputfilename ${EC2_storage}/ABRIDGE/testing/abridge/${RNA_Seq_sample}_PE_all_tags_whole_spring_dev.abridge \
+--inputalignedfilename ${EC2_storage}/ABRIDGE/testing/alignments/rna_seq_whole/${RNA_Seq_sample}_PE_all_tags_sorted.sam  \
+--temp_directory ${EC2_storage}/ABRIDGE/testing/abridge/${RNA_Seq_sample}_PE_all_tags_whole_spring_dev \
+--spring_or_fclqc SPRING \
+--cpu 12 \
+1> ${EC2_storage}/ABRIDGE/testing/abridge/${RNA_Seq_sample}_PE_all_tags_whole_spring_dev.output \
+2> ${EC2_storage}/ABRIDGE/testing/abridge/${RNA_Seq_sample}_PE_all_tags_whole_spring_dev.error &
+
+nohup abridge \
+--compress \
+--reference ${EC2_storage}/ABRIDGE/testing/reference/Arabidopsis_thaliana.TAIR10.dna_sm.toplevel.fa \
+--outputfilename ${EC2_storage}/ABRIDGE/testing/abridge/${RNA_Seq_sample}_SE_all_tags_sample_flcqc_dev.abridge \
+--inputalignedfilename ${EC2_storage}/ABRIDGE/testing/alignments/rna_seq_sample/${RNA_Seq_sample}_SE_all_tags_sorted.sam  \
+--temp_directory ${EC2_storage}/ABRIDGE/testing/abridge/${RNA_Seq_sample}_SE_all_tags_sample_flcqc_dev \
 --spring_or_fclqc FCLQC \
-1> ${EC2_storage}/ABRIDGE/testing/abridge/${RNA_Seq_sample}_SE_all_tags_sorted_selected_regions_fclqc_dev.output \
-2> ${EC2_storage}/ABRIDGE/testing/abridge/${RNA_Seq_sample}_SE_all_tags_sorted_selected_regions_fclqc_dev.error &
+--cpu 12 \
+1> ${EC2_storage}/ABRIDGE/testing/abridge/${RNA_Seq_sample}_SE_all_tags_sample_flcqc_dev.output \
+2> ${EC2_storage}/ABRIDGE/testing/abridge/${RNA_Seq_sample}_SE_all_tags_sample_flcqc_dev.error &
 
 

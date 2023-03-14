@@ -99,17 +99,17 @@ struct Sam_Alignment
 	/*
 	 * Mandatory fields
 	 */
-	char *read_name;					   // Name of the read
-	char *samflag;						   // Flag produced by aligner. For more details see https://www.samformat.info/sam-format-flag
-	char *reference_name;				   // Chromosome name
-	unsigned long long int start_position; // starting position of the read
-	char *mapping_quality_score;		   // mapping score - not very important but might be of use to some downstream software - Keeping this as a string since there is no need to perform mathematical calculations
-	char *cigar;						   // the most important bit of information
-	char *reference_name_next_mate;		   // Reference name where the mate/next read is mapped
-	long long int start_position_next;	   // Position of the mate/next read
-	char *template_length;				   // Observed template length
-	char *sequence;						   // The nucleotide read sequence
-	char *quality_scores;				   // The read quality scores
+	char *read_name;							// Name of the read
+	char *samflag;								// Flag produced by aligner. For more details see https://www.samformat.info/sam-format-flag
+	char *reference_name;						// Chromosome name
+	unsigned long long int start_position;		// starting position of the read
+	char *mapping_quality_score;				// mapping score - not very important but might be of use to some downstream software - Keeping this as a string since there is no need to perform mathematical calculations
+	char *cigar;								// the most important bit of information
+	char *reference_name_next_mate;				// Reference name where the mate/next read is mapped
+	unsigned long long int start_position_next; // Position of the mate/next read
+	char *template_length;						// Observed template length
+	char *sequence;								// The nucleotide read sequence
+	char *quality_scores;						// The read quality scores
 
 	/*
 	 * Tags important for ABRIDGE compression

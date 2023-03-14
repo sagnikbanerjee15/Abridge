@@ -259,9 +259,13 @@ void comparePoolAndWriteToFile(char *ended,
 	line_to_be_written_to_file_read_names[0] = '\0';
 
 	// Remove this section later
-	/*convertUnsignedIntegerToString(str, (unsigned long long)actual_position);
+	convertUnsignedIntegerToString(str, (unsigned long long)actual_position);
 	fprintf(fhw_compressed, "%s", str);
-	fprintf(fhw_compressed, "%s", "\t");*/
+	fprintf(fhw_compressed, "%s", "\t");
+
+	convertUnsignedIntegerToString(str, (unsigned long long)relative_position);
+	fprintf(fhw_compressed, "%s", str);
+	fprintf(fhw_compressed, "%s", "\t");
 
 	// printf("\nNumber of reads in this position: %llu", sam_alignment_instance_pool_index);
 	// fflush(stdout);
@@ -276,7 +280,7 @@ void comparePoolAndWriteToFile(char *ended,
 		/*
 		 * Collect read names
 		 */
-		if (strcmp(sam_alignment_instance_pool[i]->NH, "1") != 0 || strcmp(ended, "PE") == 0) // Store read names for Paired ended reads and single ended multi mapped reads
+		if ((strcmp(ended, "SE") == 0 && strcmp(sam_alignment_instance_pool[i]->NH, "1") != 0) || (strcmp(ended, "PE") == 0 && strcmp(sam_alignment_instance_pool[i]->NH, "2") != 0)) // Store read names for multi mapped reads
 		{
 			strcat(line_to_be_written_to_file_read_names, sam_alignment_instance_pool[i]->read_name);
 			strcat(line_to_be_written_to_file_read_names, ",");
@@ -722,10 +726,26 @@ void compressAlignmentFile(
 	do
 	{
 		/****************************************************************************************/
-
+		// printf("\n%s", line);
+		// fflush(stdout);
 		if (number_of_alignments_read == 10000000000000000000000)
 			break;
 		number_of_alignments_read++;
+
+		/***************************************************************************************
+		 * Read a line from the short read names file for aligned reads
+		 ****************************************************************************************/
+		getline(&line_name_of_file_with_read_names_to_short_read_names_and_NH,
+				&len,
+				fhr_name_of_file_with_read_names_to_short_read_names_and_NH);
+
+		splitByDelimiter(line_name_of_file_with_read_names_to_short_read_names_and_NH,
+						 '\t',
+						 split_on_tab);
+		strcpy(current_alignment->read_name, split_on_tab[3]);
+		strcpy(current_alignment->NH, split_on_tab[2]);
+		/***********************************************************************************************************/
+
 		/***********************************************************************************************************
 		 * Performs the following:
 		 * - Read in one record
@@ -770,28 +790,12 @@ void compressAlignmentFile(
 
 		/***********************************************************************************************************/
 
-		/***************************************************************************************
-		 * Read a line from the short read names file for aligned reads
-		 ****************************************************************************************/
-		// if (strcmp(current_alignment->samflag, "4") != 0)
-		//{
-		getline(&line_name_of_file_with_read_names_to_short_read_names_and_NH,
-				&len,
-				fhr_name_of_file_with_read_names_to_short_read_names_and_NH);
-
-		splitByDelimiter(line_name_of_file_with_read_names_to_short_read_names_and_NH,
-						 '\t',
-						 split_on_tab);
-		strcpy(current_alignment->read_name, split_on_tab[3]);
-		strcpy(current_alignment->NH, split_on_tab[2]);
-
 		strcpy(current_reference_name, current_alignment->reference_name);
 		current_position = current_alignment->start_position;
-		//}
 
 		// printf("\nSamformatflag %s %d",current_alignment->samflag, strcmp(current_alignment->samflag, "4"));
 		/****************Collect Unmapped reads*************************************************/
-		if (strcmp(current_alignment->samflag, "4") == 0)
+		if (isKthBitSet(convertStringToUnsignedInteger(current_alignment->samflag), 2) == 1)
 		{
 			if (flag_ignore_unmapped_sequences == 0)
 			{
@@ -845,6 +849,7 @@ void compressAlignmentFile(
 											  spring_or_fclqc,
 											  max_read_length);
 				}
+				fprintf(fhw_compressed, "%s", "ref_name: ");
 				fprintf(fhw_compressed, "%s", current_alignment->reference_name);
 				fprintf(fhw_compressed, "%s", "\n");
 
@@ -852,6 +857,7 @@ void compressAlignmentFile(
 				previous_position = current_alignment->start_position;
 				actual_start_postion_of_alignments_in_pool = current_alignment->start_position;
 				relative_start_postion_of_alignments_in_pool = current_alignment->start_position;
+				relative_position_to_previous_read_cluster = current_alignment->start_position;
 				previous_alignment = current_alignment;
 
 				sam_alignment_instance_pool_index += 1;
@@ -918,7 +924,7 @@ void compressAlignmentFile(
 		if (line_len <= 0)
 			break;
 	} while (1);
-	if (strcmp(previous_alignment->samflag, "4") != 0) // Skip for unaligned reads
+	if (isKthBitSet(convertStringToUnsignedInteger(current_alignment->samflag), 2) == 1) // Skip for unaligned reads
 	{
 		/*printf("\n2. Relative position=%llu Actual position=%llu", relative_position_to_previous_read_cluster, previous_position);
 		relative_position_to_previous_read_cluster = current_position - previous_position;

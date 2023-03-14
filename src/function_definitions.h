@@ -456,7 +456,8 @@ void generateiCIGARString(
 	char *ended,
 	struct Cigar_Items **cigar_items_instance,
 	struct Samflag_Dictionary_Items **samflag_dictionary,
-	unsigned int samflag_dictionary_size)
+	unsigned int samflag_dictionary_size,
+	char *max_read_length_string)
 {
 	/*************************************************************************************************************************
 	 * Generate the integrated CIGAR string from CIGAR and MD
@@ -847,7 +848,6 @@ void generateiCIGARString(
 			strcat(sam_alignment_instance->icigar, str);
 		}
 	}
-
 	if (runlength != 0)
 	{
 		convertUnsignedIntegerToString(str, (unsigned long long)runlength);
@@ -859,6 +859,10 @@ void generateiCIGARString(
 		str[1] = '\0';
 		strcat(sam_alignment_instance->icigar, str);
 	}
+
+	// printf("\nicigar: %s cigar: %s", sam_alignment_instance->icigar, sam_alignment_instance->cigar);
+	// if (strcmp(sam_alignment_instance->icigar, max_read_length_string) == 0)
+	// strcpy(sam_alignment_instance->icigar, "M");
 
 	// Replace the M in the iCIGAR with samformatflag character
 
@@ -875,15 +879,41 @@ void generateiCIGARString(
 	sam_alignment_instance->replacement_character = samflag_dictionary[samflag_dictionary_index]->character;
 
 	// Add the NH tag, NH is stored as a string
+	// if ((strcmp(ended, "SE") == 0 && strcmp(sam_alignment_instance->NH, "1") != 0) || (strcmp(ended, "PE") == 0 && strcmp(sam_alignment_instance->NH, "2") != 0))
 	strcat(sam_alignment_instance->icigar, sam_alignment_instance->NH);
+	/***********************************************************************************************************************
+	 * Add information if data is paired ended
+	 ***********************************************************************************************************************/
+	if (strcmp(ended, "PE") == 0)
+	{
 
-	// Add the MAPQ and the AS scores
+		long long int distance = (signed long long int)sam_alignment_instance->start_position - (signed long long int)sam_alignment_instance->start_position_next;
+		convertSignedIntegerToString(str, distance);
+		strcat(sam_alignment_instance->icigar, "~");
+		strcat(sam_alignment_instance->icigar, str);
+		if (strcmp(sam_alignment_instance->NH, "2") != 0 || sam_alignment_instance->start_position <= sam_alignment_instance->start_position_next)
+		{
+			strcat(sam_alignment_instance->icigar, "~");
+			strcat(sam_alignment_instance->icigar, sam_alignment_instance->template_length);
+		}
+	}
+
+	/***********************************************************************************************************************
+	 * Add the MAPQ and the AS scores
+	 ***********************************************************************************************************************/
 	if (flag_ignore_alignment_scores == 0)
 	{
 		strcat(sam_alignment_instance->icigar, "~");
-		strcat(sam_alignment_instance->icigar, sam_alignment_instance->mapping_quality_score);
+		if (strcmp(sam_alignment_instance->mapping_quality_score, "255") != 0)
+			strcat(sam_alignment_instance->icigar, sam_alignment_instance->mapping_quality_score);
 		strcat(sam_alignment_instance->icigar, "~");
-		strcat(sam_alignment_instance->icigar, sam_alignment_instance->AS);
+		if (strcmp(ended, "SE") == 0)
+			strcat(sam_alignment_instance->icigar, sam_alignment_instance->AS);
+		else
+		{
+			if (sam_alignment_instance->start_position <= sam_alignment_instance->start_position_next)
+				strcat(sam_alignment_instance->icigar, sam_alignment_instance->AS);
+		}
 	}
 	/************************************************************************************************************************/
 
@@ -892,6 +922,7 @@ void generateiCIGARString(
 	str[1] = '\0';
 	strcat(sam_alignment_instance->icigar_appended_with_replacement_character, str);
 
+	// printf("\tfinal icigar: %s", sam_alignment_instance->icigar);
 	/*printf ("\nCIGAR=%s\tMD=%s\n%s\n%s\n%s\n%s" ,
 			sam_alignment_instance->cigar ,
 			sam_alignment_instance->MD ,
@@ -1026,7 +1057,7 @@ void populateSamAlignmentInstance(
 
 	/********************************************************************/
 
-	strcpy(dest->read_name, src[0]);
+	// strcpy(dest->read_name, src[0]);
 	strcpy(dest->samflag, src[1]);
 	strcpy(dest->reference_name, src[2]);
 	dest->start_position = convertStringToUnsignedInteger(src[3]);
@@ -1052,9 +1083,9 @@ void populateSamAlignmentInstance(
 		if (i == number_of_fields - 1)
 			split_on_colon[2][strlen(split_on_colon[2])] = '\0';
 
-		if (strcmp(split_on_colon[0], "NH") == 0)
-			strcpy(dest->NH, split_on_colon[2]);
-		else if (strcmp(split_on_colon[0], "MD") == 0)
+		// if (strcmp(split_on_colon[0], "NH") == 0)
+		// strcpy(dest->NH, split_on_colon[2]);
+		if (strcmp(split_on_colon[0], "MD") == 0)
 			strcpy(dest->MD, split_on_colon[2]);
 		else if (strcmp(split_on_colon[0], "AS") == 0)
 		{
@@ -1106,6 +1137,14 @@ void populateBamAlignmentInstance(struct Sam_Alignment *dest, // Final Sam align
 	qseq[i] = '\0';
 }
 
+unsigned short int isKthBitSet(unsigned long long int n, int k)
+{
+	if (n & (1 << k))
+		return 1;
+	else
+		return 0;
+}
+
 unsigned short int prepareSingleRecordFromAlignmentFile(
 	char *line,
 	samFile *fp_in,	   // File pointer if BAM file provided
@@ -1138,6 +1177,10 @@ unsigned short int prepareSingleRecordFromAlignmentFile(
 	ssize_t line_len;
 
 	unsigned short int number_of_fields;
+	char max_read_length_string[TEN];
+
+	convertUnsignedIntegerToString(max_read_length_string, (unsigned long long)max_read_length);
+	strcat(max_read_length_string, "M");
 
 	if (strcmp(alignment_format, "SAM") == 0)
 	{
@@ -1173,8 +1216,9 @@ unsigned short int prepareSingleRecordFromAlignmentFile(
 	}
 
 	// Return 1 if the alignment is of an unmapped read
-	if (strcmp(sam_alignment_instance->samflag, "4") == 0)
+	if (isKthBitSet(convertStringToUnsignedInteger(sam_alignment_instance->samflag), 2) == 1)
 		return 1;
+
 	/*
 	 * Process soft clipped fields - find the soft clipped portions of the reads and prepare the corresponding fields
 	 */
@@ -1203,7 +1247,8 @@ unsigned short int prepareSingleRecordFromAlignmentFile(
 						 ended,
 						 cigar_items_instance,
 						 samflag_dictionary,
-						 samflag_dictionary_size);
+						 samflag_dictionary_size,
+						 max_read_length_string);
 	return 0;
 }
 
