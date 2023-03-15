@@ -1,0 +1,14 @@
+Lossless - storing all information
+150B1~255~130-2
+
+iCIGARNH~MAPQ~AS-"Num of repetitions"
+
+Flags:
+
+flag_ignore_mismatches
+flag_ignore_soft_clippings
+flag_ignore_unmapped_sequences
+flag_ignore_all_quality_scores
+flag_ignore_quality_scores_for_matched_bases
+flag_ignore_alignment_scores
+flag_skip_shortening_read_namess
